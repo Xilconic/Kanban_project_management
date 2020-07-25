@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kanban_Project_Management_App
+namespace KanbanProjectManagementApp
 {
     internal class InputMetric
     {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Kanban_Project_Management_App</RootNamespace>
+    <RootNamespace>KanbanProjectManagementApp</RootNamespace>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 

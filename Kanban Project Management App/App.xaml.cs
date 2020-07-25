@@ -14,15 +14,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace Kanban_Project_Management_App
+namespace KanbanProjectManagementApp
 {
     /// <summary>
     /// Interaction logic for App.xaml

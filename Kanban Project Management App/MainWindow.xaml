@@ -16,12 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 -->
-<Window x:Class="Kanban_Project_Management_App.MainWindow"
+<Window x:Class="KanbanProjectManagementApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Kanban_Project_Management_App"
+        xmlns:local="clr-namespace:KanbanProjectManagementApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>

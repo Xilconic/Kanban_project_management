@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 [assembly: ThemeInfo(
@@ -24,3 +25,4 @@ using System.Windows;
                                               //(used if a resource is not found in the page,
                                               // app, or any theme specific resource dictionaries)
 )]
+[assembly: InternalsVisibleTo("Kanban Project Management App Tests")]

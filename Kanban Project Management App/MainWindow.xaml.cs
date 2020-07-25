@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 
-namespace Kanban_Project_Management_App
+namespace KanbanProjectManagementApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
