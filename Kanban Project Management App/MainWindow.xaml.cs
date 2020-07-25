@@ -14,9 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 
 namespace KanbanProjectManagementApp
@@ -26,34 +23,9 @@ namespace KanbanProjectManagementApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<InputMetric> elements = new List<InputMetric>();
-
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            dataGrid.ItemsSource = elements;
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if(elements.Count == 0)
-            {
-                calculatedMeanTextBox.Text = "-";
-            }
-            else
-            {
-                TimeSpan sum = TimeSpan.Zero;
-                foreach (var cycleTime in elements.Select(e => e.CycleTime))
-                {
-                    sum += cycleTime;
-                }
-                var mean = sum / elements.Count;
-                calculatedMeanTextBox.Text = mean.ToString();
-            }
         }
     }
 }
