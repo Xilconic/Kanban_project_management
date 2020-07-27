@@ -14,7 +14,7 @@ namespace KanbanProjectManagementApp
 
         public ObservableCollection<InputMetric> InputMetrics { get; } = new ObservableCollection<InputMetric>();
 
-        public TimeSpan? MeanOfCycleTime
+        public TimeSpan? EstimatedMeanOfCycleTime
         {
             get => meanOfCycleTime;
             private set
@@ -22,7 +22,7 @@ namespace KanbanProjectManagementApp
                 if(value != meanOfCycleTime)
                 {
                     meanOfCycleTime = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MeanOfCycleTime)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedMeanOfCycleTime)));
                 }
             }
         }
@@ -43,7 +43,7 @@ namespace KanbanProjectManagementApp
         {
             if (InputMetrics.Count == 0)
             {
-                MeanOfCycleTime = null;
+                EstimatedMeanOfCycleTime = null;
             }
             else
             {
@@ -53,7 +53,7 @@ namespace KanbanProjectManagementApp
                     sum += cycleTime;
                 }
                 var mean = sum / InputMetrics.Count;
-                MeanOfCycleTime = mean;
+                EstimatedMeanOfCycleTime = mean;
             }
         }
 

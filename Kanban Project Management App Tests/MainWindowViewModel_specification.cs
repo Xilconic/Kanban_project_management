@@ -7,7 +7,7 @@ namespace KanbanProjectManagementApp.Tests
 {
     public class MainWindowViewModel_specification
     {
-        private const string MeanOfCycleTimePropertyName = nameof(MainWindowViewModel.MeanOfCycleTime);
+        private const string MeanOfCycleTimePropertyName = nameof(MainWindowViewModel.EstimatedMeanOfCycleTime);
 
         public class GIVEN_a_newly_constructed_view_model
         {
@@ -83,7 +83,7 @@ namespace KanbanProjectManagementApp.Tests
             {
                 UpdateMeanOfCycleTime(viewModelWithOneInputMetric);
 
-                Assert.Equal(metric.CycleTime, viewModelWithOneInputMetric.MeanOfCycleTime);
+                Assert.Equal(metric.CycleTime, viewModelWithOneInputMetric.EstimatedMeanOfCycleTime);
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(MeanOfCycleTimePropertyName);
             }
 
@@ -152,7 +152,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 UpdateMeanOfCycleTime(viewModelWithOneInputMetric);
 
-                Assert.Equal(expectedMeanOfCycleTimes, viewModelWithOneInputMetric.MeanOfCycleTime);
+                Assert.Equal(expectedMeanOfCycleTimes, viewModelWithOneInputMetric.EstimatedMeanOfCycleTime);
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(MeanOfCycleTimePropertyName);
             }
 
@@ -174,7 +174,7 @@ namespace KanbanProjectManagementApp.Tests
 
         private static void AssertMeanOfCycleTimeNull(MainWindowViewModel vm)
         {
-            Assert.Null(vm.MeanOfCycleTime);
+            Assert.Null(vm.EstimatedMeanOfCycleTime);
         }
 
         private static void AssertInputMetricsAreEmpty(MainWindowViewModel vm)

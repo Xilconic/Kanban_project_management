@@ -45,15 +45,18 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Margin="4" TextAlignment="Right">Mean:</TextBlock>
-            <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="0" Margin="4" Text="{Binding MeanOfCycleTime, Mode=OneWay}"/>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="4" TextAlignment="Center" FontWeight="Bold">Estimations</TextBlock>
 
-            <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Standard deviation:</TextBlock>
-            <TextBox x:Name="calculatedStandardDeviationTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfCycleTime, Mode=OneWay}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Mean:</TextBlock>
+            <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedMeanOfCycleTime, Mode=OneWay}"/>
 
-            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
+            <TextBlock Grid.Column="0" Grid.Row="2" Margin="4" TextAlignment="Right">Standard deviation:</TextBlock>
+            <TextBox x:Name="calculatedStandardDeviationTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="2" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfCycleTime, Mode=OneWay}"/>
+
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
         </Grid>
 
     </Grid>
