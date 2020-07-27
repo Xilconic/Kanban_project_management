@@ -27,11 +27,16 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        public ICommand UpdateMeanOfCycleTimeCommand { get; }
+        public TimeSpan? EstimatedCorrectedSampleStandardDeviationOfCycleTime
+        {
+            get;
+        }
+
+        public ICommand UpdateCycleTimeStatisticsCommand { get; }
 
         public MainWindowViewModel()
         {
-            UpdateMeanOfCycleTimeCommand = new CalculateMeanOfCycleTimeCommand(this);
+            UpdateCycleTimeStatisticsCommand = new CalculateCycleTimeStatisticsCommand(this);
         }
 
         private void UpdateMeanOfCycleTime()
@@ -52,11 +57,16 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        private class CalculateMeanOfCycleTimeCommand : ICommand
+        private void UpdateCorrectedSampleStandardDeviationOfCycleTime()
+        {
+            // TODO;
+        }
+
+        private class CalculateCycleTimeStatisticsCommand : ICommand
         {
             private readonly MainWindowViewModel viewModel;
 
-            public CalculateMeanOfCycleTimeCommand(MainWindowViewModel viewModel)
+            public CalculateCycleTimeStatisticsCommand(MainWindowViewModel viewModel)
             {
                 this.viewModel = viewModel;
             }
@@ -71,6 +81,7 @@ namespace KanbanProjectManagementApp
             public void Execute(object parameter)
             {
                 viewModel.UpdateMeanOfCycleTime();
+                viewModel.UpdateCorrectedSampleStandardDeviationOfCycleTime();
             }
         }
     }

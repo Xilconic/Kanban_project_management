@@ -33,8 +33,8 @@ namespace KanbanProjectManagementApp.Tests
             [Fact]
             public void THEN_the_command_to_update_the_mean_of_cycle_time_is_initialized_AND_able_to_execute()
             {
-                Assert.NotNull(newViewModel.UpdateMeanOfCycleTimeCommand);
-                Assert.True(newViewModel.UpdateMeanOfCycleTimeCommand.CanExecute(null));
+                Assert.NotNull(newViewModel.UpdateCycleTimeStatisticsCommand);
+                Assert.True(newViewModel.UpdateCycleTimeStatisticsCommand.CanExecute(null));
             }
         }
 
@@ -169,7 +169,7 @@ namespace KanbanProjectManagementApp.Tests
 
         private static void UpdateMeanOfCycleTime(MainWindowViewModel vm)
         {
-            vm.UpdateMeanOfCycleTimeCommand.Execute(null);
+            vm.UpdateCycleTimeStatisticsCommand.Execute(null);
         }
 
         private static void AssertMeanOfCycleTimeNull(MainWindowViewModel vm)
