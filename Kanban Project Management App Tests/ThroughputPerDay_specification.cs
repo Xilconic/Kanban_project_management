@@ -34,7 +34,7 @@ namespace KanbanProjectManagementApp.Tests
             [InlineData(double.NegativeInfinity)]
             public void AND_a_negative_value_is_used_THEN_throw_ArgumentOutOfRangeException(double invalidThroughput)
             {
-                Action call = () => new ThroughputPerDay(invalidThroughput);
+                void call() => new ThroughputPerDay(invalidThroughput);
                 AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
             }
 
@@ -42,7 +42,7 @@ namespace KanbanProjectManagementApp.Tests
             public void AND_a_NaN_value_is_used_THEN_throw_ArgumentOutOfRangeException()
             {
                 var invalidThroughput = double.NaN;
-                Action call = () => new ThroughputPerDay(invalidThroughput);
+                void call() => new ThroughputPerDay(invalidThroughput);
                 AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
             }
 
@@ -237,7 +237,7 @@ namespace KanbanProjectManagementApp.Tests
             [Fact]
             public void WHEN_dividing_an_infinite_throughput_by_infinite_THEN_ArithmeticException_is_thrown()
             {
-                Action call = () => _ = new ThroughputPerDay(double.PositiveInfinity) / double.PositiveInfinity;
+                static void call() => _ = new ThroughputPerDay(double.PositiveInfinity) / double.PositiveInfinity;
                 var actualException = Assert.Throws<ArithmeticException>(call);
                 Assert.Equal("Cannot divide an infinite throughput by infinite, as the result is indeterminate.", actualException.Message);
             }
