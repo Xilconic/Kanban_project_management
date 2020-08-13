@@ -42,6 +42,12 @@ namespace KanbanProjectManagementApp.Tests
                 AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
             }
 
+            [Fact]
+            public void AND_default_constructor_is_used_THEN_it_has_a_value_of_zero()
+            {
+                Assert.Equal(new ThroughputPerDay(0), default(ThroughputPerDay));
+            }
+
             private static void AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Action call, double invalidThroughput)
             {
                 var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
