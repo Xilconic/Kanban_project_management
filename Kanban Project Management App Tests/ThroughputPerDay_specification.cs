@@ -193,6 +193,11 @@ namespace KanbanProjectManagementApp.Tests
                     yield return new object[] { new ThroughputPerDay(0), new ThroughputPerDay(0), new ThroughputPerDay(0) };
                     yield return new object[] { new ThroughputPerDay(1), new ThroughputPerDay(2), new ThroughputPerDay(3) };
                     yield return new object[] { new ThroughputPerDay(2), new ThroughputPerDay(1), new ThroughputPerDay(3) };
+                    yield return new object[] { new ThroughputPerDay(double.MaxValue), new ThroughputPerDay(double.MaxValue), new ThroughputPerDay(double.PositiveInfinity) };
+                    yield return new object[] { new ThroughputPerDay(double.MaxValue), new ThroughputPerDay(double.Epsilon), new ThroughputPerDay(double.MaxValue) };
+                    yield return new object[] { new ThroughputPerDay(double.PositiveInfinity), new ThroughputPerDay(double.Epsilon), new ThroughputPerDay(double.PositiveInfinity) };
+                    yield return new object[] { new ThroughputPerDay(double.PositiveInfinity), new ThroughputPerDay(double.MaxValue), new ThroughputPerDay(double.PositiveInfinity) };
+                    yield return new object[] { new ThroughputPerDay(double.PositiveInfinity), new ThroughputPerDay(double.PositiveInfinity), new ThroughputPerDay(double.PositiveInfinity) };
                 }
             }
 
