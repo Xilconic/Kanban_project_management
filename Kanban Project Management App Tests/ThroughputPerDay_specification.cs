@@ -211,6 +211,37 @@ namespace KanbanProjectManagementApp.Tests
                 Assert.Equal(expectedResult, actualSum);
             }
 
+            public static IEnumerable<object[]> DivisionScenarios
+            {
+                get
+                {
+                    yield return new object[] { new ThroughputPerDay(1), 1.0, new ThroughputPerDay(1) };
+                    yield return new object[] { new ThroughputPerDay(0), 1.0, new ThroughputPerDay(0) };
+                    yield return new object[] { new ThroughputPerDay(5), 5.0, new ThroughputPerDay(1) };
+                    yield return new object[] { new ThroughputPerDay(double.MaxValue), double.MaxValue, new ThroughputPerDay(1) };
+                    yield return new object[] { new ThroughputPerDay(5), double.PositiveInfinity, new ThroughputPerDay(0) };
+                    yield return new object[] { new ThroughputPerDay(5), 0.0, new ThroughputPerDay(double.PositiveInfinity) };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(DivisionScenarios))]
+            public void WHEN_dividing_two_throughputs_THEN_the_result_is_as_expected(
+                ThroughputPerDay numerator, double denominator, ThroughputPerDay expectedResult)
+            {
+                ThroughputPerDay actualResult = numerator / denominator;
+
+                Assert.Equal(expectedResult, actualResult);
+            }
+
+            [Fact]
+            public void WHEN_dividing_an_infinite_throughput_by_infinite_THEN_ArithmeticException_is_thrown()
+            {
+                Action call = () => _ = new ThroughputPerDay(double.PositiveInfinity) / double.PositiveInfinity;
+                var actualException = Assert.Throws<ArithmeticException>(call);
+                Assert.Equal("Cannot divide an infinite throughput by infinite, as the result is indeterminate.", actualException.Message);
+            }
+
             private static void AssertThroughputEqualsReturnsFalseCommutatively(ThroughputPerDay a, ThroughputPerDay b)
             {
                 AssertThroughputEqualsReturnsFalse(a, b);

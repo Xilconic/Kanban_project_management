@@ -44,6 +44,16 @@ namespace KanbanProjectManagementApp
         public static ThroughputPerDay operator +(ThroughputPerDay a, ThroughputPerDay b) =>
             new ThroughputPerDay(a.numberOfWorkItemsFinished + b.numberOfWorkItemsFinished);
 
+        public static ThroughputPerDay operator /(ThroughputPerDay numerator, double denominator)
+        {
+            if(double.IsPositiveInfinity(denominator) && double.IsPositiveInfinity(numerator.numberOfWorkItemsFinished))
+            {
+                throw new ArithmeticException("Cannot divide an infinite throughput by infinite, as the result is indeterminate.");
+            }
+
+            return new ThroughputPerDay(numerator.numberOfWorkItemsFinished / denominator);
+        }
+
         public override string ToString() =>
             $"{numberOfWorkItemsFinished} / day";
     }
