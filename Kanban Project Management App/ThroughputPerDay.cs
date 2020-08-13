@@ -43,5 +43,8 @@ namespace KanbanProjectManagementApp
 
         public static ThroughputPerDay operator +(ThroughputPerDay a, ThroughputPerDay b) =>
             new ThroughputPerDay(a.numberOfWorkItemsFinished + b.numberOfWorkItemsFinished);
+
+        public override string ToString() =>
+            $"{numberOfWorkItemsFinished} / day";
     }
 }

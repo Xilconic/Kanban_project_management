@@ -17,6 +17,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests
@@ -59,14 +61,21 @@ namespace KanbanProjectManagementApp.Tests
             }
         }
 
-        public class GIVEN_some_throughput
+        public class GIVEN_some_throughput : IDisposable
         {
             private readonly ThroughputPerDay someThroughput;
+            private readonly CultureInfo? originalDefaultThreadCulture;
 
             public GIVEN_some_throughput()
             {
-                const double someThroughputValue = 4.0;
-                someThroughput = new ThroughputPerDay(someThroughputValue);
+                someThroughput = new ThroughputPerDay(4.0);
+
+                originalDefaultThreadCulture = CultureInfo.DefaultThreadCurrentCulture;
+            }
+
+            public void Dispose()
+            {
+                CultureInfo.DefaultThreadCurrentCulture = originalDefaultThreadCulture;
             }
 
             [Fact]
@@ -80,6 +89,26 @@ namespace KanbanProjectManagementApp.Tests
             {
                 object obj = new object();
                 AssertObjectEqualsReturnsFalseCommutatively(someThroughput, obj);
+            }
+
+            public static IEnumerable<object[]> ToStringScenarios
+            {
+                get
+                {
+                    yield return new object[] { new ThroughputPerDay(0), "0 / day" };
+                    yield return new object[] { new ThroughputPerDay(1.1), "1.1 / day" };
+                    yield return new object[] { new ThroughputPerDay(double.PositiveInfinity), "∞ / day" };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(ToStringScenarios))]
+            public void WHEN_converting_to_string_THEN_string_is_as_expected(
+                ThroughputPerDay a, string expectedString)
+            {
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
+                string actualString = a.ToString();
+                Assert.Equal(expectedString, actualString);
             }
         }
 
