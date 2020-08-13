@@ -32,10 +32,13 @@ namespace KanbanProjectManagementApp
             this.numberOfWorkItemsFinished = numberOfWorkItemsFinished;
         }
 
-        public override bool Equals(object obj) => obj is ThroughputPerDay mys && Equals(mys);
+        public override bool Equals(object obj) =>
+            obj is ThroughputPerDay mys && Equals(mys);
 
-        public bool Equals(ThroughputPerDay other) => numberOfWorkItemsFinished == other.numberOfWorkItemsFinished;
+        public bool Equals(ThroughputPerDay other) =>
+            numberOfWorkItemsFinished == other.numberOfWorkItemsFinished;
 
-        public override int GetHashCode() => numberOfWorkItemsFinished.GetHashCode();
+        public override int GetHashCode() =>
+            numberOfWorkItemsFinished.GetHashCode();
     }
 }

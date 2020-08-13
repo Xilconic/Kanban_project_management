@@ -21,81 +21,150 @@ namespace KanbanProjectManagementApp.Tests
 {
     public class ThroughputPerDay_specification
     {
-        [Theory]
-        [InlineData(0.0-double.Epsilon)]
-        [InlineData(-1)]
-        [InlineData(double.MinValue)]
-        [InlineData(double.NegativeInfinity)]
-        public void WHEN_trying_to_construct_a_throughput_with_a_negative_value_THEN_throw_ArgumentOutOfRangeException(
-            double invalidThroughput)
+        public class WHEN_trying_to_construct_a_throughput
         {
-            Action call = () => new ThroughputPerDay(invalidThroughput);
-            AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+            [Theory]
+            [InlineData(0.0 - double.Epsilon)]
+            [InlineData(-1)]
+            [InlineData(double.MinValue)]
+            [InlineData(double.NegativeInfinity)]
+            public void AND_a_negative_value_is_used_THEN_throw_ArgumentOutOfRangeException(double invalidThroughput)
+            {
+                Action call = () => new ThroughputPerDay(invalidThroughput);
+                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+            }
+
+            [Fact]
+            public void AND_a_NaN_value_is_used_THEN_throw_ArgumentOutOfRangeException()
+            {
+                var invalidThroughput = double.NaN;
+                Action call = () => new ThroughputPerDay(invalidThroughput);
+                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+            }
+
+            private static void AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Action call, double invalidThroughput)
+            {
+                var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
+                Assert.Equal("numberOfWorkItemsFinished", actualException.ParamName);
+                Assert.Equal(invalidThroughput, actualException.ActualValue);
+                Assert.Contains("Must be in range [0.0, PositiveInfinity).", actualException.Message);
+            }
         }
 
-        [Fact]
-        public void WHEN_trying_to_construct_a_throughput_with_a_NaN_value_THEN_throw_ArgumentOutOfRangeException()
+        public class GIVEN_some_throughput
         {
-            var invalidThroughput = double.NaN;
-            Action call = () => new ThroughputPerDay(invalidThroughput);
-            AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+            private readonly ThroughputPerDay someThroughput;
+
+            public GIVEN_some_throughput()
+            {
+                const double someThroughputValue = 4.0;
+                someThroughput = new ThroughputPerDay(someThroughputValue);
+            }
+
+            [Fact]
+            public void WHEN_compared_to_itself_THEN_it_is_considered_equal()
+            {
+                Assert.True(someThroughput.Equals(someThroughput));
+            }
+
+            [Fact]
+            public void WHEN_compared_to_some_other_object_THEN_it_is_considered_different()
+            {
+                object obj = new object();
+                AssertObjectEqualsReturnsFalseCommutatively(someThroughput, obj);
+            }
         }
 
-        [Fact]
-        public void GIVEN_some_throughput_WHEN_compared_to_itself_THEN_it_is_considered_equal()
+        public class GIVEN_some_throughput_AND_another_throughput_with_the_same_value
         {
-            var someThroughput = new ThroughputPerDay(3.0);
+            private readonly ThroughputPerDay someThroughput;
+            private readonly ThroughputPerDay anotherThroughputWithSameValue;
+            private readonly object anotherThroughputBoxedAsObject;
 
-            Assert.True(someThroughput.Equals(someThroughput));
+            public GIVEN_some_throughput_AND_another_throughput_with_the_same_value()
+            {
+                const double someThroughputValue = 5.0;
+                someThroughput = new ThroughputPerDay(someThroughputValue);
+                anotherThroughputWithSameValue = new ThroughputPerDay(someThroughputValue);
+                anotherThroughputBoxedAsObject = (object)anotherThroughputWithSameValue;
+            }
+
+            [Fact]
+            public void WHEN_compared_to_each_other_THEN_it_is_considered_equal()
+            {
+                AssertThroughputEqualsReturnsTrueCommutatively(someThroughput, anotherThroughputWithSameValue);
+
+                AssertObjectEqualsReturnsTrueCommutatively(someThroughput, anotherThroughputBoxedAsObject);
+            }
+
+            [Fact]
+            public void WHEN_comparing_hash_codes_THEN_hash_codes_are_equal()
+            {
+                AssertHashCodesAreEqual(someThroughput, anotherThroughputWithSameValue);
+                AssertHashCodesAreEqual(someThroughput, anotherThroughputBoxedAsObject);
+            }
+
+            private static void AssertHashCodesAreEqual<T1, T2>(T1 a, T2 b)
+            {
+                Assert.Equal(a.GetHashCode(), b.GetHashCode());
+            }
+
+            private static void AssertThroughputEqualsReturnsTrueCommutatively(ThroughputPerDay a, ThroughputPerDay b)
+            {
+                AssertThroughputEqualsReturnsTrue(a, b);
+                AssertThroughputEqualsReturnsTrue(b, a);
+            }
+
+            private static void AssertThroughputEqualsReturnsTrue(ThroughputPerDay a, ThroughputPerDay b) =>
+                AssertThroughputEqualsReturnsExpectedValue(a, b, true);
+
+            private static void AssertObjectEqualsReturnsTrueCommutatively(object a, object b)
+            {
+                AssertObjectEqualsReturnsTrue(a, b);
+                AssertObjectEqualsReturnsTrue(b, a);
+            }
+
+            private static void AssertObjectEqualsReturnsTrue(object a, object b) =>
+                AssertObjectEqualsReturnsExpectedValue(a, b, true);
         }
 
-        [Fact]
-        public void GIVEN_some_throughput_AND_another_throughput_with_the_same_value_WHEN_compared_to_each_other_THEN_it_is_considered_equal()
+        public class GIVEN_some_throughput_AND_another_throughput_with_a_different_value
         {
-            const double someThroughputValue = 4.0;
-            var someThroughput = new ThroughputPerDay(someThroughputValue);
-            var anotherThroughputWithSameValue = new ThroughputPerDay(someThroughputValue);
-            var anotherThroughputBoxedAsObject = (object)anotherThroughputWithSameValue;
+            [Fact]
+            public void WHEN_compared_to_each_other_THEN_it_is_considered_different()
+            {
+                var someThroughput = new ThroughputPerDay(5.0);
+                var anotherThroughputWithDifferentValue = new ThroughputPerDay(6.0);
+                var anotherThroughputBoxedAsObject = (object)anotherThroughputWithDifferentValue;
 
-            Assert.True(someThroughput.Equals(anotherThroughputWithSameValue));
-            Assert.True(anotherThroughputWithSameValue.Equals(someThroughput));
+                AssertThroughputEqualsReturnsFalseCommutatively(someThroughput, anotherThroughputWithDifferentValue);
 
-            Assert.True(someThroughput.Equals(anotherThroughputBoxedAsObject));
-            Assert.True(anotherThroughputBoxedAsObject.Equals(someThroughput));
+                AssertObjectEqualsReturnsFalseCommutatively(someThroughput, anotherThroughputBoxedAsObject);
+            }
+
+            private static void AssertThroughputEqualsReturnsFalseCommutatively(ThroughputPerDay a, ThroughputPerDay b)
+            {
+                AssertThroughputEqualsReturnsFalse(a, b);
+                AssertThroughputEqualsReturnsFalse(b, a);
+            }
+
+            private static void AssertThroughputEqualsReturnsFalse(ThroughputPerDay a, ThroughputPerDay b) =>
+                AssertThroughputEqualsReturnsExpectedValue(a, b, false);
         }
 
-        [Fact]
-        public void GIVEN_some_throughput_AND_another_throughput_with_a_different_value_WHEN_compared_to_each_other_THEN_it_is_considered_different()
+        private static void AssertThroughputEqualsReturnsExpectedValue(ThroughputPerDay a, ThroughputPerDay b, bool expectedReturnValue) =>
+            Assert.Equal(expectedReturnValue, a.Equals(b));
+
+        private static void AssertObjectEqualsReturnsFalseCommutatively(object a, object b)
         {
-            var someThroughput = new ThroughputPerDay(5.0);
-            var anotherThroughputWithDifferentValue = new ThroughputPerDay(6.0);
-            var anotherThroughputBoxedAsObject = (object)anotherThroughputWithDifferentValue;
-
-            Assert.False(someThroughput.Equals(anotherThroughputWithDifferentValue));
-            Assert.False(anotherThroughputWithDifferentValue.Equals(someThroughput));
-
-            Assert.False(someThroughput.Equals(anotherThroughputBoxedAsObject));
-            Assert.False(anotherThroughputBoxedAsObject.Equals(someThroughput));
+            AssertObjectEqualsReturnsFalse(a, b);
+            AssertObjectEqualsReturnsFalse(b, a);
         }
 
-        [Fact]
-        public void GIVEN_some_throughput_AND_another_throughput_with_the_same_value_WHEN_comparing_hash_codes_THEN_hash_codes_are_equal()
-        {
-            const double someThroughputValue = 4.0;
-            var someThroughput = new ThroughputPerDay(someThroughputValue);
-            var anotherThroughputWithSameValue = new ThroughputPerDay(someThroughputValue);
-            var anotherThroughputBoxedAsObject = (object)anotherThroughputWithSameValue;
+        private static void AssertObjectEqualsReturnsFalse(object a, object b) =>
+            AssertObjectEqualsReturnsExpectedValue(a, b, false);
 
-            Assert.Equal(someThroughput.GetHashCode(), anotherThroughputWithSameValue.GetHashCode());
-            Assert.Equal(someThroughput.GetHashCode(), anotherThroughputBoxedAsObject.GetHashCode());
-        }
-
-        private static void AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Action call, double invalidThroughput)
-        {
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("numberOfWorkItemsFinished", actualException.ParamName);
-            Assert.Equal(invalidThroughput, actualException.ActualValue);
-            Assert.Contains("Must be in range [0.0, PositiveInfinity).", actualException.Message);
-        }
+        private static void AssertObjectEqualsReturnsExpectedValue(object a, object b, bool expectedReturnValue) =>
+            Assert.Equal(expectedReturnValue, a.Equals(b));
     }
 }
