@@ -23,8 +23,8 @@ namespace KanbanProjectManagementApp.Tests
 {
     public class MainWindowViewModel_specification
     {
-        private const string EstimatedMeanOfCycleTimePropertyName = nameof(MainWindowViewModel.EstimatedMeanOfCycleTime);
-        private const string EstimatedCorrectedSampleStandardDeviationOfCycleTimePropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfCycleTime);
+        private const string EstimatedMeanOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedMeanOfThroughput);
+        private const string EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfThroughput);
 
         public class GIVEN_a_newly_constructed_view_model
         {
@@ -36,15 +36,15 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void THEN_the_mean_of_cycle_time_is_null()
+            public void THEN_the_mean_of_throughput_is_null()
             {
-                AssertMeanOfCycleTimeNull(newViewModel);
+                AssertMeanOfThroughputNull(newViewModel);
             }
 
             [Fact]
             public void THEN_then_the_corrected_sample_standard_deviation_is_null()
             {
-                AssertEstimatedCorrectedSampleStandardDeviationOfCycleTimeNull(newViewModel);
+                AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(newViewModel);
             }
 
             [Fact]
@@ -54,7 +54,7 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void THEN_the_command_to_update_cycle_time_statistics_is_initialized_AND_able_to_execute()
+            public void THEN_the_command_to_update_throughput_statistics_is_initialized_AND_able_to_execute()
             {
                 Assert.NotNull(newViewModel.UpdateCycleTimeStatisticsCommand);
                 Assert.True(newViewModel.UpdateCycleTimeStatisticsCommand.CanExecute(null));
@@ -72,19 +72,19 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void WHEN_updating_cycle_time_statistics_THEN_mean_of_cycle_time_is_null()
+            public void WHEN_updating_throughput_statistics_THEN_mean_of_throughput_is_null()
             {
-                UpdateCycleTimeStatistics(viewModel);
+                UpdateThroughputStatistics(viewModel);
 
-                AssertMeanOfCycleTimeNull(viewModel);
+                AssertMeanOfThroughputNull(viewModel);
             }
 
             [Fact]
-            public void WHEN_updating_cycle_time_statistics_THEN_corrected_sample_standard_deviation_of_cycle_time_is_null()
+            public void WHEN_updating_throughput_statistics_THEN_corrected_sample_standard_deviation_of_throughput_is_null()
             {
-                UpdateCycleTimeStatistics(viewModel);
+                UpdateThroughputStatistics(viewModel);
 
-                AssertEstimatedCorrectedSampleStandardDeviationOfCycleTimeNull(viewModel);
+                AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(viewModel);
             }
         }
 
@@ -98,7 +98,7 @@ namespace KanbanProjectManagementApp.Tests
             {
                 viewModelWithOneInputMetric = new MainWindowViewModel();
 
-                metric = CycleTimeToInputMetric(TimeSpan.FromHours(2));
+                metric = ThroughputToInputMetric(TimeSpan.FromHours(2));
                 viewModelWithOneInputMetric.InputMetrics.Add(metric);
 
                 propertyChangedEventTracker = new PropertyChangedEventTracker(viewModelWithOneInputMetric);
@@ -110,63 +110,63 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void WHEN_updating_cycle_time_statistics_THEN_mean_of_cycle_time_is_equals_to_the_cycle_time_of_that_metric_AND_change_has_been_notified()
+            public void WHEN_updating_throughput_statistics_THEN_mean_of_throughput_is_equals_to_the_throughput_of_that_metric_AND_change_has_been_notified()
             {
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
-                Assert.Equal(metric.CycleTime, viewModelWithOneInputMetric.EstimatedMeanOfCycleTime);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfCycleTimePropertyName);
+                Assert.Equal(metric.Throughput, viewModelWithOneInputMetric.EstimatedMeanOfThroughput);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfThroughputPropertyName);
             }
 
             [Fact]
-            public void AND_mean_of_cylce_time_already_calculated_WHEN_clearing_input_metrics_and_recalculating_cycle_time_statistics_THEN_mean_of_cycle_time_is_null_AND_change_has_been_notified()
+            public void AND_mean_of_cylce_time_already_calculated_WHEN_clearing_input_metrics_and_recalculating_throughput_statistics_THEN_mean_of_throughput_is_null_AND_change_has_been_notified()
             {
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
                 viewModelWithOneInputMetric.InputMetrics.Clear();
 
                 propertyChangedEventTracker.ClearAllRecordedEvents();
 
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
-                AssertMeanOfCycleTimeNull(viewModelWithOneInputMetric);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfCycleTimePropertyName);
+                AssertMeanOfThroughputNull(viewModelWithOneInputMetric);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfThroughputPropertyName);
             }
 
             [Fact]
-            public void WHEN_updating_cycle_time_statistics_THEN_corrected_sample_standard_deviation_is_zero_AND_change_has_been_notified()
+            public void WHEN_updating_throughput_statistics_THEN_corrected_sample_standard_deviation_is_zero_AND_change_has_been_notified()
             {
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
-                Assert.Equal(TimeSpan.Zero, viewModelWithOneInputMetric.EstimatedCorrectedSampleStandardDeviationOfCycleTime);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfCycleTimePropertyName);
+                Assert.Equal(TimeSpan.Zero, viewModelWithOneInputMetric.EstimatedCorrectedSampleStandardDeviationOfThroughput);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
             }
 
             [Fact]
-            public void AND_corrected_sample_standard_deviation_of_cylce_time_already_calculated_WHEN_clearing_input_metrics_and_recalculating_cycle_time_statistics_THEN_corrected_sample_standard_deviation_of_cycle_time_is_null_AND_change_has_been_notified()
+            public void AND_corrected_sample_standard_deviation_of_cylce_time_already_calculated_WHEN_clearing_input_metrics_and_recalculating_throughput_statistics_THEN_corrected_sample_standard_deviation_of_throughput_is_null_AND_change_has_been_notified()
             {
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
                 viewModelWithOneInputMetric.InputMetrics.Clear();
 
                 propertyChangedEventTracker.ClearAllRecordedEvents();
 
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
-                AssertEstimatedCorrectedSampleStandardDeviationOfCycleTimeNull(viewModelWithOneInputMetric);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfCycleTimePropertyName);
+                AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(viewModelWithOneInputMetric);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
             }
 
             [Fact]
-            public void WHEN_updating_cycle_time_statistics_multiple_times_consequtively_THEN_change_notification_only_happens_once_for_each_statistics_property()
+            public void WHEN_updating_throughput_statistics_multiple_times_consequtively_THEN_change_notification_only_happens_once_for_each_statistics_property()
             {
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
-                UpdateCycleTimeStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
+                UpdateThroughputStatistics(viewModelWithOneInputMetric);
 
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfCycleTimePropertyName);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfCycleTimePropertyName);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfThroughputPropertyName);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
             }
         }
 
@@ -187,7 +187,7 @@ namespace KanbanProjectManagementApp.Tests
                 propertyChangedEventTracker.Dispose();
             }
 
-            public static IEnumerable<object[]> MeanOfCycleTimeCalculationTestCases
+            public static IEnumerable<object[]> MeanOfThroughputCalculationTestCases
             {
                 get
                 {
@@ -199,7 +199,7 @@ namespace KanbanProjectManagementApp.Tests
                 }
             }
 
-            public static IEnumerable<object[]> CorrectedSampleStandardDeviationOfCycleTimeCalculationTestCases
+            public static IEnumerable<object[]> CorrectedSampleStandardDeviationOfThroughputCalculationTestCases
             {
                 get
                 {
@@ -216,33 +216,33 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Theory]
-            [MemberData(nameof(MeanOfCycleTimeCalculationTestCases))]
-            public void WHEN_updating_mean_of_cycle_time_THEN_mean_of_cycle_time_is_equals_to_the_mean_of_the_cycle_times_of_those_metrics_AND_change_has_been_notified(
+            [MemberData(nameof(MeanOfThroughputCalculationTestCases))]
+            public void WHEN_updating_mean_of_throughput_THEN_mean_of_throughput_is_equals_to_the_mean_of_the_throughputs_of_those_metrics_AND_change_has_been_notified(
                 IReadOnlyCollection<TimeSpan> cycleTimes, TimeSpan expectedMeanOfCycleTimes)
             {
-                AddInputMetricsToViewModel(cycleTimes.Select(CycleTimeToInputMetric));
+                AddInputMetricsToViewModel(cycleTimes.Select(ThroughputToInputMetric));
 
-                UpdateCycleTimeStatistics(viewModelWithMultipleInputMetrics);
+                UpdateThroughputStatistics(viewModelWithMultipleInputMetrics);
 
-                Assert.Equal(expectedMeanOfCycleTimes, viewModelWithMultipleInputMetrics.EstimatedMeanOfCycleTime);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfCycleTimePropertyName);
+                Assert.Equal(expectedMeanOfCycleTimes, viewModelWithMultipleInputMetrics.EstimatedMeanOfThroughput);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfThroughputPropertyName);
             }
 
             [Theory]
-            [MemberData(nameof(CorrectedSampleStandardDeviationOfCycleTimeCalculationTestCases))]
-            public void  WHEN_updating_cycle_time_statistics_THEN_corrected_sample_standard_deviation_of_the_cycle_time_has_been_calculated_correctly_AND_change_has_been_notified(
+            [MemberData(nameof(CorrectedSampleStandardDeviationOfThroughputCalculationTestCases))]
+            public void  WHEN_updating_throughput_statistics_THEN_corrected_sample_standard_deviation_of_the_throughput_has_been_calculated_correctly_AND_change_has_been_notified(
                 IReadOnlyCollection<TimeSpan> cycleTimes, TimeSpan expectedCorrectedSampleStandardDeviation)
             {
-                AddInputMetricsToViewModel(cycleTimes.Select(CycleTimeToInputMetric));
+                AddInputMetricsToViewModel(cycleTimes.Select(ThroughputToInputMetric));
 
-                UpdateCycleTimeStatistics(viewModelWithMultipleInputMetrics);
+                UpdateThroughputStatistics(viewModelWithMultipleInputMetrics);
 
                 // Note: Doing calculations with doubles, so need to take into account limited precision:
                 var acceptedErrorMargin = TimeSpan.FromMilliseconds(1);
                 var lowerBound = expectedCorrectedSampleStandardDeviation - acceptedErrorMargin;
                 var upperBound = expectedCorrectedSampleStandardDeviation + acceptedErrorMargin;
-                Assert.InRange(viewModelWithMultipleInputMetrics.EstimatedCorrectedSampleStandardDeviationOfCycleTime.Value, lowerBound, upperBound);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfCycleTimePropertyName);
+                Assert.InRange(viewModelWithMultipleInputMetrics.EstimatedCorrectedSampleStandardDeviationOfThroughput.Value, lowerBound, upperBound);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
             }
 
             private void AddInputMetricsToViewModel(IEnumerable<InputMetric> metrics)
@@ -254,21 +254,21 @@ namespace KanbanProjectManagementApp.Tests
             }
         }
 
-        private static InputMetric CycleTimeToInputMetric(TimeSpan cycleTime) => new InputMetric { CycleTime = cycleTime };
+        private static InputMetric ThroughputToInputMetric(TimeSpan cycleTime) => new InputMetric { Throughput = cycleTime };
 
-        private static void UpdateCycleTimeStatistics(MainWindowViewModel vm)
+        private static void UpdateThroughputStatistics(MainWindowViewModel vm)
         {
             vm.UpdateCycleTimeStatisticsCommand.Execute(null);
         }
 
-        private static void AssertMeanOfCycleTimeNull(MainWindowViewModel vm)
+        private static void AssertMeanOfThroughputNull(MainWindowViewModel vm)
         {
-            Assert.Null(vm.EstimatedMeanOfCycleTime);
+            Assert.Null(vm.EstimatedMeanOfThroughput);
         }
 
-        private static void AssertEstimatedCorrectedSampleStandardDeviationOfCycleTimeNull(MainWindowViewModel vm)
+        private static void AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(MainWindowViewModel vm)
         {
-            Assert.Null(vm.EstimatedCorrectedSampleStandardDeviationOfCycleTime);
+            Assert.Null(vm.EstimatedCorrectedSampleStandardDeviationOfThroughput);
         }
 
         private static void AssertInputMetricsAreEmpty(MainWindowViewModel vm)

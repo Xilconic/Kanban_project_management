@@ -25,35 +25,35 @@ namespace KanbanProjectManagementApp
 {
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private TimeSpan? estimatedMeanOfCycleTime;
-        private TimeSpan? estimatedCorrectedSampleStandardDeviationOfCycleTime;
+        private TimeSpan? estimatedMeanOfThroughput;
+        private TimeSpan? estimatedCorrectedSampleStandardDeviationOfThroughput;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<InputMetric> InputMetrics { get; } = new ObservableCollection<InputMetric>();
 
-        public TimeSpan? EstimatedMeanOfCycleTime
+        public TimeSpan? EstimatedMeanOfThroughput
         {
-            get => estimatedMeanOfCycleTime;
+            get => estimatedMeanOfThroughput;
             private set
             {
-                if (value != estimatedMeanOfCycleTime)
+                if (value != estimatedMeanOfThroughput)
                 {
-                    estimatedMeanOfCycleTime = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedMeanOfCycleTime)));
+                    estimatedMeanOfThroughput = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedMeanOfThroughput)));
                 }
             }
         }
 
-        public TimeSpan? EstimatedCorrectedSampleStandardDeviationOfCycleTime
+        public TimeSpan? EstimatedCorrectedSampleStandardDeviationOfThroughput
         {
-            get => estimatedCorrectedSampleStandardDeviationOfCycleTime;
+            get => estimatedCorrectedSampleStandardDeviationOfThroughput;
             private set
             {
-                if (value != estimatedCorrectedSampleStandardDeviationOfCycleTime)
+                if (value != estimatedCorrectedSampleStandardDeviationOfThroughput)
                 {
-                    estimatedCorrectedSampleStandardDeviationOfCycleTime = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedCorrectedSampleStandardDeviationOfCycleTime)));
+                    estimatedCorrectedSampleStandardDeviationOfThroughput = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedCorrectedSampleStandardDeviationOfThroughput)));
                 }
             }
         }
@@ -62,43 +62,43 @@ namespace KanbanProjectManagementApp
 
         public MainWindowViewModel()
         {
-            UpdateCycleTimeStatisticsCommand = new CalculateCycleTimeStatisticsCommand(this);
+            UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
         }
 
-        private void UpdateMeanOfCycleTime()
+        private void UpdateMeanOfThroughput()
         {
             if (InputMetrics.Count == 0)
             {
-                EstimatedMeanOfCycleTime = null;
+                EstimatedMeanOfThroughput = null;
             }
             else
             {
-                TimeSpan sum = SumOfTimeSpans(InputMetrics.Select(e => e.CycleTime));
+                TimeSpan sum = SumOfTimeSpans(InputMetrics.Select(e => e.Throughput));
                 var mean = sum / InputMetrics.Count;
-                EstimatedMeanOfCycleTime = mean;
+                EstimatedMeanOfThroughput = mean;
             }
         }
 
-        private void UpdateCorrectedSampleStandardDeviationOfCycleTime(TimeSpan? estimatedMeanOfCycleTime)
+        private void UpdateCorrectedSampleStandardDeviationOfThroughput(TimeSpan? estimatedMeanOfCycleTime)
         {
             if (InputMetrics.Count == 0)
             {
-                EstimatedCorrectedSampleStandardDeviationOfCycleTime = null;
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = null;
             }
             else if(InputMetrics.Count == 1)
             {
-                EstimatedCorrectedSampleStandardDeviationOfCycleTime = TimeSpan.Zero;
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = TimeSpan.Zero;
             }
             else
             {
-                EstimatedCorrectedSampleStandardDeviationOfCycleTime = CalculateCorrectedSampleStandardDeviationOfCycleTimeAtDayScale(estimatedMeanOfCycleTime);
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = CalculateCorrectedSampleStandardDeviationOfThroughputAtHourScale(estimatedMeanOfCycleTime);
             }
         }
 
-        private TimeSpan CalculateCorrectedSampleStandardDeviationOfCycleTimeAtDayScale(TimeSpan? estimatedMeanOfCycleTime)
+        private TimeSpan CalculateCorrectedSampleStandardDeviationOfThroughputAtHourScale(TimeSpan? estimatedMeanOfCycleTime)
         {
             // Doing calculations are hour resolution gave adequate accuracy with regards to limited precision of double calculations involved.
-            var squaredDifferencesFromMean = InputMetrics.Select(e => GetSquaredTimeSpanAtHoursResolution(e.CycleTime - estimatedMeanOfCycleTime.Value));
+            var squaredDifferencesFromMean = InputMetrics.Select(e => GetSquaredTimeSpanAtHoursResolution(e.Throughput - estimatedMeanOfCycleTime.Value));
             var sumSquaredDifferencesFromMean = SumOfTimeSpans(squaredDifferencesFromMean);
             var correctionFactor = 1.0 / (InputMetrics.Count - 1);
             return GetSquareRootOfTimeSpanAtHoursResolution(sumSquaredDifferencesFromMean * correctionFactor);
@@ -119,11 +119,11 @@ namespace KanbanProjectManagementApp
 
         private static TimeSpan GetSquareRootOfTimeSpanAtHoursResolution(TimeSpan ts) => TimeSpan.FromHours(Math.Sqrt(ts.TotalHours));
 
-        private class CalculateCycleTimeStatisticsCommand : ICommand
+        private class CalculateThroughputStatisticsCommand : ICommand
         {
             private readonly MainWindowViewModel viewModel;
 
-            public CalculateCycleTimeStatisticsCommand(MainWindowViewModel viewModel)
+            public CalculateThroughputStatisticsCommand(MainWindowViewModel viewModel)
             {
                 this.viewModel = viewModel;
             }
@@ -137,8 +137,8 @@ namespace KanbanProjectManagementApp
 
             public void Execute(object parameter)
             {
-                viewModel.UpdateMeanOfCycleTime();
-                viewModel.UpdateCorrectedSampleStandardDeviationOfCycleTime(viewModel.EstimatedMeanOfCycleTime);
+                viewModel.UpdateMeanOfThroughput();
+                viewModel.UpdateCorrectedSampleStandardDeviationOfThroughput(viewModel.EstimatedMeanOfThroughput);
             }
         }
     }
