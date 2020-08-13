@@ -49,7 +49,9 @@ namespace KanbanProjectManagementApp.Tests
             [Fact]
             public void AND_default_constructor_is_used_THEN_it_has_a_value_of_zero()
             {
-                Assert.Equal(new ThroughputPerDay(0), default(ThroughputPerDay));
+                ThroughputPerDay defaultConstructedThroughput = default;
+
+                Assert.Equal(new ThroughputPerDay(0), defaultConstructedThroughput);
             }
 
             private static void AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Action call, double invalidThroughput)
