@@ -40,5 +40,8 @@ namespace KanbanProjectManagementApp
 
         public override int GetHashCode() =>
             numberOfWorkItemsFinished.GetHashCode();
+
+        public static ThroughputPerDay operator +(ThroughputPerDay a, ThroughputPerDay b) =>
+            new ThroughputPerDay(a.numberOfWorkItemsFinished + b.numberOfWorkItemsFinished);
     }
 }

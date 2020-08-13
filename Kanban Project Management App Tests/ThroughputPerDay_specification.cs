@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests
@@ -136,16 +138,43 @@ namespace KanbanProjectManagementApp.Tests
 
         public class GIVEN_some_throughput_AND_another_throughput_with_a_different_value
         {
+            private readonly ThroughputPerDay someThroughput;
+            private readonly ThroughputPerDay anotherThroughputWithDifferentValue;
+
+            public GIVEN_some_throughput_AND_another_throughput_with_a_different_value()
+            {
+                someThroughput = new ThroughputPerDay(5.0);
+                anotherThroughputWithDifferentValue = new ThroughputPerDay(6.0);
+            }
+
             [Fact]
             public void WHEN_compared_to_each_other_THEN_it_is_considered_different()
             {
-                var someThroughput = new ThroughputPerDay(5.0);
-                var anotherThroughputWithDifferentValue = new ThroughputPerDay(6.0);
                 var anotherThroughputBoxedAsObject = (object)anotherThroughputWithDifferentValue;
 
                 AssertThroughputEqualsReturnsFalseCommutatively(someThroughput, anotherThroughputWithDifferentValue);
 
                 AssertObjectEqualsReturnsFalseCommutatively(someThroughput, anotherThroughputBoxedAsObject);
+            }
+
+            public static IEnumerable<object[]> AdditionScenarios
+            {
+                get
+                {
+                    yield return new object[] { new ThroughputPerDay(0), new ThroughputPerDay(0), new ThroughputPerDay(0) };
+                    yield return new object[] { new ThroughputPerDay(1), new ThroughputPerDay(2), new ThroughputPerDay(3) };
+                    yield return new object[] { new ThroughputPerDay(2), new ThroughputPerDay(1), new ThroughputPerDay(3) };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(AdditionScenarios))]
+            public void WHEN_adding_two_throughputs_THEN_the_sum_of_both_is_returned(
+                ThroughputPerDay a, ThroughputPerDay b, ThroughputPerDay expectedResult)
+            {
+                var actualSum = a + b;
+
+                Assert.Equal(expectedResult, actualSum);
             }
 
             private static void AssertThroughputEqualsReturnsFalseCommutatively(ThroughputPerDay a, ThroughputPerDay b)
