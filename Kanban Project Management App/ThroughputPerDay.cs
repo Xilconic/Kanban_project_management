@@ -32,6 +32,11 @@ namespace KanbanProjectManagementApp
             this.numberOfWorkItemsFinished = numberOfWorkItemsFinished;
         }
 
+        public double GetNumberOfWorkItemsPerDay()
+        {
+            return numberOfWorkItemsFinished;
+        }
+
         public override bool Equals(object obj) =>
             obj is ThroughputPerDay mys && Equals(mys);
 

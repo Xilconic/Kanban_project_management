@@ -112,6 +112,14 @@ namespace KanbanProjectManagementApp.Tests
                 string actualString = a.ToString();
                 Assert.Equal(expectedString, actualString);
             }
+
+            [Fact]
+            public void WHEN_converting_to_double_THEN_number_of_work_items_finished_per_day_is_returned()
+            {
+                var numberOfItemsFinishedPerDay = someThroughput.GetNumberOfWorkItemsPerDay();
+                Assert.Equal(4.0, numberOfItemsFinishedPerDay);
+            }
+
         }
 
         public class GIVEN_some_throughput_AND_another_throughput_with_the_same_value
