@@ -22,6 +22,7 @@ namespace KanbanProjectManagementApp
     {
         private readonly double numberOfWorkItemsFinished;
 
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsFinished"/> is out of the range [0.0, PositiveInfinity).</exception>
         public ThroughputPerDay(double numberOfWorkItemsFinished)
         {
             if (numberOfWorkItemsFinished < 0.0 || double.IsNaN(numberOfWorkItemsFinished))
