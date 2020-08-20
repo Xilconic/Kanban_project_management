@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System.Windows;
+using System.Windows.Threading;
 
 namespace KanbanProjectManagementApp
 {
@@ -23,5 +24,14 @@ namespace KanbanProjectManagementApp
     /// </summary>
     public partial class App : Application
     {
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(
+                $"An unhandled exception just occurred: {e.Exception.Message}",
+                "Exception Sample",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            e.Handled = true;
+        }
     }
 }
