@@ -18,7 +18,7 @@ using System;
 
 namespace KanbanProjectManagementApp
 {
-    public struct ThroughputPerDay : IEquatable<ThroughputPerDay>
+    public struct ThroughputPerDay : IEquatable<ThroughputPerDay>, IFormattable
     {
         private readonly double numberOfWorkItemsFinished;
 
@@ -62,5 +62,8 @@ namespace KanbanProjectManagementApp
 
         public override string ToString() =>
             $"{numberOfWorkItemsFinished} / day";
+
+        public string ToString(string format, IFormatProvider formatProvider) =>
+            $"{numberOfWorkItemsFinished.ToString(format, formatProvider)} / day";
     }
 }

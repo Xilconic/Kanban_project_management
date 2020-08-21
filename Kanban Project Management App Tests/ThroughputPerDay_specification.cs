@@ -64,6 +64,8 @@ namespace KanbanProjectManagementApp.Tests
         public class GIVEN_some_throughput : IDisposable
         {
             private readonly ThroughputPerDay someThroughput;
+            private static readonly CultureInfo englishUsCultureInfo = new CultureInfo("en-US", false);
+            private static readonly CultureInfo dutchNetherlandsCultureInfo = new CultureInfo("nl-NL", false);
             private readonly CultureInfo? originalDefaultThreadCulture;
 
             public GIVEN_some_throughput()
@@ -104,10 +106,32 @@ namespace KanbanProjectManagementApp.Tests
             [Theory]
             [MemberData(nameof(ToStringScenarios))]
             public void WHEN_converting_to_string_THEN_string_is_as_expected(
-                ThroughputPerDay a, string expectedString)
+                ThroughputPerDay throughput, string expectedString)
             {
-                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
-                string actualString = a.ToString();
+                CultureInfo.DefaultThreadCurrentCulture = englishUsCultureInfo;
+                string actualString = throughput.ToString();
+                Assert.Equal(expectedString, actualString);
+            }
+
+            public static IEnumerable<object[]> ToFormattedStringScenarios
+            {
+                get
+                {
+                    yield return new object[] { new ThroughputPerDay(0), null, null, "0 / day" };
+                    yield return new object[] { new ThroughputPerDay(1.1), null, englishUsCultureInfo, "1.1 / day" };
+                    yield return new object[] { new ThroughputPerDay(1.1), null, dutchNetherlandsCultureInfo, "1,1 / day" };
+                    yield return new object[] { new ThroughputPerDay(11), "e2", englishUsCultureInfo, "1.10e+001 / day" };
+                    yield return new object[] { new ThroughputPerDay(11), "e2", dutchNetherlandsCultureInfo, "1,10e+001 / day" };
+                    yield return new object[] { new ThroughputPerDay(2), "N3", englishUsCultureInfo, "2.000 / day" };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(ToFormattedStringScenarios))]
+            public void WHEN_converting_to_string_with_IFormatProvider_THEN_string_is_as_expected(
+                ThroughputPerDay throughput, string formatString, CultureInfo culture, string expectedString)
+            {
+                string actualString = throughput.ToString(formatString, culture);
                 Assert.Equal(expectedString, actualString);
             }
 
