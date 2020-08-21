@@ -122,18 +122,18 @@ namespace KanbanProjectManagementApp.Tests
                     new object[] { new ThroughputPerDay(value), $"{DoubleToCulturedString(value)} / day" };
 
                 yield return createInputAndExpectedResultPair(3.4);
-                yield return createInputAndExpectedResultPair(Double.PositiveInfinity);
+                yield return createInputAndExpectedResultPair(double.PositiveInfinity);
             }
         }
 
         [Theory]
         [MemberData(nameof(ThroughputValueToStringScenarios))]
         public void GIVEN_some_throughput_value_WHEN_converting_to_string_THEN_return_string_representation(
-            ThroughputPerDay input, string expectedResult)
+            ThroughputPerDay inputThroughput, string expectedResult)
         {
             CultureInfo.DefaultThreadCurrentCulture = culture;
 
-            object result = ConvertToString(input);
+            object result = ConvertToString(inputThroughput);
             Assert.Equal(expectedResult, result);
         }
 

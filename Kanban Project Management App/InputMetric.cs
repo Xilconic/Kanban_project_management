@@ -20,7 +20,6 @@ namespace KanbanProjectManagementApp
 {
     internal class InputMetric
     {
-        public TimeSpan Throughput { get; set; }
-        public ThroughputPerDay ThroughputNew { get; set; }
+        public ThroughputPerDay Throughput { get; set; }
     }
 }

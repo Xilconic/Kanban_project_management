@@ -25,34 +25,34 @@ namespace KanbanProjectManagementApp
 {
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private TimeSpan? estimatedMeanOfThroughput;
-        private TimeSpan? estimatedCorrectedSampleStandardDeviationOfThroughput;
+        private ThroughputPerDay? estimatedMeanOfThroughputNew;
+        private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<InputMetric> InputMetrics { get; } = new ObservableCollection<InputMetric>();
 
-        public TimeSpan? EstimatedMeanOfThroughput
+        public ThroughputPerDay? EstimatedMeanOfThroughput
         {
-            get => estimatedMeanOfThroughput;
+            get => estimatedMeanOfThroughputNew;
             private set
             {
-                if (value != estimatedMeanOfThroughput)
+                if (!Equals(value, estimatedMeanOfThroughputNew))
                 {
-                    estimatedMeanOfThroughput = value;
+                    estimatedMeanOfThroughputNew = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedMeanOfThroughput)));
                 }
             }
         }
 
-        public TimeSpan? EstimatedCorrectedSampleStandardDeviationOfThroughput
+        public double? EstimatedCorrectedSampleStandardDeviationOfThroughput
         {
-            get => estimatedCorrectedSampleStandardDeviationOfThroughput;
+            get => estimatedCorrectedSampleStandardDeviationOfThroughputNew;
             private set
             {
-                if (value != estimatedCorrectedSampleStandardDeviationOfThroughput)
+                if (value != estimatedCorrectedSampleStandardDeviationOfThroughputNew)
                 {
-                    estimatedCorrectedSampleStandardDeviationOfThroughput = value;
+                    estimatedCorrectedSampleStandardDeviationOfThroughputNew = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedCorrectedSampleStandardDeviationOfThroughput)));
                 }
             }
@@ -73,51 +73,42 @@ namespace KanbanProjectManagementApp
             }
             else
             {
-                TimeSpan sum = SumOfTimeSpans(InputMetrics.Select(e => e.Throughput));
+                var sum = new ThroughputPerDay(0);
+                foreach(ThroughputPerDay throughput in InputMetrics.Select(i => i.Throughput))
+                {
+                    sum += throughput;
+                }
                 var mean = sum / InputMetrics.Count;
                 EstimatedMeanOfThroughput = mean;
             }
         }
 
-        private void UpdateCorrectedSampleStandardDeviationOfThroughput(TimeSpan? estimatedMeanOfCycleTime)
+        private void UpdateCorrectedSampleStandardDeviationOfThroughput(ThroughputPerDay? estimatedMeanOfThroughput)
         {
             if (InputMetrics.Count == 0)
             {
                 EstimatedCorrectedSampleStandardDeviationOfThroughput = null;
             }
-            else if(InputMetrics.Count == 1)
+            else if (InputMetrics.Count == 1)
             {
-                EstimatedCorrectedSampleStandardDeviationOfThroughput = TimeSpan.Zero;
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = 0.0;
             }
             else
             {
-                EstimatedCorrectedSampleStandardDeviationOfThroughput = CalculateCorrectedSampleStandardDeviationOfThroughputAtHourScale(estimatedMeanOfCycleTime);
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = CalculateCorrectedSampleStandardDeviationOfThroughput(estimatedMeanOfThroughput);
             }
         }
 
-        private TimeSpan CalculateCorrectedSampleStandardDeviationOfThroughputAtHourScale(TimeSpan? estimatedMeanOfCycleTime)
+        private double CalculateCorrectedSampleStandardDeviationOfThroughput(ThroughputPerDay? estimatedMeanOfThroughput)
         {
-            // Doing calculations are hour resolution gave adequate accuracy with regards to limited precision of double calculations involved.
-            var squaredDifferencesFromMean = InputMetrics.Select(e => GetSquaredTimeSpanAtHoursResolution(e.Throughput - estimatedMeanOfCycleTime.Value));
-            var sumSquaredDifferencesFromMean = SumOfTimeSpans(squaredDifferencesFromMean);
+            double meanNumberOfDaysCompleted = estimatedMeanOfThroughput.Value.GetNumberOfWorkItemsPerDay();
+            var sumSquaredDifferencesFromMean = InputMetrics
+                .Select(e => e.Throughput.GetNumberOfWorkItemsPerDay() - meanNumberOfDaysCompleted)
+                .Select(difference => Math.Pow(difference, 2))
+                .Sum();
             var correctionFactor = 1.0 / (InputMetrics.Count - 1);
-            return GetSquareRootOfTimeSpanAtHoursResolution(sumSquaredDifferencesFromMean * correctionFactor);
+            return Math.Sqrt(sumSquaredDifferencesFromMean * correctionFactor);
         }
-
-        private TimeSpan SumOfTimeSpans(IEnumerable<TimeSpan> timeSpans)
-        {
-            TimeSpan sum = TimeSpan.Zero;
-            foreach (var cycleTime in timeSpans)
-            {
-                sum += cycleTime;
-            }
-
-            return sum;
-        }
-
-        private static TimeSpan GetSquaredTimeSpanAtHoursResolution(TimeSpan ts) => TimeSpan.FromHours(Math.Pow(ts.TotalHours, 2));
-
-        private static TimeSpan GetSquareRootOfTimeSpanAtHoursResolution(TimeSpan ts) => TimeSpan.FromHours(Math.Sqrt(ts.TotalHours));
 
         private class CalculateThroughputStatisticsCommand : ICommand
         {

@@ -38,7 +38,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
 
         <DataGrid x:Name="dataGrid" Grid.Column="0" ItemsSource="{Binding InputMetrics}" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Throughput" Binding="{Binding ThroughputNew, Converter={StaticResource throughputConverter}}"/>
+                <DataGridTextColumn Header="Throughput" Binding="{Binding Throughput, Converter={StaticResource throughputConverter}}"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -58,10 +58,10 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="4" TextAlignment="Center" FontWeight="Bold">Estimations</TextBlock>
 
             <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Mean:</TextBlock>
-            <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedMeanOfCycleTime, Mode=OneWay}"/>
+            <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedMeanOfThroughput, Mode=OneWay}"/>
 
             <TextBlock Grid.Column="0" Grid.Row="2" Margin="4" TextAlignment="Right">Standard deviation:</TextBlock>
-            <TextBox x:Name="calculatedStandardDeviationTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="2" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfCycleTime, Mode=OneWay}"/>
+            <TextBox x:Name="calculatedStandardDeviationTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="2" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfThroughput, Mode=OneWay}"/>
 
             <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
         </Grid>
