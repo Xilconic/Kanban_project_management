@@ -26,11 +26,13 @@ namespace KanbanProjectManagementApp.Tests
     public class TimeTillCompletionEstimator_specification
     {
         private readonly Mock<IRandomNumberGenerator> randomNumberGeneratorMock;
+        private readonly RandomNumberGenerator realRandomNumberGenerator;
         private readonly int someMaximumNumberOfIterations = 25;
 
         public TimeTillCompletionEstimator_specification()
         {
             randomNumberGeneratorMock = new Mock<IRandomNumberGenerator>();
+            realRandomNumberGenerator = new RandomNumberGenerator();
         }
 
         [Fact]
@@ -163,12 +165,12 @@ namespace KanbanProjectManagementApp.Tests
 
         [Theory]
         [MemberData(nameof(MultiMetricEstimationScenarios))]
-        public void GIVEN_multiple_input_metrics_AND_some_number_of_work_items_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
+        public void GIVEN_multiple_input_metrics_AND_some_number_of_work_items_AND_truely_random_number_generator_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
             IReadOnlyCollection<ThroughputPerDay> throughputs, int numberOfWorkItems, double lowerBoundExpectedNumberOfDaysRequired, double upperBoundExpectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(throughputs);
 
-            var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
+            var estimator = new TimeTillCompletionEstimator(inputMetrics, realRandomNumberGenerator, someMaximumNumberOfIterations);
 
             var estimation = estimator.Estimate(numberOfWorkItems);
             Assert.InRange(estimation.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
