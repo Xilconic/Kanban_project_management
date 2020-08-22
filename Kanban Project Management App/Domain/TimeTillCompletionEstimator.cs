@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Domain
 {
     internal class TimeTillCompletionEstimator
     {

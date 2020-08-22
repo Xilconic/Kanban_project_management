@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using KanbanProjectManagementApp.Domain;
 
 namespace KanbanProjectManagementApp.Tests
 {

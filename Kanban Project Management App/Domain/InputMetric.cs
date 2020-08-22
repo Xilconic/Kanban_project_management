@@ -14,14 +14,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Domain
 {
-    public interface IRandomNumberGenerator
+    internal class InputMetric
     {
-        int GetRandomIndex(int count);
+        public ThroughputPerDay Throughput { get; set; }
     }
 }

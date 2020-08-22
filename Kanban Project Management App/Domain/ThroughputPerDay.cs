@@ -16,7 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Domain
 {
     public struct ThroughputPerDay : IEquatable<ThroughputPerDay>, IFormattable
     {
