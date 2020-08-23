@@ -63,9 +63,27 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void THEN_then_number_of_work_items_to_be_completed_is_ten()
+            public void THEN_the_number_of_work_items_to_be_completed_is_ten()
             {
                 Assert.Equal(10, newViewModel.NumberOfWorkItemsToBeCompleted);
+            }
+
+            [Fact]
+            public void THEN_the_number_of_simulations_is_ten()
+            {
+                Assert.Equal(10, newViewModel.NumberOfMonteCarloSimulations);
+            }
+
+            [Fact]
+            public void THEN_the_maximum_number_of_iterations_is_twentyfive()
+            {
+                Assert.Equal(25, newViewModel.MaximumNumberOfIterations);
+            }
+
+            [Fact]
+            public void THEN_the_number_of_working_days_till_completion_estimations_is_an_empty_collection()
+            {
+                Assert.Empty(newViewModel.NumberOfWorkingDaysTillCompletionEstimations);
             }
 
             [Fact]
@@ -96,13 +114,57 @@ namespace KanbanProjectManagementApp.Tests
             public void WHEN_setting_invalid_number_of_work_items_to_be_completed_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfWorkItems)
             {
-                void call()
+                void call() => newViewModel.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+
+                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Number of work items to be completed must be at least 1.");
+            }
+
+            public static IEnumerable<object[]> InvalidNumberOfMonteCarloSimulationsScenarions
+            {
+                get
                 {
-                    newViewModel.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                    yield return new object[] { int.MinValue };
+                    yield return new object[] { 0 };
                 }
+            }
+
+            [Theory]
+            [MemberData(nameof(InvalidNumberOfMonteCarloSimulationsScenarions))]
+            public void WHEN_setting_invalid_number_of_simulations_THEN_throw_ArgumentOutOfRangeException(
+                int invalidNumberOfMonteCarloSimulations)
+            {
+                void call() => newViewModel.NumberOfMonteCarloSimulations = invalidNumberOfMonteCarloSimulations;
+
+                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Number of simulation should be at least 1.");
+            }
+
+            public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarions
+            {
+                get
+                {
+                    yield return new object[] { int.MinValue };
+                    yield return new object[] { 0 };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(InvalidMaximumNumberOfIterationsScenarions))]
+            public void WHEN_setting_invalid_maximum_number_of_iterations_THEN_throw_ArgumentOutOfRangeException(
+                int invalidMaximumNumberOfIterations)
+            {
+                void call() => newViewModel.MaximumNumberOfIterations = invalidMaximumNumberOfIterations;
+
+                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Maximum number of iterations should be at least 1.");
+            }
+
+            private static void AssertActionThrowsArgumentOutOfRangeException(
+                Action call,
+                string expectedParamName,
+                string expectedMessage)
+            {
                 var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-                Assert.Equal("value", actualException.ParamName);
-                Assert.StartsWith("Number of work items to be completed must be at least 1.", actualException.Message);
+                Assert.Equal(expectedParamName, actualException.ParamName);
+                Assert.StartsWith(expectedMessage, actualException.Message);
             }
         }
 
@@ -272,6 +334,47 @@ namespace KanbanProjectManagementApp.Tests
                 Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.EstimatedNumberOfWorkingDaysRequired);
                 Assert.Equal(expectedEstimate.IsIndeterminate, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.IsIndeterminate);
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedNumberOfWorkingDaysTillCompletionPropertyName);
+
+                Action<WorkEstimate> assertEstimateHasExpectedNumberOfWorkingDays = estimate => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
+                Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays,
+                    assertEstimateHasExpectedNumberOfWorkingDays
+                );
+                Action<WorkEstimate> assertEstimateIsDeterminate = estimate => Assert.False(estimate.IsIndeterminate);
+                Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate,
+                    assertEstimateIsDeterminate
+                );
+            }
+
+            [Fact]
+            public void WHEN_estimating_completion_time_of_work_items_multiple_times_THEN_the_number_of_working_days_till_completion_are_updated()
+            {
+                viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
+                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                Assert.Equal(viewModelWithOneInputMetric.NumberOfMonteCarloSimulations, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.Count);
             }
         }
 

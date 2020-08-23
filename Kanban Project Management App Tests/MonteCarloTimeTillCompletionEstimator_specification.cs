@@ -67,7 +67,7 @@ namespace KanbanProjectManagementApp.Tests
         [Fact]
         public void WHEN_constructing_new_instance_AND_input_metrics_are_null_THEN_throw_ArgumentNullException()
         {
-            void call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
+            static void call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
 
             var actualException = Assert.Throws<ArgumentNullException>(call);
             Assert.Equal("inputMetrics", actualException.ParamName);

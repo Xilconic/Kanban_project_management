@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -29,6 +30,8 @@ namespace KanbanProjectManagementApp
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
         private int numberOfWorkItemsToBeCompleted = 10;
+        private int numberOfMonteCarloSimulations = 10;
+        private int maximumNumberOfIterations = 25;
         private WorkEstimate estimatedNumberOfWorkingDaysTillCompletion;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -75,6 +78,26 @@ namespace KanbanProjectManagementApp
             }
         }
 
+        public int NumberOfMonteCarloSimulations
+        {
+            get => numberOfMonteCarloSimulations;
+            set
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "Number of simulation should be at least 1.");
+                numberOfMonteCarloSimulations = value;
+            }
+        }
+
+        public int MaximumNumberOfIterations
+        {
+            get => maximumNumberOfIterations;
+            set
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "Maximum number of iterations should be at least 1.");
+                maximumNumberOfIterations = value;
+            }
+        }
+
         public WorkEstimate EstimatedNumberOfWorkingDaysTillCompletion
         {
             get => estimatedNumberOfWorkingDaysTillCompletion;
@@ -87,6 +110,8 @@ namespace KanbanProjectManagementApp
                 }
             }
         }
+
+        public ObservableCollection<WorkEstimate> NumberOfWorkingDaysTillCompletionEstimations { get; } = new ObservableCollection<WorkEstimate>();
 
         public ICommand UpdateCycleTimeStatisticsCommand { get; }
 
@@ -169,7 +194,7 @@ namespace KanbanProjectManagementApp
         private class PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand : ICommand
         {
             private readonly MainWindowViewModel viewModel;
-            private readonly TimeTillCompletionEstimator estimator;
+            private readonly MonteCarloTimeTillCompletionEstimator estimator;
             private bool canExecute = false;
 
             public PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(MainWindowViewModel viewModel)
@@ -177,7 +202,10 @@ namespace KanbanProjectManagementApp
                 this.viewModel = viewModel;
                 this.viewModel.InputMetrics.CollectionChanged += InputMetrics_CollectionChanged;
 
-                estimator = new TimeTillCompletionEstimator(viewModel.InputMetrics, new RandomNumberGenerator(), 100);
+                estimator = new MonteCarloTimeTillCompletionEstimator(
+                    viewModel.NumberOfMonteCarloSimulations,
+                    viewModel.MaximumNumberOfIterations,
+                    viewModel.InputMetrics);
             }
 
             private void InputMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -204,10 +232,14 @@ namespace KanbanProjectManagementApp
                     throw new InvalidOperationException();
                 }
 
-                // TODO: Actually run multiple simulations and aggregate results
+                IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.NumberOfWorkItemsToBeCompleted);
+                viewModel.EstimatedNumberOfWorkingDaysTillCompletion = workEstimations.First(); // TODO: Get rid of this one.
 
-                var workEstimate = estimator.Estimate(viewModel.NumberOfWorkItemsToBeCompleted);
-                viewModel.EstimatedNumberOfWorkingDaysTillCompletion = workEstimate;
+                viewModel.NumberOfWorkingDaysTillCompletionEstimations.Clear();
+                foreach (WorkEstimate estimate in workEstimations)
+                {
+                    viewModel.NumberOfWorkingDaysTillCompletionEstimations.Add(estimate);
+                }
             }
         }
     }
