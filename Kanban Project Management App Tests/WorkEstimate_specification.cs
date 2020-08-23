@@ -18,11 +18,24 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
+using System.Globalization;
 
 namespace KanbanProjectManagementApp.Tests
 {
-    public class WorkEstimate_specification
+    public class WorkEstimate_specification : IDisposable
     {
+        private readonly CultureInfo originalThreadCulture;
+
+        public WorkEstimate_specification()
+        {
+            originalThreadCulture = CultureInfo.DefaultThreadCurrentCulture;
+        }
+
+        public void Dispose()
+        {
+            CultureInfo.DefaultThreadCurrentCulture = originalThreadCulture;
+        }
+
         public static IEnumerable<object[]> InvalidNumberOfWorkingDaysScenarios
         {
             get
@@ -45,5 +58,28 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal("estimatedNumberOfWorkingDaysRequiredToFinishWork", actualException.ParamName);
             Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
         }
+
+        public static IEnumerable<object[]> WorkEstimateToStringScenarios
+        {
+            get
+            {
+                yield return new object[] { new WorkEstimate(1.1, false), "1.1 working day(s)" };
+                yield return new object[] { new WorkEstimate(2.2, true), "2.2 working day(s) [Indeterminate]" };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(WorkEstimateToStringScenarios))]
+        public void GIVEN_some_work_estimate_WHEN_converting_to_string_THEN_return_expected_text(
+            WorkEstimate estimate, string expectedText)
+        {
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
+
+            var text = estimate.ToString();
+
+            Assert.Equal(expectedText, text);
+        }
+
+
     }
 }

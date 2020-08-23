@@ -34,6 +34,12 @@ namespace KanbanProjectManagementApp.Domain
         public double EstimatedNumberOfWorkingDaysRequired { get; }
         public bool IsIndeterminate { get; }
 
+        public override string ToString()
+        {
+            var determinacyString = IsIndeterminate ? " [Indeterminate]" : string.Empty;
+            return $"{EstimatedNumberOfWorkingDaysRequired} working day(s){determinacyString}";
+        }
+
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.
         /// </exception>
