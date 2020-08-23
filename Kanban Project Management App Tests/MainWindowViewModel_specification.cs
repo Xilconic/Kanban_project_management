@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
+using System.Windows.Input;
 
 namespace KanbanProjectManagementApp.Tests
 {
@@ -43,9 +44,15 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void THEN_then_the_corrected_sample_standard_deviation_is_null()
+            public void THEN_the_corrected_sample_standard_deviation_is_null()
             {
                 AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(newViewModel);
+            }
+
+            [Fact]
+            public void THEN_the_estimate_number_of_working_days_till_completion_is_null()
+            {
+                AssertEstimatedNumberOfWorkingDaysTillCompletionNull(newViewModel);
             }
 
             [Fact]
@@ -55,10 +62,46 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
+            public void THEN_then_number_of_work_items_to_be_completed_is_ten()
+            {
+                Assert.Equal(10, newViewModel.NumberOfWorkItemsToBeCompleted);
+            }
+
+            [Fact]
             public void THEN_the_command_to_update_throughput_statistics_is_initialized_AND_able_to_execute()
             {
                 Assert.NotNull(newViewModel.UpdateCycleTimeStatisticsCommand);
                 Assert.True(newViewModel.UpdateCycleTimeStatisticsCommand.CanExecute(null));
+            }
+
+            [Fact]
+            public void THEN_the_command_to_estimate_to_complete_work_items_is_initialized_AND_not_able_to_execute()
+            {
+                Assert.NotNull(newViewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand);
+                Assert.False(newViewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.CanExecute(null));
+            }
+
+            public static IEnumerable<object[]> InvalidNumberOfWorkItemsToBecompletedScenarios
+            {
+                get
+                {
+                    yield return new object[] { int.MinValue };
+                    yield return new object[] { 0 };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(InvalidNumberOfWorkItemsToBecompletedScenarios))]
+            public void WHEN_setting_invalid_number_of_work_items_to_be_completed_THEN_throw_ArgumentOutOfRangeException(
+                int invalidNumberOfWorkItems)
+            {
+                void call()
+                {
+                    newViewModel.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                }
+                var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
+                Assert.Equal("value", actualException.ParamName);
+                Assert.StartsWith("Number of work items to be completed must be at least 1.", actualException.Message);
             }
         }
 
@@ -86,6 +129,23 @@ namespace KanbanProjectManagementApp.Tests
                 UpdateThroughputStatistics(viewModel);
 
                 AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(viewModel);
+            }
+
+            [Fact]
+            public void WHEN_estimating_completion_time_of_work_items_THEN_throw_InvalidOperationException()
+            {
+                void call() => viewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                Assert.Throws<InvalidOperationException>(call);
+            }
+
+            [Fact]
+            public void WHEN_adding_input_metric_THEN_command_to_estimate_completion_time_of_work_items_becomes_enabled()
+            {
+                AssertThatCommandStateIsAsExpectedWhenActionIsPerformed(
+                    viewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand,
+                    () => viewModel.InputMetrics.Add(new InputMetric()),
+                    true,
+                    1);
             }
         }
 
@@ -168,6 +228,48 @@ namespace KanbanProjectManagementApp.Tests
 
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedMeanOfThroughputPropertyName);
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
+            }
+
+            [Fact]
+            public void WHEN_adding_another_input_metric_THEN_the_enabled_state_of_the_command_to_estimate_completion_time_of_work_items_remains_unchanged()
+            {
+                AssertThatCommandStateIsAsExpectedWhenActionIsPerformed(
+                    viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand,
+                    () => viewModelWithOneInputMetric.InputMetrics.Add(new InputMetric()),
+                    true,
+                    0);
+            }
+
+            [Fact]
+            public void WHEN_removing_the_input_metric_THEN_the_command_to_estimate_completion_time_of_work_items_becomes_disabled()
+            {
+                AssertThatCommandStateIsAsExpectedWhenActionIsPerformed(
+                    viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand,
+                    () => viewModelWithOneInputMetric.InputMetrics.Clear(),
+                    false,
+                    1);
+            }
+
+            public static IEnumerable<object[]> EstimateTimeTillCompletionScenarios
+            {
+                get
+                {
+                    yield return new object[] { 10, new ThroughputPerDay(2), new WorkEstimate(5.0, false) };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(EstimateTimeTillCompletionScenarios))]
+            public void WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_updated(
+                int numberOfWorkItemsToBeCompleted, ThroughputPerDay throughput, WorkEstimate expectedEstimate)
+            {
+                viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = throughput };
+                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = numberOfWorkItemsToBeCompleted;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.EstimatedNumberOfWorkingDaysRequired);
+                Assert.Equal(expectedEstimate.IsIndeterminate, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.IsIndeterminate);
             }
         }
 
@@ -266,9 +368,40 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Null(vm.EstimatedCorrectedSampleStandardDeviationOfThroughput);
         }
 
+        private static void AssertEstimatedNumberOfWorkingDaysTillCompletionNull(MainWindowViewModel vm)
+        {
+            Assert.Null(vm.EstimatedNumberOfWorkingDaysTillCompletion);
+        }
+
         private static void AssertInputMetricsAreEmpty(MainWindowViewModel vm)
         {
             Assert.Empty(vm.InputMetrics);
+        }
+
+        private static void AssertThatCommandStateIsAsExpectedWhenActionIsPerformed(
+            ICommand command,
+            Action call,
+            bool expectedEnabledState,
+            int numberOfExpectedEnabledStateChanges)
+        {
+            int numberOfInvocations = 0;
+            void CountNumberOfInvocations(object sender, EventArgs args)
+            {
+                numberOfInvocations++;
+            }
+
+            command.CanExecuteChanged += CountNumberOfInvocations;
+            try
+            {
+                call();
+
+                Assert.Equal(numberOfExpectedEnabledStateChanges, numberOfInvocations);
+                Assert.Equal(expectedEnabledState, command.CanExecute(null));
+            }
+            finally
+            {
+                command.CanExecuteChanged -= CountNumberOfInvocations;
+            }
         }
     }
 }

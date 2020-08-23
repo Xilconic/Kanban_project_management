@@ -18,7 +18,7 @@ using System;
 
 namespace KanbanProjectManagementApp.Domain
 {
-    internal class WorkEstimate
+    public class WorkEstimate
     {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.

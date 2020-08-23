@@ -16,6 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
@@ -27,6 +28,7 @@ namespace KanbanProjectManagementApp
     {
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
+        private int numberOfWorkItemsToBeCompleted = 10;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -58,11 +60,30 @@ namespace KanbanProjectManagementApp
             }
         }
 
+        public int NumberOfWorkItemsToBeCompleted
+        {
+            get => numberOfWorkItemsToBeCompleted;
+            set
+            {
+                if(value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Number of work items to be completed must be at least 1.");
+                }
+
+                numberOfWorkItemsToBeCompleted = value;
+            }
+        }
+
+        public WorkEstimate EstimatedNumberOfWorkingDaysTillCompletion { get; private set; }
+
         public ICommand UpdateCycleTimeStatisticsCommand { get; }
+
+        public ICommand EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand { get; }
 
         public MainWindowViewModel()
         {
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
+            EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
         }
 
         private void UpdateMeanOfThroughput()
@@ -74,7 +95,7 @@ namespace KanbanProjectManagementApp
             else
             {
                 var sum = new ThroughputPerDay(0);
-                foreach(ThroughputPerDay throughput in InputMetrics.Select(i => i.Throughput))
+                foreach (ThroughputPerDay throughput in InputMetrics.Select(i => i.Throughput))
                 {
                     sum += throughput;
                 }
@@ -130,6 +151,51 @@ namespace KanbanProjectManagementApp
             {
                 viewModel.UpdateMeanOfThroughput();
                 viewModel.UpdateCorrectedSampleStandardDeviationOfThroughput(viewModel.EstimatedMeanOfThroughput);
+            }
+        }
+
+        private class PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand : ICommand
+        {
+            private readonly MainWindowViewModel viewModel;
+            private readonly TimeTillCompletionEstimator estimator;
+            private bool canExecute = false;
+
+            public PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(MainWindowViewModel viewModel)
+            {
+                this.viewModel = viewModel;
+                this.viewModel.InputMetrics.CollectionChanged += InputMetrics_CollectionChanged;
+
+                estimator = new TimeTillCompletionEstimator(viewModel.InputMetrics, new RandomNumberGenerator(), 100);
+            }
+
+            private void InputMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                var newValue = viewModel.InputMetrics.Count > 0;
+                if (canExecute != newValue)
+                {
+                    canExecute = newValue;
+                    CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter)
+            {
+                return canExecute;
+            }
+
+            public void Execute(object parameter)
+            {
+                if (!CanExecute(parameter))
+                {
+                    throw new InvalidOperationException();
+                }
+
+                // TODO: Actually run multiple simulations and aggregate results
+
+                var workEstimate = estimator.Estimate(viewModel.NumberOfWorkItemsToBeCompleted);
+                viewModel.EstimatedNumberOfWorkingDaysTillCompletion = workEstimate;
             }
         }
     }
