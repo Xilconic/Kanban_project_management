@@ -53,9 +53,14 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="4" TextAlignment="Center" FontWeight="Bold">Estimations</TextBlock>
+            <!-- Metric Statistics section: -->
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="4" TextAlignment="Center" FontWeight="Bold">Statistics</TextBlock>
 
             <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Mean:</TextBlock>
             <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedMeanOfThroughput, Mode=OneWay}"/>
@@ -64,6 +69,16 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             <TextBox x:Name="calculatedStandardDeviationTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="2" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfThroughput, Mode=OneWay}"/>
 
             <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
+
+            <!-- Work estimation section: -->
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="4,24,4,4" TextAlignment="Center" FontWeight="Bold">Estimation</TextBlock>
+            <TextBlock Grid.Column="0" Grid.Row="5" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="5" Margin="4" Text="{Binding NumberOfWorkItemsToBeCompleted}"/>
+
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
+
+            <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of working days:</TextBlock>
+            <TextBox IsReadOnly="True" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="4" Text="{Binding EstimatedNumberOfWorkingDaysTillCompletion, Mode=OneWay}"/>
         </Grid>
 
     </Grid>
