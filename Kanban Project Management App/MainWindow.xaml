@@ -57,6 +57,8 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Metric Statistics section: -->
@@ -72,13 +74,24 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
 
             <!-- Work estimation section: -->
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="4,24,4,4" TextAlignment="Center" FontWeight="Bold">Estimation</TextBlock>
-            <TextBlock Grid.Column="0" Grid.Row="5" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
-            <TextBox Grid.Column="1" Grid.Row="5" Margin="4" Text="{Binding NumberOfWorkItemsToBeCompleted}"/>
 
-            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
+            <TextBlock Grid.Column="0" Grid.Row="5" Margin="4" TextAlignment="Right">Number of simulations:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="5" Margin="4" Text="{Binding NumberOfMonteCarloSimulations}"/>
 
-            <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of working days:</TextBlock>
-            <TextBox IsReadOnly="True" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7" Margin="4" Text="{Binding EstimatedNumberOfWorkingDaysTillCompletion, Mode=OneWay}"/>
+            <TextBlock Grid.Column="0" Grid.Row="6" Margin="4" TextAlignment="Right">Max. number of iterations:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="6" Margin="4" Text="{Binding MaximumNumberOfIterations}"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding NumberOfWorkItemsToBeCompleted}"/>
+
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
+
+            <DataGrid Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding NumberOfWorkingDaysTillCompletionEstimations}"  AutoGenerateColumns="False" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Number of days till completion in simulation" Binding="{Binding EstimatedNumberOfWorkingDaysRequired}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Is indeterminate" Binding="{Binding IsIndeterminate}" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
 
     </Grid>

@@ -32,7 +32,6 @@ namespace KanbanProjectManagementApp
         private int numberOfWorkItemsToBeCompleted = 10;
         private int numberOfMonteCarloSimulations = 10;
         private int maximumNumberOfIterations = 25;
-        private WorkEstimate estimatedNumberOfWorkingDaysTillCompletion;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -83,7 +82,11 @@ namespace KanbanProjectManagementApp
             get => numberOfMonteCarloSimulations;
             set
             {
-                throw new ArgumentOutOfRangeException(nameof(value), "Number of simulation should be at least 1.");
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Number of simulation should be at least 1.");
+                }
+
                 numberOfMonteCarloSimulations = value;
             }
         }
@@ -93,21 +96,12 @@ namespace KanbanProjectManagementApp
             get => maximumNumberOfIterations;
             set
             {
-                throw new ArgumentOutOfRangeException(nameof(value), "Maximum number of iterations should be at least 1.");
-                maximumNumberOfIterations = value;
-            }
-        }
-
-        public WorkEstimate EstimatedNumberOfWorkingDaysTillCompletion
-        {
-            get => estimatedNumberOfWorkingDaysTillCompletion;
-            private set
-            {
-                if (value != estimatedNumberOfWorkingDaysTillCompletion)
+                if (value <= 0)
                 {
-                    estimatedNumberOfWorkingDaysTillCompletion = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedNumberOfWorkingDaysTillCompletion)));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum number of iterations should be at least 1.");
                 }
+
+                maximumNumberOfIterations = value;
             }
         }
 
@@ -194,18 +188,12 @@ namespace KanbanProjectManagementApp
         private class PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand : ICommand
         {
             private readonly MainWindowViewModel viewModel;
-            private readonly MonteCarloTimeTillCompletionEstimator estimator;
             private bool canExecute = false;
 
             public PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(MainWindowViewModel viewModel)
             {
                 this.viewModel = viewModel;
                 this.viewModel.InputMetrics.CollectionChanged += InputMetrics_CollectionChanged;
-
-                estimator = new MonteCarloTimeTillCompletionEstimator(
-                    viewModel.NumberOfMonteCarloSimulations,
-                    viewModel.MaximumNumberOfIterations,
-                    viewModel.InputMetrics);
             }
 
             private void InputMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -232,8 +220,11 @@ namespace KanbanProjectManagementApp
                     throw new InvalidOperationException();
                 }
 
+                var estimator = new MonteCarloTimeTillCompletionEstimator(
+                    viewModel.NumberOfMonteCarloSimulations,
+                    viewModel.MaximumNumberOfIterations,
+                    viewModel.InputMetrics);
                 IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.NumberOfWorkItemsToBeCompleted);
-                viewModel.EstimatedNumberOfWorkingDaysTillCompletion = workEstimations.First(); // TODO: Get rid of this one.
 
                 viewModel.NumberOfWorkingDaysTillCompletionEstimations.Clear();
                 foreach (WorkEstimate estimate in workEstimations)

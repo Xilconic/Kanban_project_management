@@ -27,7 +27,6 @@ namespace KanbanProjectManagementApp.Tests
     {
         private const string EstimatedMeanOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedMeanOfThroughput);
         private const string EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfThroughput);
-        private const string EstimatedNumberOfWorkingDaysTillCompletionPropertyName = nameof(MainWindowViewModel.EstimatedNumberOfWorkingDaysTillCompletion);
 
         public class GIVEN_a_newly_constructed_view_model
         {
@@ -48,12 +47,6 @@ namespace KanbanProjectManagementApp.Tests
             public void THEN_the_corrected_sample_standard_deviation_is_null()
             {
                 AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(newViewModel);
-            }
-
-            [Fact]
-            public void THEN_the_estimate_number_of_working_days_till_completion_is_null()
-            {
-                AssertEstimatedNumberOfWorkingDaysTillCompletionNull(newViewModel);
             }
 
             [Fact]
@@ -331,11 +324,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
-                Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.EstimatedNumberOfWorkingDaysRequired);
-                Assert.Equal(expectedEstimate.IsIndeterminate, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.IsIndeterminate);
-                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedNumberOfWorkingDaysTillCompletionPropertyName);
-
-                Action<WorkEstimate> assertEstimateHasExpectedNumberOfWorkingDays = estimate => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
+                void assertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
                 Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
                     assertEstimateHasExpectedNumberOfWorkingDays,
                     assertEstimateHasExpectedNumberOfWorkingDays,
@@ -348,7 +337,8 @@ namespace KanbanProjectManagementApp.Tests
                     assertEstimateHasExpectedNumberOfWorkingDays,
                     assertEstimateHasExpectedNumberOfWorkingDays
                 );
-                Action<WorkEstimate> assertEstimateIsDeterminate = estimate => Assert.False(estimate.IsIndeterminate);
+
+                static void assertEstimateIsDeterminate(WorkEstimate estimate) => Assert.False(estimate.IsIndeterminate);
                 Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
                     assertEstimateIsDeterminate,
                     assertEstimateIsDeterminate,
@@ -471,11 +461,6 @@ namespace KanbanProjectManagementApp.Tests
         private static void AssertEstimatedCorrectedSampleStandardDeviationOfThroughputNull(MainWindowViewModel vm)
         {
             Assert.Null(vm.EstimatedCorrectedSampleStandardDeviationOfThroughput);
-        }
-
-        private static void AssertEstimatedNumberOfWorkingDaysTillCompletionNull(MainWindowViewModel vm)
-        {
-            Assert.Null(vm.EstimatedNumberOfWorkingDaysTillCompletion);
         }
 
         private static void AssertInputMetricsAreEmpty(MainWindowViewModel vm)
