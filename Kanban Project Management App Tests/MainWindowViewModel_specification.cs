@@ -27,6 +27,7 @@ namespace KanbanProjectManagementApp.Tests
     {
         private const string EstimatedMeanOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedMeanOfThroughput);
         private const string EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfThroughput);
+        private const string EstimatedNumberOfWorkingDaysTillCompletionPropertyName = nameof(MainWindowViewModel.EstimatedNumberOfWorkingDaysTillCompletion);
 
         public class GIVEN_a_newly_constructed_view_model
         {
@@ -270,6 +271,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.EstimatedNumberOfWorkingDaysRequired);
                 Assert.Equal(expectedEstimate.IsIndeterminate, viewModelWithOneInputMetric.EstimatedNumberOfWorkingDaysTillCompletion.IsIndeterminate);
+                propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedNumberOfWorkingDaysTillCompletionPropertyName);
             }
         }
 

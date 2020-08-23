@@ -29,6 +29,7 @@ namespace KanbanProjectManagementApp
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
         private int numberOfWorkItemsToBeCompleted = 10;
+        private WorkEstimate estimatedNumberOfWorkingDaysTillCompletion;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -74,7 +75,18 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        public WorkEstimate EstimatedNumberOfWorkingDaysTillCompletion { get; private set; }
+        public WorkEstimate EstimatedNumberOfWorkingDaysTillCompletion
+        {
+            get => estimatedNumberOfWorkingDaysTillCompletion;
+            private set
+            {
+                if (value != estimatedNumberOfWorkingDaysTillCompletion)
+                {
+                    estimatedNumberOfWorkingDaysTillCompletion = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EstimatedNumberOfWorkingDaysTillCompletion)));
+                }
+            }
+        }
 
         public ICommand UpdateCycleTimeStatisticsCommand { get; }
 
