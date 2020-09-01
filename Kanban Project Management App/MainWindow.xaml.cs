@@ -26,6 +26,7 @@ namespace KanbanProjectManagementApp
         public MainWindow()
         {
             InitializeComponent();
+            MainGrid.DataContext = new MainWindowViewModel();
         }
     }
 }

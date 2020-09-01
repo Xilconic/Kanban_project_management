@@ -27,10 +27,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
     <Window.Resources>
         <local:ThroughputPerDayValueConverter x:Key="throughputConverter"/>
     </Window.Resources>
-    <Grid>
-        <Grid.DataContext>
-            <local:MainWindowViewModel/>
-        </Grid.DataContext>
+    <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
