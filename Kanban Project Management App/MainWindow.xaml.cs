@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -29,15 +31,36 @@ namespace KanbanProjectManagementApp
         {
             InitializeComponent();
             MainGrid.DataContext = new MainWindowViewModel(
-                new FileLocationGetterStub(),
+                new SaveFileDialogDrivenFileLocationGetter(this),
                 new WorkEstimationsFileExporterStub()
             );
         }
 
-        private class FileLocationGetterStub : IFileLocationGetter
+        private class SaveFileDialogDrivenFileLocationGetter : IFileLocationGetter
         {
+            private readonly Window owner;
+
+            public SaveFileDialogDrivenFileLocationGetter(Window owner)
+            {
+                this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            }
+
             public bool TryGetFileLocation(out string filePath)
             {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    AddExtension = true,
+                    FileName = "work_estimations",
+                    DefaultExt = ".csv",
+                    Filter = "Comma separated values file (.csv)|*.csv"
+                };
+                var dialogResult = saveFileDialog.ShowDialog(owner);
+                if (dialogResult.HasValue && dialogResult.Value)
+                {
+                    filePath = saveFileDialog.FileName;
+                    return true;
+                }
+
                 filePath = string.Empty;
                 return false;
             }
