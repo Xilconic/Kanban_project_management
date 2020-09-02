@@ -460,6 +460,30 @@ namespace KanbanProjectManagementApp.Tests
                     Times.Never
                 );
             }
+
+            [Fact]
+            public void AND_completion_time_of_work_items_estimated_AND_file_path_returned_AND_file_exporter_throws_FileExportException_WHEN_exporting_work_estimates_THEN_FileExportException_bubbles()
+            {
+                viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
+                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                string expectedFilePath = "c:/some/folder/and/someFile.csv";
+                fileLocationGetterMock
+                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Returns(true);
+
+                var expectedException = new FileExportException();
+                workEstimationsFileExporterMock
+                    .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations))
+                    .Throws(expectedException);
+
+                void call() => viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
+
+                var actualException = Assert.Throws<FileExportException>(call);
+                Assert.Same(expectedException, actualException);
+            }
         }
 
         public class GIVEN_multiple_input_metrics_in_the_collection : IDisposable

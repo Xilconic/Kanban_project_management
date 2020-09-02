@@ -15,12 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
+using System;
 using System.Collections.Generic;
 
 namespace KanbanProjectManagementApp
 {
     public interface IWorkEstimationsFileExporter
     {
+        /// <exception cref="FileExportException"/>
         void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates);
+    }
+
+    public class FileExportException : Exception
+    {
+        public FileExportException()
+        {
+        }
+
+        public FileExportException(string message)
+            : base(message)
+        {
+        }
+
+        public FileExportException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
     }
 }

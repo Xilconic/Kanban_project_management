@@ -18,6 +18,7 @@ using KanbanProjectManagementApp.Domain;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 
 namespace KanbanProjectManagementApp
@@ -32,7 +33,7 @@ namespace KanbanProjectManagementApp
             InitializeComponent();
             MainGrid.DataContext = new MainWindowViewModel(
                 new SaveFileDialogDrivenFileLocationGetter(this),
-                new WorkEstimationsFileExporterStub()
+                new WorkEstimationsToCsvFileExporter()
             );
         }
 
@@ -66,10 +67,24 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        private class WorkEstimationsFileExporterStub : IWorkEstimationsFileExporter
+        private class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
         {
             public void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates)
             {
+                try
+                {
+                    using (var writer = new StreamWriter(filePath))
+                    {
+                        var csvWriter = new WorkEstimationsCsvWriter(writer);
+                        csvWriter.Write(workEstimates);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new FileExportException(
+                        $"Failed to export work estimation to file '{filePath}', due to an unexpected error.",
+                        ex);
+                }
             }
         }
     }
