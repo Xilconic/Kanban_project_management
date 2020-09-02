@@ -56,6 +56,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- Metric Statistics section: -->
@@ -89,6 +90,8 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                     <DataGridTextColumn Header="Is indeterminate" Binding="{Binding IsIndeterminate}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
+
+            <Button Grid.Row="10" Grid.Column="1" Command="{Binding ExportWorkEstimatesCommand}">Export</Button>
         </Grid>
 
     </Grid>
