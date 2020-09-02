@@ -16,38 +16,11 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace KanbanProjectManagementApp
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public interface IWorkEstimationsFileExporter
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            MainGrid.DataContext = new MainWindowViewModel(
-                new FileLocationGetterStub(),
-                new WorkEstimationsFileExporterStub()
-            );
-        }
-
-        private class FileLocationGetterStub : IFileLocationGetter
-        {
-            public bool TryGetFileLocation(out string filePath)
-            {
-                filePath = string.Empty;
-                return false;
-            }
-        }
-
-        private class WorkEstimationsFileExporterStub : IWorkEstimationsFileExporter
-        {
-            public void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates)
-            {
-            }
-        }
+        void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates);
     }
 }

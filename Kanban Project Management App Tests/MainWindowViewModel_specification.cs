@@ -20,6 +20,7 @@ using System.Linq;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
 using System.Windows.Input;
+using Moq;
 
 namespace KanbanProjectManagementApp.Tests
 {
@@ -28,13 +29,36 @@ namespace KanbanProjectManagementApp.Tests
         private const string EstimatedMeanOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedMeanOfThroughput);
         private const string EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfThroughput);
 
+        public class WHEN_constructing_view_model
+        {
+            [Fact]
+            public void AND_file_location_getter_is_null_THEN_throw_ArgumentNullException()
+            {
+                void call() => new MainWindowViewModel(null, new Mock<IWorkEstimationsFileExporter>().Object);
+
+                var actualException = Assert.Throws<ArgumentNullException>(call);
+                Assert.Equal("fileLocationGetter", actualException.ParamName);
+            }
+
+            [Fact]
+            public void AND_work_estimation_file_exporter_is_null_THEN_throw_ArgumentNullException()
+            {
+                void call() => new MainWindowViewModel(new Mock<IFileLocationGetter>().Object, null);
+
+                var actualException = Assert.Throws<ArgumentNullException>(call);
+                Assert.Equal("workEstimationsFileExporter", actualException.ParamName);
+            }
+        }
+
         public class GIVEN_a_newly_constructed_view_model
         {
             private readonly MainWindowViewModel newViewModel;
 
             public GIVEN_a_newly_constructed_view_model()
             {
-                newViewModel = new MainWindowViewModel();
+                newViewModel = new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object);
             }
 
             [Fact]
@@ -91,6 +115,13 @@ namespace KanbanProjectManagementApp.Tests
             {
                 Assert.NotNull(newViewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand);
                 Assert.False(newViewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.CanExecute(null));
+            }
+
+            [Fact]
+            public void THEN_the_command_to_export_work_estimates_is_initialized_AND_not_able_to_execute()
+            {
+                Assert.NotNull(newViewModel.ExportWorkEstimatesCommand);
+                Assert.False(newViewModel.ExportWorkEstimatesCommand.CanExecute(null));
             }
 
             public static IEnumerable<object[]> InvalidNumberOfWorkItemsToBecompletedScenarios
@@ -167,7 +198,9 @@ namespace KanbanProjectManagementApp.Tests
 
             public GIVEN_an_empty_InputMetrics_collection()
             {
-                viewModel = new MainWindowViewModel();
+                viewModel = new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object);
                 AssertInputMetricsAreEmpty(viewModel);
             }
 
@@ -207,13 +240,19 @@ namespace KanbanProjectManagementApp.Tests
 
         public class GIVEN_one_input_metric_in_the_collection : IDisposable
         {
+            private readonly Mock<IFileLocationGetter> fileLocationGetterMock;
+            private readonly Mock<IWorkEstimationsFileExporter> workEstimationsFileExporterMock;
             private readonly MainWindowViewModel viewModelWithOneInputMetric;
             private readonly InputMetric metric;
             private readonly PropertyChangedEventTracker propertyChangedEventTracker;
 
             public GIVEN_one_input_metric_in_the_collection()
             {
-                viewModelWithOneInputMetric = new MainWindowViewModel();
+                fileLocationGetterMock = new Mock<IFileLocationGetter>();
+                workEstimationsFileExporterMock = new Mock<IWorkEstimationsFileExporter>();
+                viewModelWithOneInputMetric = new MainWindowViewModel(
+                    fileLocationGetterMock.Object,
+                    workEstimationsFileExporterMock.Object);
 
                 metric = ThroughputToInputMetric(new ThroughputPerDay(2));
                 viewModelWithOneInputMetric.InputMetrics.Add(metric);
@@ -366,6 +405,61 @@ namespace KanbanProjectManagementApp.Tests
 
                 Assert.Equal(viewModelWithOneInputMetric.NumberOfMonteCarloSimulations, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.Count);
             }
+
+            [Fact]
+            public void WHEN_estimating_completion_time_of_work_items_THEN_export_work_estimates_command_becomes_enabled()
+            {
+                AssertThatCommandStateIsAsExpectedWhenActionIsPerformed(
+                    viewModelWithOneInputMetric.ExportWorkEstimatesCommand,
+                    () =>
+                    {
+                        viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
+                        viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+
+                        viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                    },
+                    true,
+                    1);
+            }
+
+            [Fact]
+            public void AND_completion_time_of_work_items_estimated_AND_file_path_returned_WHEN_exporting_work_estimates_THEN_export_to_file_was_performed()
+            {
+                viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
+                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                string expectedFilePath = "c:/some/folder/and/someFile.csv";
+                fileLocationGetterMock
+                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Returns(true);
+
+                viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
+
+                workEstimationsFileExporterMock.Verify(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations));
+            }
+
+            [Fact]
+            public void AND_completion_time_of_work_items_estimated_AND_no_file_path_returned_WHEN_exporting_work_estimates_THEN_nothing_happens()
+            {
+                viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
+                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                string expectedFilePath = null;
+                fileLocationGetterMock
+                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Returns(false);
+
+                viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
+
+                workEstimationsFileExporterMock.Verify(
+                    e => e.Export(It.IsAny<string>(), It.IsAny<IReadOnlyCollection<WorkEstimate>>()),
+                    Times.Never
+                );
+            }
         }
 
         public class GIVEN_multiple_input_metrics_in_the_collection : IDisposable
@@ -375,7 +469,9 @@ namespace KanbanProjectManagementApp.Tests
 
             public GIVEN_multiple_input_metrics_in_the_collection()
             {
-                viewModelWithMultipleInputMetrics = new MainWindowViewModel();
+                viewModelWithMultipleInputMetrics = new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object);
 
                 propertyChangedEventTracker = new PropertyChangedEventTracker(viewModelWithMultipleInputMetrics);
             }

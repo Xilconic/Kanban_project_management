@@ -111,10 +111,15 @@ namespace KanbanProjectManagementApp
 
         public ICommand EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand { get; }
 
-        public MainWindowViewModel()
+        public ICommand ExportWorkEstimatesCommand { get; }
+
+        public MainWindowViewModel(
+            IFileLocationGetter fileLocationGetter,
+            IWorkEstimationsFileExporter workEstimationsFileExporter)
         {
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
+            ExportWorkEstimatesCommand = new ExportWorkEstimatesToFileCommand(fileLocationGetter, workEstimationsFileExporter, NumberOfWorkingDaysTillCompletionEstimations);
         }
 
         private void UpdateMeanOfThroughput()
@@ -230,6 +235,56 @@ namespace KanbanProjectManagementApp
                 foreach (WorkEstimate estimate in workEstimations)
                 {
                     viewModel.NumberOfWorkingDaysTillCompletionEstimations.Add(estimate);
+                }
+            }
+        }
+
+        private class ExportWorkEstimatesToFileCommand : ICommand
+        {
+            private readonly IFileLocationGetter fileLocationGetter;
+            private readonly IWorkEstimationsFileExporter workEstimationsFileExporter;
+            private readonly ObservableCollection<WorkEstimate> workEstimations;
+            private bool canExecute = false;
+
+            public ExportWorkEstimatesToFileCommand(
+                IFileLocationGetter fileLocationGetter,
+                IWorkEstimationsFileExporter workEstimationsFileExporter,
+                ObservableCollection<WorkEstimate> workEstimations)
+            {
+                this.fileLocationGetter = fileLocationGetter ?? throw new ArgumentNullException(nameof(fileLocationGetter));
+                this.workEstimationsFileExporter = workEstimationsFileExporter ?? throw new ArgumentNullException(nameof(workEstimationsFileExporter));
+                this.workEstimations = workEstimations ?? throw new ArgumentNullException(nameof(workEstimations));
+                canExecute = HasWorkEstimations();
+                workEstimations.CollectionChanged += InputMetrics_CollectionChanged;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter)
+            {
+                return canExecute;
+            }
+
+            public void Execute(object parameter)
+            {
+                if(fileLocationGetter.TryGetFileLocation(out string filePath))
+                {
+                    workEstimationsFileExporter.Export(filePath, workEstimations);
+                }
+            }
+
+            private bool HasWorkEstimations()
+            {
+                return workEstimations.Count > 0;
+            }
+
+            private void InputMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                var newValue = HasWorkEstimations();
+                if (canExecute != newValue)
+                {
+                    canExecute = newValue;
+                    CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
