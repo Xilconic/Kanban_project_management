@@ -18,6 +18,7 @@ using KanbanProjectManagementApp.Domain;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 
@@ -28,9 +29,15 @@ namespace KanbanProjectManagementApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly CultureInfo applicationCultureInfo = new CultureInfo("en-US", false);
+
         public MainWindow()
         {
             InitializeComponent();
+
+            CultureInfo.CurrentCulture = applicationCultureInfo;
+            CultureInfo.CurrentUICulture = applicationCultureInfo;
+
             MainGrid.DataContext = new MainWindowViewModel(
                 new SaveFileDialogDrivenFileLocationGetter(this),
                 new WorkEstimationsToCsvFileExporter()
