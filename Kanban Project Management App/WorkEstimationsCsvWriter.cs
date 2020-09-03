@@ -42,10 +42,8 @@ namespace KanbanProjectManagementApp
                 Delimiter = ";",
                 SanitizeForInjection = true,
             };
-            using(var csvWriter = new CsvWriter(textWriter, configuration, true))
-            {
-                csvWriter.WriteRecords(workEstimates.Select(WorkEstimateRow.FromDomain));
-            }
+            using var csvWriter = new CsvWriter(textWriter, configuration, true);
+            csvWriter.WriteRecords(workEstimates.Select(WorkEstimateRow.FromDomain));
         }
 
         private class WorkEstimateRow
