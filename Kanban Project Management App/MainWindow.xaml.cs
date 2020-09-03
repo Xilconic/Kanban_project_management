@@ -40,7 +40,9 @@ namespace KanbanProjectManagementApp
 
             MainGrid.DataContext = new MainWindowViewModel(
                 new SaveFileDialogDrivenFileLocationGetter(this),
-                new WorkEstimationsToCsvFileExporter()
+                new FileToReadGetterStub(),
+                new WorkEstimationsToCsvFileExporter(),
+                new InputMetricsFileImporterStub()
             );
         }
 
@@ -74,17 +76,24 @@ namespace KanbanProjectManagementApp
             }
         }
 
+        private class FileToReadGetterStub : IFileToReadGetter
+        {
+            public bool TryGetFileToRead(out string filePath)
+            {
+                filePath = string.Empty;
+                return false;
+            }
+        }
+
         private class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
         {
             public void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates)
             {
                 try
                 {
-                    using (var writer = new StreamWriter(filePath))
-                    {
-                        var csvWriter = new WorkEstimationsCsvWriter(writer);
-                        csvWriter.Write(workEstimates);
-                    }
+                    using var writer = new StreamWriter(filePath);
+                    var csvWriter = new WorkEstimationsCsvWriter(writer);
+                    csvWriter.Write(workEstimates);
                 }
                 catch (Exception ex)
                 {
@@ -92,6 +101,14 @@ namespace KanbanProjectManagementApp
                         $"Failed to export work estimation to file '{filePath}', due to an unexpected error.",
                         ex);
                 }
+            }
+        }
+
+        private class InputMetricsFileImporterStub : IInputMetricsFileImporter
+        {
+            public IReadOnlyCollection<InputMetric> Import(string filePath)
+            {
+                return Array.Empty<InputMetric>();
             }
         }
     }

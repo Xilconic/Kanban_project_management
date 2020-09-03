@@ -14,10 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-namespace KanbanProjectManagementApp.Domain
+
+namespace KanbanProjectManagementApp
 {
-    public class InputMetric
+    public interface IFileToReadGetter
     {
-        public ThroughputPerDay Throughput { get; set; }
+        bool TryGetFileToRead(out string filePath);
     }
 }

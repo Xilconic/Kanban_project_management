@@ -21,6 +21,7 @@ using Xunit;
 using KanbanProjectManagementApp.Domain;
 using System.Windows.Input;
 using Moq;
+using System.Collections.Specialized;
 
 namespace KanbanProjectManagementApp.Tests
 {
@@ -34,19 +35,53 @@ namespace KanbanProjectManagementApp.Tests
             [Fact]
             public void AND_file_location_getter_is_null_THEN_throw_ArgumentNullException()
             {
-                void call() => new MainWindowViewModel(null, new Mock<IWorkEstimationsFileExporter>().Object);
+                static void call() => new MainWindowViewModel(
+                    null,
+                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    new Mock<IInputMetricsFileImporter>().Object);
 
                 var actualException = Assert.Throws<ArgumentNullException>(call);
-                Assert.Equal("fileLocationGetter", actualException.ParamName);
+                Assert.Equal("fileLocationToSaveGetter", actualException.ParamName);
+            }
+
+            [Fact]
+            public void AND_file_to_read_getter_is_null_THEN_throw_ArgumentNullException()
+            {
+                static void call() => new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    null,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    new Mock<IInputMetricsFileImporter>().Object);
+
+                var actualException = Assert.Throws<ArgumentNullException>(call);
+                Assert.Equal("fileToReadGetter", actualException.ParamName);
             }
 
             [Fact]
             public void AND_work_estimation_file_exporter_is_null_THEN_throw_ArgumentNullException()
             {
-                void call() => new MainWindowViewModel(new Mock<IFileLocationGetter>().Object, null);
+                static void call() => new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IFileToReadGetter>().Object,
+                    null,
+                    new Mock<IInputMetricsFileImporter>().Object);
 
                 var actualException = Assert.Throws<ArgumentNullException>(call);
                 Assert.Equal("workEstimationsFileExporter", actualException.ParamName);
+            }
+
+            [Fact]
+            public void AND_input_metrics_file_importer_is_null_THEN_throw_ArgumentNullException()
+            {
+                static void call() => new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    null);
+
+                var actualException = Assert.Throws<ArgumentNullException>(call);
+                Assert.Equal("inputMetricsFileImporter", actualException.ParamName);
             }
         }
 
@@ -58,7 +93,9 @@ namespace KanbanProjectManagementApp.Tests
             {
                 newViewModel = new MainWindowViewModel(
                     new Mock<IFileLocationGetter>().Object,
-                    new Mock<IWorkEstimationsFileExporter>().Object);
+                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    new Mock<IInputMetricsFileImporter>().Object);
             }
 
             [Fact]
@@ -101,6 +138,13 @@ namespace KanbanProjectManagementApp.Tests
             public void THEN_the_number_of_working_days_till_completion_estimations_is_an_empty_collection()
             {
                 Assert.Empty(newViewModel.NumberOfWorkingDaysTillCompletionEstimations);
+            }
+
+            [Fact]
+            public void THEN_the_command_to_import_throughput_metrics_is_initialized_AND_able_to_execute()
+            {
+                Assert.NotNull(newViewModel.ImportThroughputMetricsCommand);
+                Assert.True(newViewModel.ImportThroughputMetricsCommand.CanExecute(null));
             }
 
             [Fact]
@@ -194,13 +238,17 @@ namespace KanbanProjectManagementApp.Tests
 
         public class GIVEN_an_empty_InputMetrics_collection
         {
+            private readonly Mock<IFileToReadGetter> fileToReadGetterMock = new Mock<IFileToReadGetter>();
+            private readonly Mock<IInputMetricsFileImporter> inputMetricsFileImporterMock = new Mock<IInputMetricsFileImporter>();
             private readonly MainWindowViewModel viewModel;
 
             public GIVEN_an_empty_InputMetrics_collection()
             {
                 viewModel = new MainWindowViewModel(
                     new Mock<IFileLocationGetter>().Object,
-                    new Mock<IWorkEstimationsFileExporter>().Object);
+                    fileToReadGetterMock.Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    inputMetricsFileImporterMock.Object);
                 AssertInputMetricsAreEmpty(viewModel);
             }
 
@@ -236,6 +284,31 @@ namespace KanbanProjectManagementApp.Tests
                     true,
                     1);
             }
+
+            [Fact]
+            public void WHEN_importing_some_metrics_THEN_input_metrics_are_changed()
+            {
+                string filePath = "c:/some/folder/and/someFile.csv";
+                fileToReadGetterMock
+                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Returns(true);
+
+                var expectedMetrics = new[]
+                {
+                    new InputMetric { Throughput = new ThroughputPerDay(1.1) },
+                    new InputMetric { Throughput = new ThroughputPerDay(2.2) },
+                };
+
+                inputMetricsFileImporterMock
+                    .Setup(i => i.Import(filePath))
+                    .Returns(expectedMetrics);
+
+                using var eventTracker = new CollectionChangedEventTracker(viewModel.InputMetrics);
+                viewModel.ImportThroughputMetricsCommand.Execute(null);
+
+                Assert.Equal(expectedMetrics, viewModel.InputMetrics);
+                eventTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Add, 2);
+            }
         }
 
         public class GIVEN_one_input_metric_in_the_collection : IDisposable
@@ -252,7 +325,9 @@ namespace KanbanProjectManagementApp.Tests
                 workEstimationsFileExporterMock = new Mock<IWorkEstimationsFileExporter>();
                 viewModelWithOneInputMetric = new MainWindowViewModel(
                     fileLocationGetterMock.Object,
-                    workEstimationsFileExporterMock.Object);
+                    new Mock<IFileToReadGetter>().Object,
+                    workEstimationsFileExporterMock.Object,
+                    new Mock<IInputMetricsFileImporter>().Object);
 
                 metric = ThroughputToInputMetric(new ThroughputPerDay(2));
                 viewModelWithOneInputMetric.InputMetrics.Add(metric);
@@ -488,6 +563,7 @@ namespace KanbanProjectManagementApp.Tests
 
         public class GIVEN_multiple_input_metrics_in_the_collection : IDisposable
         {
+            private readonly Mock<IFileToReadGetter> fileToReadGetterMock = new Mock<IFileToReadGetter>();
             private readonly MainWindowViewModel viewModelWithMultipleInputMetrics;
             private readonly PropertyChangedEventTracker propertyChangedEventTracker;
 
@@ -495,7 +571,9 @@ namespace KanbanProjectManagementApp.Tests
             {
                 viewModelWithMultipleInputMetrics = new MainWindowViewModel(
                     new Mock<IFileLocationGetter>().Object,
-                    new Mock<IWorkEstimationsFileExporter>().Object);
+                    fileToReadGetterMock.Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    new Mock<IInputMetricsFileImporter>().Object);
 
                 propertyChangedEventTracker = new PropertyChangedEventTracker(viewModelWithMultipleInputMetrics);
             }
@@ -555,6 +633,28 @@ namespace KanbanProjectManagementApp.Tests
                 var upperBound = expectedCorrectedSampleStandardDeviation + acceptedErrorMargin;
                 Assert.InRange(viewModelWithMultipleInputMetrics.EstimatedCorrectedSampleStandardDeviationOfThroughput.Value, lowerBound, upperBound);
                 propertyChangedEventTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName);
+            }
+
+            [Fact]
+            public void WHEN_importing_some_metrics_and_file_selection_was_cancelled_THEN_input_metrics_unaffected()
+            {
+                string filePath = string.Empty;
+                fileToReadGetterMock
+                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Returns(false);
+
+                var expectedMetrics = new[]
+                {
+                    ThroughputToInputMetric(new ThroughputPerDay(1.1)),
+                    ThroughputToInputMetric(new ThroughputPerDay(2.2)),
+                };
+                AddInputMetricsToViewModel(expectedMetrics);
+
+                using var eventTracker = new CollectionChangedEventTracker(viewModelWithMultipleInputMetrics.InputMetrics);
+                viewModelWithMultipleInputMetrics.ImportThroughputMetricsCommand.Execute(null);
+
+                Assert.Equal(expectedMetrics, viewModelWithMultipleInputMetrics.InputMetrics);
+                eventTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             private void AddInputMetricsToViewModel(IEnumerable<InputMetric> metrics)

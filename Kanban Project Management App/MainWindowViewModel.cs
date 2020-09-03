@@ -107,6 +107,8 @@ namespace KanbanProjectManagementApp
 
         public ObservableCollection<WorkEstimate> NumberOfWorkingDaysTillCompletionEstimations { get; } = new ObservableCollection<WorkEstimate>();
 
+        public ICommand ImportThroughputMetricsCommand { get; }
+
         public ICommand UpdateCycleTimeStatisticsCommand { get; }
 
         public ICommand EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand { get; }
@@ -114,12 +116,15 @@ namespace KanbanProjectManagementApp
         public ICommand ExportWorkEstimatesCommand { get; }
 
         public MainWindowViewModel(
-            IFileLocationGetter fileLocationGetter,
-            IWorkEstimationsFileExporter workEstimationsFileExporter)
+            IFileLocationGetter fileLocationToSaveGetter,
+            IFileToReadGetter fileToReadGetter,
+            IWorkEstimationsFileExporter workEstimationsFileExporter,
+            IInputMetricsFileImporter inputMetricsFileImporter)
         {
+            ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(InputMetrics, fileToReadGetter, inputMetricsFileImporter);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
-            ExportWorkEstimatesCommand = new ExportWorkEstimatesToFileCommand(fileLocationGetter, workEstimationsFileExporter, NumberOfWorkingDaysTillCompletionEstimations);
+            ExportWorkEstimatesCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter, NumberOfWorkingDaysTillCompletionEstimations);
         }
 
         private void UpdateMeanOfThroughput()
@@ -165,6 +170,41 @@ namespace KanbanProjectManagementApp
                 .Sum();
             var correctionFactor = 1.0 / (InputMetrics.Count - 1);
             return Math.Sqrt(sumSquaredDifferencesFromMean * correctionFactor);
+        }
+
+        private class ImportThroughputMetricsFromFileCommand : ICommand
+        {
+            private readonly IFileToReadGetter fileToReadGetter;
+            private readonly IInputMetricsFileImporter inputMetricsFileImporter;
+            private readonly ObservableCollection<InputMetric> inputMetrics;
+
+            public ImportThroughputMetricsFromFileCommand(
+                ObservableCollection<InputMetric> inputMetrics,
+                IFileToReadGetter fileToReadGetter,
+                IInputMetricsFileImporter inputMetricsFileImporter)
+            {
+                this.inputMetrics = inputMetrics ?? throw new ArgumentNullException(nameof(inputMetrics));
+                this.fileToReadGetter = fileToReadGetter ?? throw new ArgumentNullException(nameof(fileToReadGetter));
+                this.inputMetricsFileImporter = inputMetricsFileImporter ?? throw new ArgumentNullException(nameof(inputMetricsFileImporter));
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
+
+            public void Execute(object parameter)
+            {
+                if(fileToReadGetter.TryGetFileToRead(out string filePath))
+                {
+                    foreach (InputMetric metric in inputMetricsFileImporter.Import(filePath))
+                    {
+                        inputMetrics.Add(metric);
+                    }
+                }
+            }
         }
 
         private class CalculateThroughputStatisticsCommand : ICommand
@@ -247,11 +287,11 @@ namespace KanbanProjectManagementApp
             private bool canExecute = false;
 
             public ExportWorkEstimatesToFileCommand(
-                IFileLocationGetter fileLocationGetter,
+                IFileLocationGetter fileLocationToSaveGetter,
                 IWorkEstimationsFileExporter workEstimationsFileExporter,
                 ObservableCollection<WorkEstimate> workEstimations)
             {
-                this.fileLocationGetter = fileLocationGetter ?? throw new ArgumentNullException(nameof(fileLocationGetter));
+                this.fileLocationGetter = fileLocationToSaveGetter ?? throw new ArgumentNullException(nameof(fileLocationToSaveGetter));
                 this.workEstimationsFileExporter = workEstimationsFileExporter ?? throw new ArgumentNullException(nameof(workEstimationsFileExporter));
                 this.workEstimations = workEstimations ?? throw new ArgumentNullException(nameof(workEstimations));
                 canExecute = HasWorkEstimations();
