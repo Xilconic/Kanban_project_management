@@ -40,7 +40,7 @@ namespace KanbanProjectManagementApp
 
             MainGrid.DataContext = new MainWindowViewModel(
                 new SaveFileDialogDrivenFileLocationGetter(this),
-                new FileToReadGetterStub(),
+                new OpenFileDialogDrivenFileToReadGetter(this),
                 new WorkEstimationsToCsvFileExporter(),
                 new InputMetricsFileImporterStub()
             );
@@ -76,10 +76,30 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        private class FileToReadGetterStub : IFileToReadGetter
+        private class OpenFileDialogDrivenFileToReadGetter : IFileToReadGetter
         {
+            private readonly Window owner;
+
+            public OpenFileDialogDrivenFileToReadGetter(Window owner)
+            {
+                this.owner = owner;
+            }
+
             public bool TryGetFileToRead(out string filePath)
             {
+                var openFileDialog = new OpenFileDialog
+                {
+                    AddExtension = true,
+                    DefaultExt = ".csv",
+                    Filter = "Comma separated values file (.csv)|*.csv"
+                };
+                var dialogResult = openFileDialog.ShowDialog(owner);
+                if (dialogResult.HasValue && dialogResult.Value)
+                {
+                    filePath = openFileDialog.FileName;
+                    return true;
+                }
+
                 filePath = string.Empty;
                 return false;
             }
