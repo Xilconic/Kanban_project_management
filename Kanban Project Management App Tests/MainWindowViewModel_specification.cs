@@ -309,6 +309,25 @@ namespace KanbanProjectManagementApp.Tests
                 Assert.Equal(expectedMetrics, viewModel.InputMetrics);
                 eventTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Add, 2);
             }
+
+            [Fact]
+            public void WHEN_importing_some_metrics_AND_file_importer_throws_FileImportException_THEN_bubble_that_exception()
+            {
+                string filePath = "c:/some/folder/and/someFile.csv";
+                fileToReadGetterMock
+                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Returns(true);
+
+                var expectedException = new FileImportException();
+                inputMetricsFileImporterMock
+                    .Setup(i => i.Import(filePath))
+                    .Throws(expectedException);
+
+                void call() => viewModel.ImportThroughputMetricsCommand.Execute(null);
+
+                var actualException = Assert.Throws<FileImportException>(call);
+                Assert.Same(expectedException, actualException);
+            }
         }
 
         public class GIVEN_one_input_metric_in_the_collection : IDisposable

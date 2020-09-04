@@ -42,7 +42,7 @@ namespace KanbanProjectManagementApp
                 new SaveFileDialogDrivenFileLocationGetter(this),
                 new OpenFileDialogDrivenFileToReadGetter(this),
                 new WorkEstimationsToCsvFileExporter(),
-                new InputMetricsFileImporterStub()
+                new InputMetricsFromCsvFileImporter()
             );
         }
 
@@ -124,11 +124,21 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        private class InputMetricsFileImporterStub : IInputMetricsFileImporter
+        private class InputMetricsFromCsvFileImporter : IInputMetricsFileImporter
         {
             public IReadOnlyCollection<InputMetric> Import(string filePath)
             {
-                return Array.Empty<InputMetric>();
+                try
+                {
+                    using var reader = new StreamReader(filePath);
+                    return InputMetricsCsvReader.Read(reader);
+                }
+                catch(Exception ex)
+                {
+                    throw new FileImportException(
+                        $"Failed to import input metrics from file '{filePath}', due to an unexpected error.",
+                        ex);
+                }
             }
         }
     }
