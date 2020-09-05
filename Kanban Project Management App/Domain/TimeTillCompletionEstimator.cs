@@ -43,12 +43,20 @@ namespace KanbanProjectManagementApp.Domain
             this.maximumNumberOfIterations = maximumNumberOfIterations;
         }
 
-        public WorkEstimate Estimate(int numberOfWorkItemsToBeCompleted)
+        public WorkEstimate Estimate(Project project)
         {
-            ValidateThatAtLeastOneWorkItemsHasToBeCompleted(numberOfWorkItemsToBeCompleted);
+            ValidateThatProjectHasWorkToBeCompleted(project);
             ValidateThatInputMetricsHaveAtLeastOneElement();
 
-            return EstimateWorkRequiredForFinishWorkItems(numberOfWorkItemsToBeCompleted);
+            return EstimateWorkRequiredForFinishWorkItems(project);
+        }
+
+        private void ValidateThatProjectHasWorkToBeCompleted(Project project)
+        {
+            if (!project.HasWorkToBeCompleted)
+            {
+                throw new ArgumentOutOfRangeException(nameof(project), "Project should have work to be completed.");
+            }
         }
 
         private static void ValidateMaximumNumberOfIterationsIsGreaterThanZero(int maximumNumberOfIterations)
@@ -56,17 +64,6 @@ namespace KanbanProjectManagementApp.Domain
             if (maximumNumberOfIterations <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(maximumNumberOfIterations));
-            }
-        }
-
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="numberOfWorkItemsToBeCompleted"/> is not larger than 0.
-        /// </exception>
-        private static void ValidateThatAtLeastOneWorkItemsHasToBeCompleted(int numberOfWorkItemsToBeCompleted)
-        {
-            if (numberOfWorkItemsToBeCompleted <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberOfWorkItemsToBeCompleted), "Number of workitems to complete should be at least 1.");
             }
         }
 
@@ -81,20 +78,32 @@ namespace KanbanProjectManagementApp.Domain
             }
         }
 
-        private WorkEstimate EstimateWorkRequiredForFinishWorkItems(double workRemainingToBeDone)
+        private WorkEstimate EstimateWorkRequiredForFinishWorkItems(Project project)
         {
             double estimatedNumberOfWorkingDaysRequiredToFinishWork = 0.0;
             int iterationNumber = 0;
+            double leftOverThroughput = 0.0;
             do
             {
-                var throughputOfThatDay = GetThroughputOfThatDay();
-                estimatedNumberOfWorkingDaysRequiredToFinishWork += GetAmountOfWorkingDayConsumed(workRemainingToBeDone, throughputOfThatDay);
-                workRemainingToBeDone -= throughputOfThatDay;
+                var throughputOfThatDay = GetThroughputOfThatDay() + leftOverThroughput;
+
+                estimatedNumberOfWorkingDaysRequiredToFinishWork += GetAmountOfWorkingDayConsumed(project, throughputOfThatDay);
+                double numberOfWorkItemsFinishedThisDay = Math.Floor(throughputOfThatDay);
+
+                for (int i = 0; i < numberOfWorkItemsFinishedThisDay; i++)
+                {
+                    if (project.HasWorkToBeCompleted)
+                    {
+                        project.CompleteWorkItem();
+                    }
+                }
+
+                leftOverThroughput = throughputOfThatDay - numberOfWorkItemsFinishedThisDay;
                 iterationNumber++;
             }
-            while (IsThereStillWorkRemaining(workRemainingToBeDone) && !IsMaximumNumberOfIterationsReached(iterationNumber));
+            while (project.HasWorkToBeCompleted && !IsMaximumNumberOfIterationsReached(iterationNumber));
 
-            return new WorkEstimate(estimatedNumberOfWorkingDaysRequiredToFinishWork, IsThereStillWorkRemaining(workRemainingToBeDone));
+            return new WorkEstimate(estimatedNumberOfWorkingDaysRequiredToFinishWork, project.HasWorkToBeCompleted);
         }
 
         private double GetThroughputOfThatDay()
@@ -107,16 +116,11 @@ namespace KanbanProjectManagementApp.Domain
             return inputMetrics[rng.GetRandomIndex(inputMetrics.Count)];
         }
 
-        private static double GetAmountOfWorkingDayConsumed(double workRemainingToBeDone, double throughputOfThatDay)
+        private double GetAmountOfWorkingDayConsumed(Project project, double throughputOfThatDay)
         {
-            return throughputOfThatDay <= workRemainingToBeDone ?
+            return throughputOfThatDay <= project.NumberOfWorkItemsRemaining ?
                 1.0 :
-                workRemainingToBeDone / throughputOfThatDay;
-        }
-
-        private static bool IsThereStillWorkRemaining(double workRemainingToBeDone)
-        {
-            return workRemainingToBeDone > 0.0;
+                project.NumberOfWorkItemsRemaining / throughputOfThatDay;
         }
 
         private bool IsMaximumNumberOfIterationsReached(int iterationNumber)

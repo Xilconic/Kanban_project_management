@@ -48,7 +48,7 @@ namespace KanbanProjectManagementApp.Domain
             var simulationResults = new WorkEstimate[numberOfSimulations];
             for (int i = 0; i < numberOfSimulations; i++)
             {
-                simulationResults[i] = simulationEstimator.Estimate(numberOfWorkItemsToComplete);
+                simulationResults[i] = simulationEstimator.Estimate(new Project(numberOfWorkItemsToComplete));
             }
 
             return simulationResults;

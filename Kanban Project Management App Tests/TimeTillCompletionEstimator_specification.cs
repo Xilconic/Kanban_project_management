@@ -28,6 +28,7 @@ namespace KanbanProjectManagementApp.Tests
         private readonly Mock<IRandomNumberGenerator> randomNumberGeneratorMock;
         private readonly RandomNumberGenerator realRandomNumberGenerator;
         private readonly int someMaximumNumberOfIterations = 25;
+        private readonly Project someProject = new Project(1);
 
         public TimeTillCompletionEstimator_specification()
         {
@@ -84,71 +85,63 @@ namespace KanbanProjectManagementApp.Tests
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            void call() => estimator.Estimate(1);
+            void call() => estimator.Estimate(someProject);
 
             var actualException = Assert.Throws<InvalidOperationException>(call);
             Assert.StartsWith("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
         }
 
-        public static IEnumerable<object[]> InvalidBacklogScenarios
+        [Fact]
+        public void GIVEN_project_already_has_all_work_completed_WHEN_estimating_time_to_completion_THEN_throw_ArgumentOutOfRangeException()
         {
-            get
-            {
-                yield return new object[] { 0 };
-                yield return new object[] { int.MinValue };
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(InvalidBacklogScenarios))]
-        public void GIVEN_some_input_metrics_AND_invalid_number_of_work_items_WHEN_estimating_time_to_completion_THEN_throw_ArgumentOutOfRangeException(
-            int invalidNumberOfWorkItems)
-        {
-            var inputMetrics = ToInputMetrics(new[]{ ToThroughput(1) });
+            var inputMetrics = ToInputMetrics(new[] { ToThroughput(1) });
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            void call() => estimator.Estimate(invalidNumberOfWorkItems);
+            var projectWithoutWorkRemaining = new Project(1);
+            projectWithoutWorkRemaining.CompleteWorkItem();
+
+            void call() => estimator.Estimate(projectWithoutWorkRemaining);
 
             var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("numberOfWorkItemsToBeCompleted", actualException.ParamName);
-            Assert.StartsWith("Number of workitems to complete should be at least 1.", actualException.Message);
+            Assert.Equal("project", actualException.ParamName);
+            Assert.StartsWith("Project should have work to be completed.", actualException.Message);
         }
 
         public static IEnumerable<object[]> SingleMetricEstimationScenarios
         {
             get
             {
-                yield return new object[] { ToThroughput(1), 10, 10.0 };
-                yield return new object[] { ToThroughput(2), 10, 5.0 };
-                yield return new object[] { ToThroughput(3), 10, 3.333333 };
-                yield return new object[] { ToThroughput(3), 3, 1.0 };
-                yield return new object[] { ToThroughput(3), 1, 0.333333 };
+                yield return new object[] { ToThroughput(1), new Project(10), 10.0 };
+                yield return new object[] { ToThroughput(2), new Project(10), 5.0 };
+                yield return new object[] { ToThroughput(3), new Project(10), 3.333333 };
+                yield return new object[] { ToThroughput(3), new Project(3), 1.0 };
+                yield return new object[] { ToThroughput(3), new Project(1), 0.333333 };
             }
         }
 
         [Theory]
         [MemberData(nameof(SingleMetricEstimationScenarios))]
-        public void GIVEN_one_input_metric_AND_some_number_of_work_items_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days(
-            ThroughputPerDay throughput, int numberOfWorkItems, double expectedNumberOfDaysRequired)
+        public void GIVEN_one_input_metric_AND_some_project_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days(
+            ThroughputPerDay throughput, Project project, double expectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(new[] { throughput });
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(numberOfWorkItems);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(project);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
             AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
         }
 
         [Fact]
-        public void GIVEN_all_input_metrics_with_zero_throughput_AND_some_number_of_work_items_WHEN_estimating_time_to_completion_THEN_return_indeterminate_with_lower_bound_estimate()
+        public void GIVEN_all_input_metrics_with_zero_throughput_AND_some_project_WHEN_estimating_time_to_completion_THEN_return_indeterminate_with_lower_bound_estimate()
         {
             var inputMetrics = ToInputMetrics(new[] { ToThroughput(0) });
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(1);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(someProject);
             AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, estimatedNumberOfDaysTillCompletion);
             AssertExpectedNumberOfWorkingDaysIsIndeterminate(estimatedNumberOfDaysTillCompletion);
         }
@@ -157,22 +150,22 @@ namespace KanbanProjectManagementApp.Tests
         {
             get
             {
-                yield return new object[] { ToThroughput(2, 2).ToArray(), 10, 5.0, 5.0 };
-                yield return new object[] { ToThroughput(1, 2).ToArray(), 10, 5.0, 10.0 };
-                yield return new object[] { ToThroughput(5, 1).ToArray(), 10, 2.0, 10.0 };
+                yield return new object[] { ToThroughput(2, 2).ToArray(), new Project(10), 5.0, 5.0 };
+                yield return new object[] { ToThroughput(1, 2).ToArray(), new Project(10), 5.0, 10.0 };
+                yield return new object[] { ToThroughput(5, 1).ToArray(), new Project(10), 2.0, 10.0 };
             }
         }
 
         [Theory]
         [MemberData(nameof(MultiMetricEstimationScenarios))]
-        public void GIVEN_multiple_input_metrics_AND_some_number_of_work_items_AND_truely_random_number_generator_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
-            IReadOnlyCollection<ThroughputPerDay> throughputs, int numberOfWorkItems, double lowerBoundExpectedNumberOfDaysRequired, double upperBoundExpectedNumberOfDaysRequired)
+        public void GIVEN_multiple_input_metrics_AND_some_project_AND_truely_random_number_generator_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
+            IReadOnlyCollection<ThroughputPerDay> throughputs, Project project, double lowerBoundExpectedNumberOfDaysRequired, double upperBoundExpectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(throughputs);
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, realRandomNumberGenerator, someMaximumNumberOfIterations);
 
-            var estimation = estimator.Estimate(numberOfWorkItems);
+            var estimation = estimator.Estimate(project);
             Assert.InRange(estimation.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
             AssertEstimateIsDeterminate(estimation);
         }
@@ -181,17 +174,17 @@ namespace KanbanProjectManagementApp.Tests
         {
             get
             {
-                yield return new object[] { ToThroughput(2, 2).ToArray(), 10, new Queue<int>(new[] { 0, 1, 0, 1, 0 }), 5.0 };
-                yield return new object[] { ToThroughput(1, 3).ToArray(), 10, new Queue<int>(new[] { 0, 1, 0, 1, 0, 0 }), 6.0 };
-                yield return new object[] { ToThroughput(1, 3).ToArray(), 10, new Queue<int>(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }), 10.0 };
-                yield return new object[] { ToThroughput(1, 3).ToArray(), 10, new Queue<int>(new[] { 1, 1, 1, 1 }), 3.333333 };
+                yield return new object[] { ToThroughput(2, 2).ToArray(), new Project(10), new Queue<int>(new[] { 0, 1, 0, 1, 0 }), 5.0 };
+                yield return new object[] { ToThroughput(1, 3).ToArray(), new Project(10), new Queue<int>(new[] { 0, 1, 0, 1, 0, 0 }), 6.0 };
+                yield return new object[] { ToThroughput(1, 3).ToArray(), new Project(10), new Queue<int>(new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }), 10.0 };
+                yield return new object[] { ToThroughput(1, 3).ToArray(), new Project(10), new Queue<int>(new[] { 1, 1, 1, 1 }), 3.333333 };
             }
         }
 
         [Theory]
         [MemberData(nameof(MultiMetricRandomisedSelectionEstimationScenarios))]
-        public void GIVEN_multiple_input_metrics_AND_some_number_of_work_items_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_metrics(
-            IReadOnlyCollection<ThroughputPerDay> throughputs, int numberOfWorkItems, Queue<int> selectedIndices, double expectedNumberOfDaysRequired)
+        public void GIVEN_multiple_input_metrics_AND_some_project_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_metrics(
+            IReadOnlyCollection<ThroughputPerDay> throughputs, Project project, Queue<int> selectedIndices, double expectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(throughputs);
 
@@ -201,7 +194,7 @@ namespace KanbanProjectManagementApp.Tests
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(numberOfWorkItems);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(project);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
             AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
         }
