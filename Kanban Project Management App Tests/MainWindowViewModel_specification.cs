@@ -22,6 +22,7 @@ using KanbanProjectManagementApp.Domain;
 using System.Windows.Input;
 using Moq;
 using System.Collections.Specialized;
+using KanbanProjectManagementApp.Tests.TestUtilities;
 
 namespace KanbanProjectManagementApp.Tests
 {

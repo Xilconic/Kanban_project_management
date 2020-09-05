@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.TestUtilities
 {
     internal sealed class PropertyChangedEventTracker : IDisposable
     {

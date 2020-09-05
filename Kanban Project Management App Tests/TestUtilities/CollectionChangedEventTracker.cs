@@ -20,7 +20,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.TestUtilities
 {
     internal sealed class CollectionChangedEventTracker : IDisposable
     {
