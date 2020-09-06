@@ -25,10 +25,13 @@ namespace KanbanProjectManagementApp.Tests
     public class WorkEstimate_specification : IDisposable
     {
         private readonly CultureInfo originalThreadCulture;
+        private readonly Project someFinishedProject;
 
         public WorkEstimate_specification()
         {
             originalThreadCulture = CultureInfo.DefaultThreadCurrentCulture;
+
+            someFinishedProject = CreateFinishedProject();
         }
 
         public void Dispose()
@@ -47,6 +50,25 @@ namespace KanbanProjectManagementApp.Tests
             }
         }
 
+        [Fact]
+        public void GIVEN_project_null_WHEN_creating_new_instance_THEN_throw_ArgumentNullException()
+        {
+            static void call() => new WorkEstimate(null, 1.1);
+
+            Assert.Throws<ArgumentNullException>("project", call);
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidNumberOfWorkingDaysScenarios))]
+        public void WHEN_constructing_new_instance_with_project_AND_with_negative_number_of_days_THEN_throw_ArgumentOutOfRangeException(
+    double invalidNumberOfWorkingDays)
+        {
+            void call() => new WorkEstimate(someFinishedProject, invalidNumberOfWorkingDays);
+
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("estimatedNumberOfWorkingDaysRequiredToFinishWork", call);
+            Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
+        }
+
         [Theory]
         [MemberData(nameof(InvalidNumberOfWorkingDaysScenarios))]
         public void WHEN_constructing_new_instance_with_negative_number_of_days_THEN_throw_ArgumentOutOfRangeException(
@@ -62,8 +84,10 @@ namespace KanbanProjectManagementApp.Tests
         {
             get
             {
-                yield return new object[] { new WorkEstimate(1.1, false), "1.1 working day(s)" };
-                yield return new object[] { new WorkEstimate(2.2, true), "2.2 working day(s) [Indeterminate]" };
+                yield return new object[] { new WorkEstimate(CreateFinishedProject(), 1.1), "1.1 working day(s)" };
+
+                Project unfinishedProject = new Project(1);
+                yield return new object[] { new WorkEstimate(unfinishedProject, 2.2), "2.2 working day(s) [Indeterminate]" };
             }
         }
 
@@ -79,6 +103,11 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal(expectedText, text);
         }
 
-
+        private static Project CreateFinishedProject()
+        {
+            Project project = new Project(1);
+            project.CompleteWorkItem();
+            return project;
+        }
     }
 }

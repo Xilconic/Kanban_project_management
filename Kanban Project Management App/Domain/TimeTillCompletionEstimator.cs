@@ -114,7 +114,7 @@ namespace KanbanProjectManagementApp.Domain
             }
             while (roadmap.HasWorkToBeCompleted && !IsMaximumNumberOfIterationsReached(iterationNumber));
 
-            return new WorkEstimate(estimatedNumberOfWorkingDaysRequiredToFinishWork, roadmap.GetProject().HasWorkToBeCompleted);
+            return new WorkEstimate(roadmap.GetProject(), estimatedNumberOfWorkingDaysRequiredToFinishWork);
         }
 
         private double GetThroughputOfThatDay()

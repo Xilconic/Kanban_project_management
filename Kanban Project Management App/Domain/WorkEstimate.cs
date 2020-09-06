@@ -23,6 +23,14 @@ namespace KanbanProjectManagementApp.Domain
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.
         /// </exception>
+        public WorkEstimate(Project project, double estimatedNumberOfWorkingDaysRequiredToFinishWork) :
+            this(estimatedNumberOfWorkingDaysRequiredToFinishWork, GetHasWorkToBeCompleted(project))
+        {
+        }
+
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.
+        /// </exception>
         public WorkEstimate(double estimatedNumberOfWorkingDaysRequiredToFinishWork, bool isEstimateIndeterminate)
         {
             ValidateEstimatedNumberOfWorkingDaysToBeAtLeastZero(estimatedNumberOfWorkingDaysRequiredToFinishWork);
@@ -38,6 +46,16 @@ namespace KanbanProjectManagementApp.Domain
         {
             var determinacyString = IsIndeterminate ? " [Indeterminate]" : string.Empty;
             return $"{EstimatedNumberOfWorkingDaysRequired} working day(s){determinacyString}";
+        }
+
+        private static bool GetHasWorkToBeCompleted(Project project)
+        {
+            if (project is null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            return project.HasWorkToBeCompleted;
         }
 
         /// <exception cref="ArgumentOutOfRangeException">

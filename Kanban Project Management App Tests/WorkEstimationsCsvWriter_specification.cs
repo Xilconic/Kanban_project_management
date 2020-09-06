@@ -27,7 +27,7 @@ namespace KanbanProjectManagementApp.Tests
         [Fact]
         public void WHEN_constructing_writer_AND_text_writer_is_null_THEN_throw_ArgumentNullException()
         {
-            void call() => new WorkEstimationsCsvWriter(null);
+            static void call() => new WorkEstimationsCsvWriter(null);
             var actualException = Assert.Throws<ArgumentNullException>("textWriter", call);
         }
 
@@ -42,17 +42,20 @@ namespace KanbanProjectManagementApp.Tests
 "
                 };
 
+                var unfinishedProject = new Project(1);
                 yield return new object[]
                 {
-                    new[] { new WorkEstimate(1.1, true) },
+                    new[] { new WorkEstimate(unfinishedProject, 1.1) },
 @"Number of days till completion in simulation;Is indeterminate
 1.1;True
 "
                 };
 
+                var finishedProject = new Project(1);
+                finishedProject.CompleteWorkItem();
                 yield return new object[]
                 {
-                    new[] { new WorkEstimate(2.2, true), new WorkEstimate(3.3, false),  },
+                    new[] { new WorkEstimate(unfinishedProject, 2.2), new WorkEstimate(finishedProject, 3.3) },
 @"Number of days till completion in simulation;Is indeterminate
 2.2;True
 3.3;False
@@ -67,14 +70,12 @@ namespace KanbanProjectManagementApp.Tests
             IReadOnlyCollection<WorkEstimate> workEstimates,
             string expectedOutput)
         {
-            using (var stringWriter = new StringWriter())
-            {
-                var workEstimationsCsvWriter = new WorkEstimationsCsvWriter(stringWriter);
-                workEstimationsCsvWriter.Write(workEstimates);
+            using var stringWriter = new StringWriter();
+            var workEstimationsCsvWriter = new WorkEstimationsCsvWriter(stringWriter);
+            workEstimationsCsvWriter.Write(workEstimates);
 
-                var output = stringWriter.ToString();
-                Assert.Equal(expectedOutput, output);
-            }
+            var output = stringWriter.ToString();
+            Assert.Equal(expectedOutput, output);
         }
     }
 }
