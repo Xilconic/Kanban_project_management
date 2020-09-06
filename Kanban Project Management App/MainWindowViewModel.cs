@@ -29,7 +29,6 @@ namespace KanbanProjectManagementApp
     {
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
-        private int numberOfWorkItemsToBeCompleted = 10;
         private int numberOfMonteCarloSimulations = 10;
         private int maximumNumberOfIterations = 25;
 
@@ -63,19 +62,7 @@ namespace KanbanProjectManagementApp
             }
         }
 
-        public int NumberOfWorkItemsToBeCompleted
-        {
-            get => numberOfWorkItemsToBeCompleted;
-            set
-            {
-                if(value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), "Number of work items to be completed must be at least 1.");
-                }
-
-                numberOfWorkItemsToBeCompleted = value;
-            }
-        }
+        public RoadmapConfigurationViewModel RoadmapConfigurator { get; } = new RoadmapConfigurationViewModel();
 
         public int NumberOfMonteCarloSimulations
         {
@@ -269,7 +256,7 @@ namespace KanbanProjectManagementApp
                     viewModel.NumberOfMonteCarloSimulations,
                     viewModel.MaximumNumberOfIterations,
                     viewModel.InputMetrics);
-                IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.NumberOfWorkItemsToBeCompleted);
+                IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted);
 
                 viewModel.NumberOfWorkingDaysTillCompletionEstimations.Clear();
                 foreach (WorkEstimate estimate in workEstimations)

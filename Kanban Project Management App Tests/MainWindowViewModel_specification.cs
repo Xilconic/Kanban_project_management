@@ -116,7 +116,7 @@ namespace KanbanProjectManagementApp.Tests
             [Fact]
             public void THEN_the_number_of_work_items_to_be_completed_is_ten()
             {
-                Assert.Equal(10, newViewModel.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(10, newViewModel.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted);
             }
 
             [Fact]
@@ -179,7 +179,7 @@ namespace KanbanProjectManagementApp.Tests
             public void WHEN_setting_invalid_number_of_work_items_to_be_completed_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfWorkItems)
             {
-                void call() => newViewModel.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                void call() => newViewModel.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
 
                 AssertActionThrowsArgumentOutOfRangeException(call, "value", "Number of work items to be completed must be at least 1.");
             }
@@ -449,7 +449,7 @@ namespace KanbanProjectManagementApp.Tests
                 int numberOfWorkItemsToBeCompleted, ThroughputPerDay throughput, WorkEstimate expectedEstimate)
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = throughput };
-                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = numberOfWorkItemsToBeCompleted;
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = numberOfWorkItemsToBeCompleted;
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
@@ -486,7 +486,7 @@ namespace KanbanProjectManagementApp.Tests
             public void WHEN_estimating_completion_time_of_work_items_multiple_times_THEN_the_number_of_working_days_till_completion_are_updated()
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
-                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
@@ -504,7 +504,7 @@ namespace KanbanProjectManagementApp.Tests
                     () =>
                     {
                         viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
-                        viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+                        viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
 
                         viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
                     },
@@ -516,7 +516,7 @@ namespace KanbanProjectManagementApp.Tests
             public void AND_completion_time_of_work_items_estimated_AND_file_path_returned_WHEN_exporting_work_estimates_THEN_export_to_file_was_performed()
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
-                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
@@ -534,7 +534,7 @@ namespace KanbanProjectManagementApp.Tests
             public void AND_completion_time_of_work_items_estimated_AND_no_file_path_returned_WHEN_exporting_work_estimates_THEN_nothing_happens()
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
-                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
@@ -555,7 +555,7 @@ namespace KanbanProjectManagementApp.Tests
             public void AND_completion_time_of_work_items_estimated_AND_file_path_returned_AND_file_exporter_throws_FileExportException_WHEN_exporting_work_estimates_THEN_FileExportException_bubbles()
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
-                viewModelWithOneInputMetric.NumberOfWorkItemsToBeCompleted = 12;
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
