@@ -18,7 +18,7 @@ using KanbanProjectManagementApp.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Views
 {
     /// <summary>
     /// Interaction logic for RoadmapConfiguratorControl.xaml

@@ -19,7 +19,7 @@ using System.Globalization;
 using System.Windows.Data;
 using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Views
 {
     public class ThroughputPerDayValueConverter : IValueConverter
     {

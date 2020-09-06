@@ -23,7 +23,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
