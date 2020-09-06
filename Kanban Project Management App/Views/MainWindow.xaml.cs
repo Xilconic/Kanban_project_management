@@ -16,6 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.ViewModels;
+using KanbanProjectManagementApp.Views.InterfaceImplementations;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
