@@ -79,6 +79,19 @@ namespace KanbanProjectManagementApp.Tests
         }
 
         [Fact]
+        public void GIVEN_project_is_null_WHEN_estimating_time_to_completion_THEN_throw_ArgumentNullException()
+        {
+            var inputMetrics = ToInputMetrics(new[] { ToThroughput(1) });
+
+            var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
+
+            void call() => estimator.Estimate(null);
+
+            var actualException = Assert.Throws<ArgumentNullException>(call);
+            Assert.Equal("project", actualException.ParamName);
+        }
+
+        [Fact]
         public void GIVEN_no_input_metrics_WHEN_estimating_time_to_completion_THEN_throw_InvalidOperationException()
         {
             var inputMetrics = Array.Empty<InputMetric>();

@@ -43,6 +43,9 @@ namespace KanbanProjectManagementApp.Domain
             this.maximumNumberOfIterations = maximumNumberOfIterations;
         }
 
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="project"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="project"/> has no work to be completed.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> doesn't have at least 1 element.</exception>
         public WorkEstimate Estimate(Project project)
         {
             ValidateThatProjectHasWorkToBeCompleted(project);
@@ -51,8 +54,15 @@ namespace KanbanProjectManagementApp.Domain
             return EstimateWorkRequiredForFinishWorkItems(project);
         }
 
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="project"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="project"/> has no work to be completed.</exception>
         private void ValidateThatProjectHasWorkToBeCompleted(Project project)
         {
+            if (project is null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
             if (!project.HasWorkToBeCompleted)
             {
                 throw new ArgumentOutOfRangeException(nameof(project), "Project should have work to be completed.");
