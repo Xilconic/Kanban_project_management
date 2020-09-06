@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.Views;
+using KanbanProjectManagementApp.Views.ValueConverters;
 
 namespace KanbanProjectManagementApp.Tests
 {

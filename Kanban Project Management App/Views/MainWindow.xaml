@@ -22,10 +22,11 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KanbanProjectManagementApp.Views"
+        xmlns:valueconveters="clr-namespace:KanbanProjectManagementApp.Views.ValueConverters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
-        <local:ThroughputPerDayValueConverter x:Key="throughputConverter"/>
+        <valueconveters:ThroughputPerDayValueConverter x:Key="throughputConverter"/>
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
