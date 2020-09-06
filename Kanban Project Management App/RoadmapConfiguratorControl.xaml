@@ -23,14 +23,26 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:KanbanProjectManagementApp"
              mc:Ignorable="d"
-             d:DesignHeight="24" d:DesignWidth="400">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/> <!--HACK: This value is copied from MainWindow Grid to ensure visual consistency-->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+             d:DesignHeight="55" d:DesignWidth="400">
+    <TabControl>
+        <TabItem Header="Simple">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <!--HACK: This value is copied from MainWindow Grid to ensure visual consistency
+                    Had to deduct 2 from it, to compensate for the TabControl BorderBrush width of 1px
+                    -->
+                    <ColumnDefinition Width="148"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
-        <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding RoadmapConfigurator.NumberOfWorkItemsToBeCompleted, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
-    </Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
+                <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding RoadmapConfigurator.NumberOfWorkItemsToBeCompleted, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+
 </UserControl>
