@@ -69,8 +69,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             static void call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
 
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("inputMetrics", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentNullException>("inputMetrics", call);
         }
 
         [Fact]
@@ -127,8 +126,7 @@ namespace KanbanProjectManagementApp.Tests
             string expectedParamName,
             string expectedMessage)
         {
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal(expectedParamName, actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>(expectedParamName, call);
             Assert.StartsWith(expectedMessage, actualException.Message);
         }
     }

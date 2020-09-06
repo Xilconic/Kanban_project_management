@@ -45,8 +45,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             object value = null;
             void call() => ConvertToThroughputPerDay(value);
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("value", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentNullException>("value", call);
         }
 
         public static IEnumerable<object[]> NonNumberStringScenarios
@@ -87,8 +86,7 @@ namespace KanbanProjectManagementApp.Tests
             string text)
         {
             void call() => ConvertToThroughputPerDay(text);
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("numberOfWorkItemsFinished", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsFinished", call);
         }
 
         public static IEnumerable<object[]> ValidThroughputNumberAsStringScenarios

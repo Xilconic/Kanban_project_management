@@ -54,8 +54,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             void call() => new WorkEstimate(invalidNumberOfWorkingDays, default);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("estimatedNumberOfWorkingDaysRequiredToFinishWork", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("estimatedNumberOfWorkingDaysRequiredToFinishWork", call);
             Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
         }
 

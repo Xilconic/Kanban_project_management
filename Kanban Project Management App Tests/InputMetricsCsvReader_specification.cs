@@ -30,8 +30,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             static void call() => InputMetricsCsvReader.Read(null);
 
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("textReader", actualException.ParamName);
+            Assert.Throws<ArgumentNullException>("textReader", call);
         }
 
         [Fact]

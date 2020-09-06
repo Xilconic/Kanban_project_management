@@ -55,8 +55,7 @@ namespace KanbanProjectManagementApp.Tests
 
             private static void AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Action call, double invalidThroughput)
             {
-                var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-                Assert.Equal("numberOfWorkItemsFinished", actualException.ParamName);
+                var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsFinished", call);
                 Assert.Equal(invalidThroughput, actualException.ActualValue);
                 Assert.Contains("Must be in range [0.0, PositiveInfinity).", actualException.Message);
             }

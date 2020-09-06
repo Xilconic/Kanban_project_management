@@ -28,8 +28,7 @@ namespace KanbanProjectManagementApp.Tests
         public void WHEN_constructing_writer_AND_text_writer_is_null_THEN_throw_ArgumentNullException()
         {
             void call() => new WorkEstimationsCsvWriter(null);
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("textWriter", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentNullException>("textWriter", call);
         }
 
         public static IEnumerable<object[]> WriterScenarios

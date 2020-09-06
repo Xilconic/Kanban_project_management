@@ -42,7 +42,7 @@ namespace KanbanProjectManagementApp.Tests
             IReadOnlyList<InputMetric> inputMetrics = null;
 
             void call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
-            AssertCallThrowsArgumentNullException(call, "inputMetrics");
+            Assert.Throws<ArgumentNullException>("inputMetrics", call);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace KanbanProjectManagementApp.Tests
 
             void call() => new TimeTillCompletionEstimator(inputMetrics, null, someMaximumNumberOfIterations);
 
-            AssertCallThrowsArgumentNullException(call, "rng");
+            Assert.Throws<ArgumentNullException>("rng", call);
         }
 
         public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarios
@@ -74,8 +74,7 @@ namespace KanbanProjectManagementApp.Tests
 
             void call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, maximumNumberOfIterations);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("maximumNumberOfIterations", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("maximumNumberOfIterations", call);
         }
 
         [Fact]
@@ -87,8 +86,7 @@ namespace KanbanProjectManagementApp.Tests
 
             void call() => estimator.Estimate(null);
 
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("roadmap", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentNullException>("roadmap", call);
         }
 
         [Fact]
@@ -117,8 +115,7 @@ namespace KanbanProjectManagementApp.Tests
 
             void call() => estimator.Estimate(roadmap);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("roadmap", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("roadmap", call);
             Assert.StartsWith("Roadmap should have work to be completed.", actualException.Message);
         }
 
@@ -232,12 +229,6 @@ namespace KanbanProjectManagementApp.Tests
 
         private static InputMetric ConvertToInputMetric(ThroughputPerDay throughput) =>
             new InputMetric { Throughput = throughput };
-
-        private static void AssertCallThrowsArgumentNullException(Action call, string expectedParameterName)
-        {
-            var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal(expectedParameterName, actualException.ParamName);
-        }
 
         private static void AssertExpectedNumberOfWorkingDaysIsEqual(double expected, WorkEstimate actual)
         {

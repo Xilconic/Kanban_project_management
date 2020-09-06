@@ -42,8 +42,7 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object);
 
-                var actualException = Assert.Throws<ArgumentNullException>(call);
-                Assert.Equal("fileLocationToSaveGetter", actualException.ParamName);
+                Assert.Throws<ArgumentNullException>("fileLocationToSaveGetter", call);
             }
 
             [Fact]
@@ -55,8 +54,7 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object);
 
-                var actualException = Assert.Throws<ArgumentNullException>(call);
-                Assert.Equal("fileToReadGetter", actualException.ParamName);
+                Assert.Throws<ArgumentNullException>("fileToReadGetter", call);
             }
 
             [Fact]
@@ -68,8 +66,7 @@ namespace KanbanProjectManagementApp.Tests
                     null,
                     new Mock<IInputMetricsFileImporter>().Object);
 
-                var actualException = Assert.Throws<ArgumentNullException>(call);
-                Assert.Equal("workEstimationsFileExporter", actualException.ParamName);
+                Assert.Throws<ArgumentNullException>("workEstimationsFileExporter", call);
             }
 
             [Fact]
@@ -81,8 +78,7 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     null);
 
-                var actualException = Assert.Throws<ArgumentNullException>(call);
-                Assert.Equal("inputMetricsFileImporter", actualException.ParamName);
+                Assert.Throws<ArgumentNullException>("inputMetricsFileImporter", call);
             }
         }
 
@@ -231,8 +227,7 @@ namespace KanbanProjectManagementApp.Tests
                 string expectedParamName,
                 string expectedMessage)
             {
-                var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-                Assert.Equal(expectedParamName, actualException.ParamName);
+                var actualException = Assert.Throws<ArgumentOutOfRangeException>(expectedParamName, call);
                 Assert.StartsWith(expectedMessage, actualException.Message);
             }
         }

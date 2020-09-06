@@ -39,8 +39,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             void call() => new Project(invalidNumberOfWorkItemsRemaining);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("numberOfWorkItemsRemaining", actualException.ParamName);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsRemaining", call);
             Assert.StartsWith("Project should consist out of at least 1 work item.", actualException.Message);
         }
 
