@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.ViewModels
 {
     public class RoadmapConfigurationViewModel : INotifyPropertyChanged
     {

@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using KanbanProjectManagementApp.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 

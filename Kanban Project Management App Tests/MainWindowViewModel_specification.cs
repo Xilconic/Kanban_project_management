@@ -23,6 +23,7 @@ using System.Windows.Input;
 using Moq;
 using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
+using KanbanProjectManagementApp.ViewModels;
 
 namespace KanbanProjectManagementApp.Tests
 {

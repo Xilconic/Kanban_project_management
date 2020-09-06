@@ -23,7 +23,7 @@ using System.Linq;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp
+namespace KanbanProjectManagementApp.ViewModels
 {
     internal class MainWindowViewModel : INotifyPropertyChanged
     {

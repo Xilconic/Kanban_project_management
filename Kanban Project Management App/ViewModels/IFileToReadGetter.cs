@@ -14,10 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-namespace KanbanProjectManagementApp
+
+namespace KanbanProjectManagementApp.ViewModels
 {
-    public interface IFileLocationGetter
+    public interface IFileToReadGetter
     {
-        bool TryGetFileLocation(out string filePath);
+        bool TryGetFileToRead(out string filePath);
     }
 }
