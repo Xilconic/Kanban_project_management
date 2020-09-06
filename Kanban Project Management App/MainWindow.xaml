@@ -50,7 +50,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
 
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="150"/> <!--HACK: This value is copied to RoadmapConfiguratorControl Grid to ensure visual consistency-->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -82,8 +82,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             <!-- Work estimation section: -->
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="4,24,4,4" TextAlignment="Center" FontWeight="Bold">Estimation</TextBlock>
 
-            <TextBlock Grid.Column="0" Grid.Row="5" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
-            <TextBox Grid.Column="1" Grid.Row="5" Margin="4" Text="{Binding RoadmapConfigurator.NumberOfWorkItemsToBeCompleted}"/>
+            <local:RoadmapConfiguratorControl Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" RoadmapConfigurator="{Binding RoadmapConfigurator}"/>
 
             <TextBlock Grid.Column="0" Grid.Row="6" Margin="4" TextAlignment="Right">Number of simulations:</TextBlock>
             <TextBox Grid.Column="1" Grid.Row="6" Margin="4" Text="{Binding NumberOfMonteCarloSimulations}"/>
