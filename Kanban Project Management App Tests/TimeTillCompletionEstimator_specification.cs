@@ -28,7 +28,7 @@ namespace KanbanProjectManagementApp.Tests
         private readonly Mock<IRandomNumberGenerator> randomNumberGeneratorMock;
         private readonly RandomNumberGenerator realRandomNumberGenerator;
         private readonly int someMaximumNumberOfIterations = 25;
-        private readonly Project someProject = new Project(1);
+        private readonly Roadmap someRoadmap = new Roadmap(new Project(1));
 
         public TimeTillCompletionEstimator_specification()
         {
@@ -88,7 +88,7 @@ namespace KanbanProjectManagementApp.Tests
             void call() => estimator.Estimate(null);
 
             var actualException = Assert.Throws<ArgumentNullException>(call);
-            Assert.Equal("project", actualException.ParamName);
+            Assert.Equal("roadmap", actualException.ParamName);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace KanbanProjectManagementApp.Tests
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            void call() => estimator.Estimate(someProject);
+            void call() => estimator.Estimate(someRoadmap);
 
             var actualException = Assert.Throws<InvalidOperationException>(call);
             Assert.StartsWith("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
@@ -113,12 +113,13 @@ namespace KanbanProjectManagementApp.Tests
 
             var projectWithoutWorkRemaining = new Project(1);
             projectWithoutWorkRemaining.CompleteWorkItem();
+            var roadmap = new Roadmap(projectWithoutWorkRemaining);
 
-            void call() => estimator.Estimate(projectWithoutWorkRemaining);
+            void call() => estimator.Estimate(roadmap);
 
             var actualException = Assert.Throws<ArgumentOutOfRangeException>(call);
-            Assert.Equal("project", actualException.ParamName);
-            Assert.StartsWith("Project should have work to be completed.", actualException.Message);
+            Assert.Equal("roadmap", actualException.ParamName);
+            Assert.StartsWith("Roadmap should have work to be completed.", actualException.Message);
         }
 
         public static IEnumerable<object[]> SingleMetricEstimationScenarios
@@ -135,14 +136,15 @@ namespace KanbanProjectManagementApp.Tests
 
         [Theory]
         [MemberData(nameof(SingleMetricEstimationScenarios))]
-        public void GIVEN_one_input_metric_AND_some_project_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days(
+        public void GIVEN_one_input_metric_AND_one_project_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days(
             ThroughputPerDay throughput, Project project, double expectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(new[] { throughput });
+            var roadmap = new Roadmap(project);
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(project);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(roadmap);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
             AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
         }
@@ -154,7 +156,7 @@ namespace KanbanProjectManagementApp.Tests
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(someProject);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(someRoadmap);
             AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, estimatedNumberOfDaysTillCompletion);
             AssertExpectedNumberOfWorkingDaysIsIndeterminate(estimatedNumberOfDaysTillCompletion);
         }
@@ -171,14 +173,15 @@ namespace KanbanProjectManagementApp.Tests
 
         [Theory]
         [MemberData(nameof(MultiMetricEstimationScenarios))]
-        public void GIVEN_multiple_input_metrics_AND_some_project_AND_truely_random_number_generator_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
+        public void GIVEN_multiple_input_metrics_AND_one_project_AND_truely_random_number_generator_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days_in_range(
             IReadOnlyCollection<ThroughputPerDay> throughputs, Project project, double lowerBoundExpectedNumberOfDaysRequired, double upperBoundExpectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(throughputs);
+            var roadmap = new Roadmap(project);
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, realRandomNumberGenerator, someMaximumNumberOfIterations);
 
-            var estimation = estimator.Estimate(project);
+            var estimation = estimator.Estimate(roadmap);
             Assert.InRange(estimation.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
             AssertEstimateIsDeterminate(estimation);
         }
@@ -196,10 +199,11 @@ namespace KanbanProjectManagementApp.Tests
 
         [Theory]
         [MemberData(nameof(MultiMetricRandomisedSelectionEstimationScenarios))]
-        public void GIVEN_multiple_input_metrics_AND_some_project_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_metrics(
+        public void GIVEN_multiple_input_metrics_AND_one_project_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_metrics(
             IReadOnlyCollection<ThroughputPerDay> throughputs, Project project, Queue<int> selectedIndices, double expectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(throughputs);
+            var roadmap = new Roadmap(project);
 
             randomNumberGeneratorMock
                 .Setup(rng => rng.GetRandomIndex(throughputs.Count))
@@ -207,7 +211,7 @@ namespace KanbanProjectManagementApp.Tests
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(project);
+            var estimatedNumberOfDaysTillCompletion = estimator.Estimate(roadmap);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
             AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
         }

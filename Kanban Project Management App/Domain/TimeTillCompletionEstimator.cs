@@ -43,29 +43,29 @@ namespace KanbanProjectManagementApp.Domain
             this.maximumNumberOfIterations = maximumNumberOfIterations;
         }
 
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="project"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="project"/> has no work to be completed.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="roadmap"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="roadmap"/> has no work to be completed.</exception>
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> doesn't have at least 1 element.</exception>
-        public WorkEstimate Estimate(Project project)
+        public WorkEstimate Estimate(Roadmap roadmap)
         {
-            ValidateThatProjectHasWorkToBeCompleted(project);
+            ValidateThatRoadmapHasWorkToBeCompleted(roadmap);
             ValidateThatInputMetricsHaveAtLeastOneElement();
 
-            return EstimateWorkRequiredForFinishWorkItems(project);
+            return EstimateWorkRequiredForFinishWorkItems(roadmap); ;
         }
 
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="project"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="project"/> has no work to be completed.</exception>
-        private void ValidateThatProjectHasWorkToBeCompleted(Project project)
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="roadmap"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="roadmap"/> has no work to be completed.</exception>
+        private void ValidateThatRoadmapHasWorkToBeCompleted(Roadmap roadmap)
         {
-            if (project is null)
+            if (roadmap is null)
             {
-                throw new ArgumentNullException(nameof(project));
+                throw new ArgumentNullException(nameof(roadmap));
             }
 
-            if (!project.HasWorkToBeCompleted)
+            if (!roadmap.HasWorkToBeCompleted)
             {
-                throw new ArgumentOutOfRangeException(nameof(project), "Project should have work to be completed.");
+                throw new ArgumentOutOfRangeException(nameof(roadmap), "Roadmap should have work to be completed.");
             }
         }
 
@@ -88,7 +88,7 @@ namespace KanbanProjectManagementApp.Domain
             }
         }
 
-        private WorkEstimate EstimateWorkRequiredForFinishWorkItems(Project project)
+        private WorkEstimate EstimateWorkRequiredForFinishWorkItems(Roadmap roadmap)
         {
             double estimatedNumberOfWorkingDaysRequiredToFinishWork = 0.0;
             int iterationNumber = 0;
@@ -97,11 +97,12 @@ namespace KanbanProjectManagementApp.Domain
             {
                 var throughputOfThatDay = GetThroughputOfThatDay() + leftOverThroughput;
 
-                estimatedNumberOfWorkingDaysRequiredToFinishWork += GetAmountOfWorkingDayConsumed(project, throughputOfThatDay);
+                estimatedNumberOfWorkingDaysRequiredToFinishWork += GetAmountOfWorkingDayConsumed(roadmap.GetProject(), throughputOfThatDay);
                 double numberOfWorkItemsFinishedThisDay = Math.Floor(throughputOfThatDay);
 
                 for (int i = 0; i < numberOfWorkItemsFinishedThisDay; i++)
                 {
+                    var project = roadmap.GetProject();
                     if (project.HasWorkToBeCompleted)
                     {
                         project.CompleteWorkItem();
@@ -111,9 +112,9 @@ namespace KanbanProjectManagementApp.Domain
                 leftOverThroughput = throughputOfThatDay - numberOfWorkItemsFinishedThisDay;
                 iterationNumber++;
             }
-            while (project.HasWorkToBeCompleted && !IsMaximumNumberOfIterationsReached(iterationNumber));
+            while (roadmap.HasWorkToBeCompleted && !IsMaximumNumberOfIterationsReached(iterationNumber));
 
-            return new WorkEstimate(estimatedNumberOfWorkingDaysRequiredToFinishWork, project.HasWorkToBeCompleted);
+            return new WorkEstimate(estimatedNumberOfWorkingDaysRequiredToFinishWork, roadmap.GetProject().HasWorkToBeCompleted);
         }
 
         private double GetThroughputOfThatDay()
