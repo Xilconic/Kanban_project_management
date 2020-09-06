@@ -46,6 +46,12 @@ namespace KanbanProjectManagementApp.Tests.TestUtilities
             Assert.Single(recordedPropertyChangedEvents, e => e.PropertyName == propertyName);
         }
 
+        /// <exception cref="XUnitException">Thrown if any assertion failed.</exception>
+        public void AssertNoPropertyChangeNotificationsHappened()
+        {
+            Assert.Empty(recordedPropertyChangedEvents);
+        }
+
         private void RecordPropertyChangeEvent(object s, PropertyChangedEventArgs e) => recordedPropertyChangedEvents.Add(e);
     }
 }

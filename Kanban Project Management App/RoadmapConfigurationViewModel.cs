@@ -38,7 +38,19 @@ namespace KanbanProjectManagementApp
                     throw new ArgumentOutOfRangeException(nameof(value), "Number of work items to be completed must be at least 1.");
                 }
 
-                numberOfWorkItemsToBeCompleted = value;
+                if(value != numberOfWorkItemsToBeCompleted)
+                {
+                    numberOfWorkItemsToBeCompleted = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NumberOfWorkItemsToBeCompleted)));
+                }
+            }
+        }
+
+        public int NumberOfProjects
+        {
+            get
+            {
+                return 1;
             }
         }
     }
