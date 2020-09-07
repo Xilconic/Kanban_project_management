@@ -14,7 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -38,6 +43,42 @@ namespace KanbanProjectManagementApp.Views
         {
             get { return (RoadmapConfigurationViewModel)GetValue(RoadmapConfiguratorProperty); }
             set { SetValue(RoadmapConfiguratorProperty, value); }
+        }
+
+        private void EditRoadmapProjectsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var projectsRowItems = GetProjectRowItems(RoadmapConfigurator);
+            var projectedEditorWindow = new ProjectsEditorWindow(projectsRowItems);
+            var result = projectedEditorWindow.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = projectsRowItems.Sum(r => r.NumberOfWorkItemsToBeCompleted);
+            }
+        }
+
+        private ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
+        {
+            return new ObservableCollectionThatKeepsAtLeastOneItem(
+                new[] { new Project(configurationViewModel.NumberOfWorkItemsToBeCompleted) }
+                .Select(ProjectRowItem.FromDomain)
+            );
+        }
+
+        private class ObservableCollectionThatKeepsAtLeastOneItem : ObservableCollection<ProjectRowItem>
+        {
+            public ObservableCollectionThatKeepsAtLeastOneItem(IEnumerable<ProjectRowItem> elements) : base(elements) { }
+
+            protected override void RemoveItem(int index)
+            {
+                if (Count > 1)
+                {
+                    base.RemoveItem(index);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Cannot delete last project of Roadmap.");
+                }
+            }
         }
     }
 }

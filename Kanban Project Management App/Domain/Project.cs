@@ -35,7 +35,7 @@ namespace KanbanProjectManagementApp.Domain
 
         public bool HasWorkToBeCompleted => NumberOfWorkItemsRemaining > 0;
 
-        public double NumberOfWorkItemsRemaining { get; private set; }
+        public int NumberOfWorkItemsRemaining { get; private set; }
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="HasWorkToBeCompleted"/> is false.</exception>
         public void CompleteWorkItem()
