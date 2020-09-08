@@ -58,27 +58,11 @@ namespace KanbanProjectManagementApp.Views
 
         private ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
         {
-            return new ObservableCollectionThatKeepsAtLeastOneItem(
+            return new ObservableCollectionThatKeepsAtLeastOneItem<ProjectRowItem>(
                 new[] { new Project(configurationViewModel.NumberOfWorkItemsToBeCompleted) }
-                .Select(ProjectRowItem.FromDomain)
+                    .Select(ProjectRowItem.FromDomain),
+                "project of Roadmap"
             );
-        }
-
-        private class ObservableCollectionThatKeepsAtLeastOneItem : ObservableCollection<ProjectRowItem>
-        {
-            public ObservableCollectionThatKeepsAtLeastOneItem(IEnumerable<ProjectRowItem> elements) : base(elements) { }
-
-            protected override void RemoveItem(int index)
-            {
-                if (Count > 1)
-                {
-                    base.RemoveItem(index);
-                }
-                else
-                {
-                    throw new InvalidOperationException("Cannot delete last project of Roadmap.");
-                }
-            }
         }
     }
 }
