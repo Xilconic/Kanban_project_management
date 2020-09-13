@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace KanbanProjectManagementApp.ViewModels
 {
@@ -31,15 +33,79 @@ namespace KanbanProjectManagementApp.ViewModels
             this.elementDescription = elementDescription;
         }
 
+        public bool AreCollectionChangesAllowed { get; set; } = true;
+
+        /// <exception cref="ArgumentException">Thrown when <paramref name="newElements"/> is empty.</exception>
+        public void ResetElements(IEnumerable<T> newElements)
+        {
+            ThrowIfCollectionChangesAreNotAllowed();
+
+            if (!newElements.Any())
+            {
+                throw new ArgumentException(
+                    $"Requires at least one {elementDescription} when resetting.",
+                    nameof(newElements));
+            }
+
+            Items.Clear();
+            foreach (T newElement in newElements)
+            {
+                Items.Add(newElement);
+            }
+
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        protected override void InsertItem(int index, T item)
+        {
+            ThrowIfCollectionChangesAreNotAllowed();
+
+            base.InsertItem(index, item);
+        }
+
         protected override void RemoveItem(int index)
         {
+            ThrowIfCollectionChangesAreNotAllowed();
+
             if (Count > 1)
             {
                 base.RemoveItem(index);
             }
             else
             {
-                throw new InvalidOperationException($"Cannot delete last {elementDescription}.");
+                throw CreateGuardAgaintDeletingLastElementException();
+            }
+        }
+
+        protected override void MoveItem(int oldIndex, int newIndex)
+        {
+            ThrowIfCollectionChangesAreNotAllowed();
+
+            base.MoveItem(oldIndex, newIndex);
+        }
+
+        protected override void SetItem(int index, T item)
+        {
+            ThrowIfCollectionChangesAreNotAllowed();
+
+            base.SetItem(index, item);
+        }
+
+        protected override void ClearItems()
+        {
+            ThrowIfCollectionChangesAreNotAllowed();
+
+            throw CreateGuardAgaintDeletingLastElementException();
+        }
+
+        private InvalidOperationException CreateGuardAgaintDeletingLastElementException() =>
+            new InvalidOperationException($"Cannot delete last {elementDescription}.");
+
+        private void ThrowIfCollectionChangesAreNotAllowed()
+        {
+            if (!AreCollectionChangesAllowed)
+            {
+                throw new InvalidOperationException("Changes are not allowed.");
             }
         }
     }
