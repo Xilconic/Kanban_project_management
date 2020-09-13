@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests.TestUtilities
@@ -44,6 +45,11 @@ namespace KanbanProjectManagementApp.Tests.TestUtilities
         public void AssertOnlyOnePropertyChangeNotificationHappenedForName(string propertyName)
         {
             Assert.Single(recordedPropertyChangedEvents, e => e.PropertyName == propertyName);
+        }
+
+        internal void AssertNoPropertyChangeNotificationHappenedForName(string propertyName)
+        {
+            Assert.Empty(recordedPropertyChangedEvents.Where(e => e.PropertyName == propertyName));
         }
 
         /// <exception cref="XUnitException">Thrown if any assertion failed.</exception>
