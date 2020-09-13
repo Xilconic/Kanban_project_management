@@ -66,22 +66,46 @@ namespace KanbanProjectManagementApp.Views
             );
         }
 
+        private bool reEntrancyGuardWhenSwitchingToSimpleMode = false;
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var tabControl = (TabControl)e.Source;
-            ConfigurationMode configurationMode = ToConfigurationMode(tabControl.SelectedIndex);
-            switch (configurationMode)
+            if(e.OriginalSource == ModeSelectorControl)
             {
-                case ConfigurationMode.Simple:
-                    RoadmapConfigurator.SwitchToSimpleConfigurationMode();
-                    break;
-                case ConfigurationMode.Advanced:
-                    RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
-                    break;
-                default: throw new InvalidEnumArgumentException(
-                    nameof(configurationMode),
-                    (int)configurationMode,
-                    typeof(ConfigurationMode));
+                e.Handled = true;
+
+                ConfigurationMode configurationMode = ToConfigurationMode(ModeSelectorControl.SelectedIndex);
+                switch (configurationMode)
+                {
+                    case ConfigurationMode.Simple:
+                        // Note: Unexpected behavior and unsure what is causing it:
+                        // When for `SwitchToSimpleConfigurationMode` gets canceled by the user and remains in Advanced mode
+                        // the 1st attempt to select the Advanced mode tab again somehow re-triggers a second attempt to put it
+                        // in Simple mode. The guard is there to prevent serving the user the same question AGAIN but we still
+                        // need to change the SelectedIndex again...
+                        if (reEntrancyGuardWhenSwitchingToSimpleMode)
+                        {
+                            reEntrancyGuardWhenSwitchingToSimpleMode = false;
+                            ModeSelectorControl.SelectedIndex = 1;
+                        }
+                        else
+                        {
+                            RoadmapConfigurator.SwitchToSimpleConfigurationMode();
+                            if (RoadmapConfigurator.ConfigurationMode == ViewModels.ConfigurationMode.Advanced)
+                            {
+                                reEntrancyGuardWhenSwitchingToSimpleMode = true;
+                                ModeSelectorControl.SelectedIndex = 1;
+                            }
+                        }
+                        break;
+                    case ConfigurationMode.Advanced:
+                        RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
+                        break;
+                    default:
+                        throw new InvalidEnumArgumentException(
+                           nameof(configurationMode),
+                           (int)configurationMode,
+                           typeof(ConfigurationMode));
+                }
             }
         }
 

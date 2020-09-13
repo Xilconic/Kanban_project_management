@@ -45,7 +45,7 @@ namespace KanbanProjectManagementApp.Views
                 new OpenFileDialogDrivenFileToReadGetter(this),
                 new WorkEstimationsToCsvFileExporter(),
                 new InputMetricsFromCsvFileImporter(),
-                new IAskUserForConfirmationToProceedStub()
+                new IAskUserForConfirmationToProceedUsingMessageBox(this)
             );
         }
 
@@ -145,11 +145,23 @@ namespace KanbanProjectManagementApp.Views
             }
         }
 
-        private class IAskUserForConfirmationToProceedStub : IAskUserForConfirmationToProceed
+        private class IAskUserForConfirmationToProceedUsingMessageBox : IAskUserForConfirmationToProceed
         {
+            private readonly Window owner;
+
+            public IAskUserForConfirmationToProceedUsingMessageBox(Window owner)
+            {
+                this.owner = owner;
+            }
+
             public bool ConfirmToProceed(string questionToUser)
             {
-                return true;
+                var result = MessageBox.Show(owner, questionToUser, "Are you sure?", MessageBoxButton.OKCancel);
+                return result switch
+                {
+                    MessageBoxResult.OK => true,
+                    _ => false,
+                };
             }
         }
     }
