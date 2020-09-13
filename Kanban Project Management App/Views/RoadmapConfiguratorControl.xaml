@@ -24,7 +24,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
              xmlns:local="clr-namespace:KanbanProjectManagementApp.Views"
              mc:Ignorable="d"
              d:DesignHeight="80" d:DesignWidth="400">
-    <TabControl>
+    <TabControl x:Name="ModeSelectorControl">
         <TabItem Header="Simple">
             <Grid>
                 <Grid.ColumnDefinitions>

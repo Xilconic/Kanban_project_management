@@ -62,7 +62,7 @@ namespace KanbanProjectManagementApp.ViewModels
             }
         }
 
-        public RoadmapConfigurationViewModel RoadmapConfigurator { get; } = new RoadmapConfigurationViewModel();
+        public RoadmapConfigurationViewModel RoadmapConfigurator { get; }
 
         public int NumberOfMonteCarloSimulations
         {
@@ -106,12 +106,15 @@ namespace KanbanProjectManagementApp.ViewModels
             IFileLocationGetter fileLocationToSaveGetter,
             IFileToReadGetter fileToReadGetter,
             IWorkEstimationsFileExporter workEstimationsFileExporter,
-            IInputMetricsFileImporter inputMetricsFileImporter)
+            IInputMetricsFileImporter inputMetricsFileImporter,
+            IAskUserForConfirmationToProceed confirmationAsker)
         {
             ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(InputMetrics, fileToReadGetter, inputMetricsFileImporter);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
             ExportWorkEstimatesCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter, NumberOfWorkingDaysTillCompletionEstimations);
+
+            RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
         }
 
         private void UpdateMeanOfThroughput()

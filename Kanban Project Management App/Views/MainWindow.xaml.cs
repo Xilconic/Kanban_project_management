@@ -44,7 +44,8 @@ namespace KanbanProjectManagementApp.Views
                 new SaveFileDialogDrivenFileLocationGetter(this),
                 new OpenFileDialogDrivenFileToReadGetter(this),
                 new WorkEstimationsToCsvFileExporter(),
-                new InputMetricsFromCsvFileImporter()
+                new InputMetricsFromCsvFileImporter(),
+                new IAskUserForConfirmationToProceedStub()
             );
         }
 
@@ -141,6 +142,14 @@ namespace KanbanProjectManagementApp.Views
                         $"Failed to import input metrics from file '{filePath}', due to an unexpected error.",
                         ex);
                 }
+            }
+        }
+
+        private class IAskUserForConfirmationToProceedStub : IAskUserForConfirmationToProceed
+        {
+            public bool ConfirmToProceed(string questionToUser)
+            {
+                return true;
             }
         }
     }

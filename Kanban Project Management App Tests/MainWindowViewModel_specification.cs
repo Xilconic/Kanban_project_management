@@ -41,7 +41,8 @@ namespace KanbanProjectManagementApp.Tests
                     null,
                     new Mock<IFileToReadGetter>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 Assert.Throws<ArgumentNullException>("fileLocationToSaveGetter", call);
             }
@@ -53,7 +54,8 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     null,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 Assert.Throws<ArgumentNullException>("fileToReadGetter", call);
             }
@@ -65,7 +67,8 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     new Mock<IFileToReadGetter>().Object,
                     null,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 Assert.Throws<ArgumentNullException>("workEstimationsFileExporter", call);
             }
@@ -77,9 +80,23 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     new Mock<IFileToReadGetter>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    null);
+                    null,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 Assert.Throws<ArgumentNullException>("inputMetricsFileImporter", call);
+            }
+
+            [Fact]
+            public void AND_user_confirmation_asker_is_null_THEN_throw_ArgumentNullException()
+            {
+                static void call() => new MainWindowViewModel(
+                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IWorkEstimationsFileExporter>().Object,
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    null);
+
+                Assert.Throws<ArgumentNullException>("confirmationAsker", call);
             }
         }
 
@@ -93,7 +110,8 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     new Mock<IFileToReadGetter>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
             }
 
             [Fact]
@@ -245,7 +263,8 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     fileToReadGetterMock.Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    inputMetricsFileImporterMock.Object);
+                    inputMetricsFileImporterMock.Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
                 AssertInputMetricsAreEmpty(viewModel);
             }
 
@@ -343,7 +362,8 @@ namespace KanbanProjectManagementApp.Tests
                     fileLocationGetterMock.Object,
                     new Mock<IFileToReadGetter>().Object,
                     workEstimationsFileExporterMock.Object,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 metric = ThroughputToInputMetric(new ThroughputPerDay(2));
                 viewModelWithOneInputMetric.InputMetrics.Add(metric);
@@ -589,7 +609,8 @@ namespace KanbanProjectManagementApp.Tests
                     new Mock<IFileLocationGetter>().Object,
                     fileToReadGetterMock.Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
-                    new Mock<IInputMetricsFileImporter>().Object);
+                    new Mock<IInputMetricsFileImporter>().Object,
+                    new Mock<IAskUserForConfirmationToProceed>().Object);
 
                 propertyChangedEventTracker = new PropertyChangedEventTracker(viewModelWithMultipleInputMetrics);
             }

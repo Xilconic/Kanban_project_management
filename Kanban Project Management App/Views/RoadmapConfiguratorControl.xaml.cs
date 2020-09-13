@@ -17,8 +17,8 @@
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,11 +33,12 @@ namespace KanbanProjectManagementApp.Views
         public RoadmapConfiguratorControl()
         {
             InitializeComponent();
+            ModeSelectorControl.SelectionChanged += TabControl_SelectionChanged;
         }
 
         public static readonly DependencyProperty RoadmapConfiguratorProperty =
              DependencyProperty.Register(nameof(RoadmapConfigurator), typeof(RoadmapConfigurationViewModel),
-             typeof(RoadmapConfiguratorControl), new FrameworkPropertyMetadata(new RoadmapConfigurationViewModel()));
+             typeof(RoadmapConfiguratorControl), new FrameworkPropertyMetadata(new RoadmapConfigurationViewModel(new IAskUserForConfirmationToProceedStub())));
 
         public RoadmapConfigurationViewModel RoadmapConfigurator
         {
@@ -52,7 +53,7 @@ namespace KanbanProjectManagementApp.Views
             var result = projectedEditorWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = projectsRowItems.Sum(r => r.NumberOfWorkItemsToBeCompleted);
+                RoadmapConfigurator.ResetRoadmap(projectsRowItems.Select(i => i.ToDomain()));
             }
         }
 
@@ -63,6 +64,49 @@ namespace KanbanProjectManagementApp.Views
                     .Select(ProjectRowItem.FromDomain),
                 "project of Roadmap"
             );
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var tabControl = (TabControl)e.Source;
+            ConfigurationMode configurationMode = ToConfigurationMode(tabControl.SelectedIndex);
+            switch (configurationMode)
+            {
+                case ConfigurationMode.Simple:
+                    RoadmapConfigurator.SwitchToSimpleConfigurationMode();
+                    break;
+                case ConfigurationMode.Advanced:
+                    RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
+                    break;
+                default: throw new InvalidEnumArgumentException(
+                    nameof(configurationMode),
+                    (int)configurationMode,
+                    typeof(ConfigurationMode));
+            }
+        }
+
+        private ConfigurationMode ToConfigurationMode(int selectedIndex)
+        {
+            return selectedIndex switch
+            {
+                0 => ConfigurationMode.Simple,
+                1 => ConfigurationMode.Advanced,
+                _ => throw new ArgumentOutOfRangeException(nameof(selectedIndex)),
+            };
+        }
+
+        private enum ConfigurationMode
+        {
+            Simple,
+            Advanced,
+        }
+
+        private class IAskUserForConfirmationToProceedStub : IAskUserForConfirmationToProceed
+        {
+            public bool ConfirmToProceed(string questionToUser)
+            {
+                return true;
+            }
         }
     }
 }
