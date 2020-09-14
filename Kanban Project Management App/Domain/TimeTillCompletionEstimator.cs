@@ -16,6 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
@@ -46,12 +47,12 @@ namespace KanbanProjectManagementApp.Domain
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="roadmap"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="roadmap"/> has no work to be completed.</exception>
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> doesn't have at least 1 element.</exception>
-        public WorkEstimate Estimate(Roadmap roadmap)
+        public IReadOnlyList<WorkEstimate> Estimate(Roadmap roadmap)
         {
             ValidateThatRoadmapHasWorkToBeCompleted(roadmap);
             ValidateThatInputMetricsHaveAtLeastOneElement();
 
-            return EstimateWorkRequiredForFinishWorkItems(roadmap); ;
+            return EstimateWorkRequiredForFinishWorkItems(roadmap);
         }
 
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="roadmap"/> is null.</exception>
@@ -88,33 +89,62 @@ namespace KanbanProjectManagementApp.Domain
             }
         }
 
-        private WorkEstimate EstimateWorkRequiredForFinishWorkItems(Roadmap roadmap)
+        private IReadOnlyList<WorkEstimate> EstimateWorkRequiredForFinishWorkItems(Roadmap roadmap)
         {
-            double estimatedNumberOfWorkingDaysRequiredToFinishWork = 0.0;
+            var estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject = roadmap.Projects.ToDictionary(p => p, p => 0.0);
+
             int iterationNumber = 0;
             double leftOverThroughput = 0.0;
+
+            var workedProjects = new HashSet<Project>(estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject.Count);
+            var unworkedProjects = new HashSet<Project>(estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject.Keys);
             do
             {
                 var throughputOfThatDay = GetThroughputOfThatDay() + leftOverThroughput;
+                var amountOfWorkingDayConsumed = GetAmountOfWorkingDayConsumed(roadmap, throughputOfThatDay);
 
-                estimatedNumberOfWorkingDaysRequiredToFinishWork += GetAmountOfWorkingDayConsumed(roadmap.GetProject(), throughputOfThatDay);
                 double numberOfWorkItemsFinishedThisDay = Math.Floor(throughputOfThatDay);
-
                 for (int i = 0; i < numberOfWorkItemsFinishedThisDay; i++)
                 {
-                    var project = roadmap.GetProject();
-                    if (project.HasWorkToBeCompleted)
+                    var availableProjects = roadmap.GetCurrentAvailableProjectsThatHaveWorkToBeCompleted();
+                    if (availableProjects.Count == 0)
                     {
-                        project.CompleteWorkItem();
+                        // Nothing to do any more, so early exit from the loop.
+                        break;
                     }
+
+                    var projectToWorkOn = GetRandomElement(availableProjects);
+
+                    projectToWorkOn.CompleteWorkItem();
+
+                    unworkedProjects.Remove(projectToWorkOn);
+                    workedProjects.Add(projectToWorkOn);
+                }
+
+                // Projects actually worked on can finish sooner than 1 day:
+                foreach (var p in workedProjects)
+                {
+                    estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject[p] += amountOfWorkingDayConsumed;
+                }
+
+                // Projects not worked on always complete 1 day later:
+                foreach(var p in unworkedProjects)
+                {
+                    estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject[p] += 1;
                 }
 
                 leftOverThroughput = throughputOfThatDay - numberOfWorkItemsFinishedThisDay;
                 iterationNumber++;
+
+                foreach(var p in workedProjects)
+                {
+                    unworkedProjects.Add(p);
+                }
+                workedProjects.Clear();
             }
             while (roadmap.HasWorkToBeCompleted && !IsMaximumNumberOfIterationsReached(iterationNumber));
 
-            return new WorkEstimate(roadmap.GetProject(), estimatedNumberOfWorkingDaysRequiredToFinishWork);
+            return estimatedNumberOfWorkingDaysRequiredToFinishWorkPerProject.Select(kvp => new WorkEstimate(kvp.Key, kvp.Value)).ToArray();
         }
 
         private double GetThroughputOfThatDay()
@@ -124,14 +154,19 @@ namespace KanbanProjectManagementApp.Domain
 
         private InputMetric GetRandomInputMetric()
         {
-            return inputMetrics[rng.GetRandomIndex(inputMetrics.Count)];
+            return GetRandomElement(inputMetrics);
         }
 
-        private double GetAmountOfWorkingDayConsumed(Project project, double throughputOfThatDay)
+        private T GetRandomElement<T>(IReadOnlyList<T> collection)
         {
-            return throughputOfThatDay <= project.NumberOfWorkItemsRemaining ?
+            return collection[rng.GetRandomIndex(collection.Count)];
+        }
+
+        private double GetAmountOfWorkingDayConsumed(Roadmap roadmap, double throughputOfThatDay)
+        {
+            return throughputOfThatDay <= roadmap.TotalOfWorkRemaining ?
                 1.0 :
-                project.NumberOfWorkItemsRemaining / throughputOfThatDay;
+                roadmap.TotalOfWorkRemaining / throughputOfThatDay;
         }
 
         private bool IsMaximumNumberOfIterationsReached(int iterationNumber)

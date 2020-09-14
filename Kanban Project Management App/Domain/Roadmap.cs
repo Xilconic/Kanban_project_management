@@ -15,23 +15,50 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
     internal class Roadmap
     {
-        private readonly Project project;
+        private readonly Project[] projects;
 
-        public Roadmap(Project project)
+        public Roadmap(IEnumerable<Project> projects)
         {
-            this.project = project ?? throw new ArgumentNullException(nameof(project));
+            this.projects = projects?.ToArray() ?? throw new ArgumentNullException(nameof(projects));
+            ValidateProjects(this.projects);
         }
 
-        public bool HasWorkToBeCompleted => project.HasWorkToBeCompleted;
+        public IReadOnlyList<Project> Projects => projects;
 
-        public Project GetProject()
+        public bool HasWorkToBeCompleted => projects.Any(p => p.HasWorkToBeCompleted);
+
+        public double TotalOfWorkRemaining => projects.Sum(p => p.NumberOfWorkItemsRemaining);
+
+        public IReadOnlyList<Project> GetCurrentAvailableProjectsThatHaveWorkToBeCompleted()
         {
-            return project;
+            return projects.Where(p => p.HasWorkToBeCompleted).ToArray();
+        }
+
+        private static void ValidateProjects(Project[] projects)
+        {
+            if (projects.Length == 0)
+            {
+                throw new ArgumentException("Roadmap should contain at least one project.", nameof(projects));
+            }
+
+            foreach (Project p in projects)
+            {
+                if (p is null)
+                {
+                    throw new ArgumentException("Sequence of projects for roadmap cannot contain null elements.", nameof(projects));
+                }
+                else if (!p.HasWorkToBeCompleted)
+                {
+                    throw new ArgumentException("Roadmap should contain only out of projects that has work to be completed.", nameof(projects));
+                }
+            }
         }
     }
 }

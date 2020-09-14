@@ -16,6 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
@@ -48,8 +49,8 @@ namespace KanbanProjectManagementApp.Domain
             var simulationResults = new WorkEstimate[numberOfSimulations];
             for (int i = 0; i < numberOfSimulations; i++)
             {
-                var roadmap = new Roadmap(new Project(numberOfWorkItemsToComplete));
-                simulationResults[i] = simulationEstimator.Estimate(roadmap);
+                var roadmap = new Roadmap(new[] { new Project(numberOfWorkItemsToComplete) });
+                simulationResults[i] = simulationEstimator.Estimate(roadmap).First();
             }
 
             return simulationResults;

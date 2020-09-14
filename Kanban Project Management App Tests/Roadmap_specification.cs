@@ -23,12 +23,50 @@ namespace KanbanProjectManagementApp.Tests
     public class Roadmap_specification
     {
         [Fact]
-        public void GIVEN_project_null_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentNullException()
+        public void GIVEN_projects_collection_null_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentNullException()
         {
             static void call() => new Roadmap(null);
 
-            Assert.Throws<ArgumentNullException>("project", call);
+            Assert.Throws<ArgumentNullException>("projects", call);
+        }
 
+        [Fact]
+        public void GIVEN_no_projects_in_sequence_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentException()
+        {
+            var emptyProjectsCollection = Array.Empty<Project>();
+
+            void call() => new Roadmap(emptyProjectsCollection);
+
+            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            Assert.StartsWith("Roadmap should contain at least one project.", actualException.Message);
+        }
+
+        [Fact]
+        public void GIVEN_all_projects_have_no_work_to_be_done_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentException()
+        {
+            var completedProject = new Project(1);
+            completedProject.CompleteWorkItem();
+
+            void call() => new Roadmap(new[] { completedProject });
+
+            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            Assert.StartsWith("Roadmap should contain only out of projects that has work to be completed.", actualException.Message);
+        }
+
+        [Fact]
+        public void GIVEN_project_sequence_contains_null_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentException()
+        {
+            var projectSequenceWithNullElements = new[]
+            {
+                new Project(1),
+                null,
+                new Project(2),
+            };
+
+            void call() => new Roadmap(projectSequenceWithNullElements);
+
+            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            Assert.StartsWith("Sequence of projects for roadmap cannot contain null elements.", actualException.Message);
         }
     }
 }
