@@ -125,9 +125,18 @@ namespace KanbanProjectManagementApp.Tests
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
             var estimations = estimator.Estimate(roadmap);
-            var estimatedNumberOfDaysTillCompletion = Assert.Single(estimations);
-            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
-            AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
+
+            Assert.Equal(2, estimations.Count);
+
+            WorkEstimate roadmapWorkEstimate = estimations[0];
+            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
+            AssertEstimateIsDeterminate(roadmapWorkEstimate);
+
+            WorkEstimate projectWorkEstimate = estimations[1];
+            Assert.Equal("project", projectWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
+            AssertEstimateIsDeterminate(roadmapWorkEstimate);
         }
 
         [Fact]
@@ -138,9 +147,18 @@ namespace KanbanProjectManagementApp.Tests
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
             var estimations = estimator.Estimate(someRoadmap);
-            var estimatedNumberOfDaysTillCompletion = Assert.Single(estimations);
-            AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, estimatedNumberOfDaysTillCompletion);
-            AssertExpectedNumberOfWorkingDaysIsIndeterminate(estimatedNumberOfDaysTillCompletion);
+
+            Assert.Equal(2, estimations.Count);
+
+            WorkEstimate roadmapWorkEstimate = estimations[0];
+            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, roadmapWorkEstimate);
+            AssertExpectedNumberOfWorkingDaysIsIndeterminate(roadmapWorkEstimate);
+
+            WorkEstimate projectWorkEstimate = estimations[1];
+            Assert.Equal("project", projectWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, projectWorkEstimate);
+            AssertExpectedNumberOfWorkingDaysIsIndeterminate(projectWorkEstimate);
         }
 
         public static IEnumerable<object[]> MultiMetricEstimationScenarios
@@ -164,9 +182,18 @@ namespace KanbanProjectManagementApp.Tests
             var estimator = new TimeTillCompletionEstimator(inputMetrics, realRandomNumberGenerator, someMaximumNumberOfIterations);
 
             var estimations = estimator.Estimate(roadmap);
-            var estimation = Assert.Single(estimations);
-            Assert.InRange(estimation.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
-            AssertEstimateIsDeterminate(estimation);
+
+            Assert.Equal(2, estimations.Count);
+
+            WorkEstimate roadmapWorkEstimate = estimations[0];
+            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            Assert.InRange(roadmapWorkEstimate.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
+            AssertEstimateIsDeterminate(roadmapWorkEstimate);
+
+            WorkEstimate projectWorkEstimate = estimations[1];
+            Assert.Equal("project", projectWorkEstimate.Identifier);
+            Assert.InRange(projectWorkEstimate.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
+            AssertEstimateIsDeterminate(projectWorkEstimate);
         }
 
         public static IEnumerable<object[]> MultiMetricRandomisedSelectionEstimationScenarios
@@ -195,9 +222,18 @@ namespace KanbanProjectManagementApp.Tests
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
             var estimations = estimator.Estimate(roadmap);
-            var estimatedNumberOfDaysTillCompletion = Assert.Single(estimations);
-            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, estimatedNumberOfDaysTillCompletion);
-            AssertEstimateIsDeterminate(estimatedNumberOfDaysTillCompletion);
+
+            Assert.Equal(2, estimations.Count);
+
+            WorkEstimate roadmapWorkEstimate = estimations[0];
+            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
+            AssertEstimateIsDeterminate(roadmapWorkEstimate);
+
+            WorkEstimate projectWorkEstimate = estimations[1];
+            Assert.Equal("project", projectWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, projectWorkEstimate);
+            AssertEstimateIsDeterminate(projectWorkEstimate);
         }
 
         private static IEnumerable<ThroughputPerDay> ToThroughput(params double[] throughputValues)

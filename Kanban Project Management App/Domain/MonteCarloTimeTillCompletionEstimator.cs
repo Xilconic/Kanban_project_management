@@ -50,7 +50,7 @@ namespace KanbanProjectManagementApp.Domain
             for (int i = 0; i < numberOfSimulations; i++)
             {
                 var roadmap = new Roadmap(new[] { new Project(numberOfWorkItemsToComplete) });
-                simulationResults[i] = simulationEstimator.Estimate(roadmap).First();
+                simulationResults[i] = simulationEstimator.Estimate(roadmap).First(); // First estimate is the roadmap
             }
 
             return simulationResults;
