@@ -26,17 +26,35 @@ namespace KanbanProjectManagementApp.Tests
     {
         private readonly CultureInfo originalThreadCulture;
         private readonly Project someFinishedProject;
+        private readonly Roadmap someFinishedRoadmap;
 
         public WorkEstimate_specification()
         {
             originalThreadCulture = CultureInfo.DefaultThreadCurrentCulture;
 
             someFinishedProject = CreateFinishedProject();
+            someFinishedRoadmap = CreateFinishedRoadmap();
         }
 
         public void Dispose()
         {
             CultureInfo.DefaultThreadCurrentCulture = originalThreadCulture;
+        }
+
+        [Fact]
+        public void GIVEN_project_null_WHEN_creating_new_instance_THEN_throw_ArgumentNullException()
+        {
+            static void call() => new WorkEstimate((Project)null, 1.1);
+
+            Assert.Throws<ArgumentNullException>("project", call);
+        }
+
+        [Fact]
+        public void GIVEN_roadmap_null_WHEN_creating_new_instance_THEN_throw_ArgumentNullException()
+        {
+            static void call() => new WorkEstimate((Roadmap)null, 1.1);
+
+            Assert.Throws<ArgumentNullException>("roadmap", call);
         }
 
         public static IEnumerable<object[]> InvalidNumberOfWorkingDaysScenarios
@@ -50,20 +68,23 @@ namespace KanbanProjectManagementApp.Tests
             }
         }
 
-        [Fact]
-        public void GIVEN_project_null_WHEN_creating_new_instance_THEN_throw_ArgumentNullException()
+        [Theory]
+        [MemberData(nameof(InvalidNumberOfWorkingDaysScenarios))]
+        public void WHEN_constructing_new_instance_with_project_AND_with_negative_number_of_days_THEN_throw_ArgumentOutOfRangeException(
+            double invalidNumberOfWorkingDays)
         {
-            static void call() => new WorkEstimate(null, 1.1);
+            void call() => new WorkEstimate(someFinishedProject, invalidNumberOfWorkingDays);
 
-            Assert.Throws<ArgumentNullException>("project", call);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("estimatedNumberOfWorkingDaysRequiredToFinishWork", call);
+            Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
         }
 
         [Theory]
         [MemberData(nameof(InvalidNumberOfWorkingDaysScenarios))]
-        public void WHEN_constructing_new_instance_with_project_AND_with_negative_number_of_days_THEN_throw_ArgumentOutOfRangeException(
-    double invalidNumberOfWorkingDays)
+        public void WHEN_constructing_new_instance_with_roadmap_AND_with_negative_number_of_days_THEN_throw_ArgumentOutOfRangeException(
+            double invalidNumberOfWorkingDays)
         {
-            void call() => new WorkEstimate(someFinishedProject, invalidNumberOfWorkingDays);
+            void call() => new WorkEstimate(someFinishedRoadmap, invalidNumberOfWorkingDays);
 
             var actualException = Assert.Throws<ArgumentOutOfRangeException>("estimatedNumberOfWorkingDaysRequiredToFinishWork", call);
             Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
@@ -108,6 +129,14 @@ namespace KanbanProjectManagementApp.Tests
             Project project = new Project(1);
             project.CompleteWorkItem();
             return project;
+        }
+
+        private static Roadmap CreateFinishedRoadmap()
+        {
+            var project = new Project(1);
+            var roadmap = new Roadmap(new[] { project });
+            project.CompleteWorkItem();
+            return roadmap;
         }
     }
 }

@@ -31,6 +31,14 @@ namespace KanbanProjectManagementApp.Domain
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.
         /// </exception>
+        public WorkEstimate(Roadmap roadmap, double estimatedNumberOfWorkingDaysRequiredToFinishWork) :
+            this(estimatedNumberOfWorkingDaysRequiredToFinishWork, GetHasWorkToBeCompleted(roadmap))
+        {
+        }
+
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="estimatedNumberOfWorkingDaysRequiredToFinishWork"/> is not at least 0.
+        /// </exception>
         public WorkEstimate(double estimatedNumberOfWorkingDaysRequiredToFinishWork, bool isEstimateIndeterminate)
         {
             ValidateEstimatedNumberOfWorkingDaysToBeAtLeastZero(estimatedNumberOfWorkingDaysRequiredToFinishWork);
@@ -56,6 +64,16 @@ namespace KanbanProjectManagementApp.Domain
             }
 
             return project.HasWorkToBeCompleted;
+        }
+
+        private static bool GetHasWorkToBeCompleted(Roadmap roadmap)
+        {
+            if(roadmap is null)
+            {
+                throw new ArgumentNullException(nameof(roadmap));
+            }
+
+            return roadmap.HasWorkToBeCompleted;
         }
 
         /// <exception cref="ArgumentOutOfRangeException">

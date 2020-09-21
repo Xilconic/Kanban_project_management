@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
-    internal class Roadmap
+    public class Roadmap
     {
         private readonly Project[] projects;
 
