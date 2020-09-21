@@ -101,6 +101,22 @@ namespace KanbanProjectManagementApp.Tests
             Assert.StartsWith("Estimate of working days should be greater or equal to 0.", actualException.Message);
         }
 
+        [Fact]
+        public void GIVEN_work_estimate_for_project_WHEN_getting_identifier_THEN_return_project_name()
+        {
+            var workEstimate = new WorkEstimate(someFinishedProject, 1.1);
+
+            Assert.Equal("project", workEstimate.Identifier);
+        }
+
+        [Fact]
+        public void GIVEN_work_estimate_for_project_WHEN_getting_identifier_THEN_return_roadmap()
+        {
+            var workEstimate = new WorkEstimate(someFinishedRoadmap, 1.1);
+
+            Assert.Equal("roadmap", workEstimate.Identifier);
+        }
+
         public static IEnumerable<object[]> WorkEstimateToStringScenarios
         {
             get
