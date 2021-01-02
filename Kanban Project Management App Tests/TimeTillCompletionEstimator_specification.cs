@@ -129,12 +129,12 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal(2, estimations.Count);
 
             WorkEstimate roadmapWorkEstimate = estimations[0];
-            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            Assert.Equal("Roadmap", roadmapWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
             AssertEstimateIsDeterminate(roadmapWorkEstimate);
 
             WorkEstimate projectWorkEstimate = estimations[1];
-            Assert.Equal("project", projectWorkEstimate.Identifier);
+            Assert.Equal("Project", projectWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
             AssertEstimateIsDeterminate(roadmapWorkEstimate);
         }
@@ -151,12 +151,12 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal(2, estimations.Count);
 
             WorkEstimate roadmapWorkEstimate = estimations[0];
-            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            Assert.Equal("Roadmap", roadmapWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, roadmapWorkEstimate);
             AssertExpectedNumberOfWorkingDaysIsIndeterminate(roadmapWorkEstimate);
 
             WorkEstimate projectWorkEstimate = estimations[1];
-            Assert.Equal("project", projectWorkEstimate.Identifier);
+            Assert.Equal("Project", projectWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(someMaximumNumberOfIterations, projectWorkEstimate);
             AssertExpectedNumberOfWorkingDaysIsIndeterminate(projectWorkEstimate);
         }
@@ -186,12 +186,12 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal(2, estimations.Count);
 
             WorkEstimate roadmapWorkEstimate = estimations[0];
-            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            Assert.Equal("Roadmap", roadmapWorkEstimate.Identifier);
             Assert.InRange(roadmapWorkEstimate.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
             AssertEstimateIsDeterminate(roadmapWorkEstimate);
 
             WorkEstimate projectWorkEstimate = estimations[1];
-            Assert.Equal("project", projectWorkEstimate.Identifier);
+            Assert.Equal("Project", projectWorkEstimate.Identifier);
             Assert.InRange(projectWorkEstimate.EstimatedNumberOfWorkingDaysRequired, lowerBoundExpectedNumberOfDaysRequired, upperBoundExpectedNumberOfDaysRequired);
             AssertEstimateIsDeterminate(projectWorkEstimate);
         }
@@ -226,12 +226,12 @@ namespace KanbanProjectManagementApp.Tests
             Assert.Equal(2, estimations.Count);
 
             WorkEstimate roadmapWorkEstimate = estimations[0];
-            Assert.Equal("roadmap", roadmapWorkEstimate.Identifier);
+            Assert.Equal("Roadmap", roadmapWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, roadmapWorkEstimate);
             AssertEstimateIsDeterminate(roadmapWorkEstimate);
 
             WorkEstimate projectWorkEstimate = estimations[1];
-            Assert.Equal("project", projectWorkEstimate.Identifier);
+            Assert.Equal("Project", projectWorkEstimate.Identifier);
             AssertExpectedNumberOfWorkingDaysIsEqual(expectedNumberOfDaysRequired, projectWorkEstimate);
             AssertEstimateIsDeterminate(projectWorkEstimate);
         }

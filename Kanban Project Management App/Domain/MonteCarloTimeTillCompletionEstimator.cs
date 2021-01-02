@@ -40,22 +40,27 @@ namespace KanbanProjectManagementApp.Domain
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsToComplete"/> is not at least 1.</exception>
-        /// <returns>Returns a number of elements equal to the given number of simulations at construction time.</returns>
-        public IReadOnlyCollection<WorkEstimate> Estimate(int numberOfWorkItemsToComplete)
+        /// <returns>The simulation results for multiple individual projects that make up a roadmap.
+        /// The elements in the first level collection represent the simulation results: the first element
+        /// in the first level collection represents the first simulation.
+        /// The first element in the second level collection is the estimate for completing the roadmap.
+        /// All remaining elements in the second level collection represent the work estimates for the individual projects.</returns>
+        public TimeTillCompletionEstimationsCollection Estimate(IReadOnlyCollection<Project> projectsToComplete)
         {
             ValidateAtLeastOneInputMetric();
-            ValidateAtLeastOneWorkItemToComplete(numberOfWorkItemsToComplete);
+            ValidateAtLeastOneWorkItemToComplete(projectsToComplete);
 
             var simulationEstimator = new TimeTillCompletionEstimator(inputMetrics, new RandomNumberGenerator(), maximumNumberOfIterations);
-            var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, 1);
+            var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, projectsToComplete.Count);
             for (int i = 0; i < numberOfSimulations; i++)
             {
-                var roadmap = new Roadmap(new[] { new Project(numberOfWorkItemsToComplete) });
+                var copyOfProjects = projectsToComplete.Select(p => p.DeepClone());
+                var roadmap = new Roadmap(copyOfProjects);
                 var estimations = simulationEstimator.Estimate(roadmap);
                 simulationResults.AddEstimationsForSimulation(estimations[0], estimations.Skip(1).ToArray()); // First estimate is the roadmap
             }
 
-            return simulationResults.RoadmapEstimation;
+            return simulationResults;
         }
 
         private static void ValidateAtLeastOneSimulation(int numberOfSimulations)
@@ -87,6 +92,14 @@ namespace KanbanProjectManagementApp.Domain
             if (numberOfWorkItemsToComplete <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(numberOfWorkItemsToComplete), "Number of workitems to complete should be at least 1.");
+            }
+        }
+
+        private static void ValidateAtLeastOneWorkItemToComplete(IReadOnlyCollection<Project> projectsToComplete)
+        {
+            if (projectsToComplete.Sum(p => p.NumberOfWorkItemsRemaining) <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(projectsToComplete), "Number of workitems to complete should be at least 1.");
             }
         }
     }

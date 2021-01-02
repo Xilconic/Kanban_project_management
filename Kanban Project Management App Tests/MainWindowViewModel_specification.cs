@@ -521,11 +521,11 @@ namespace KanbanProjectManagementApp.Tests
                 Assert.Equal(2, viewModelWithOneInputMetric.WorkEstimationDataGridColumns.Count);
 
                 var firstColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[0];
-                Assert.Equal("Number of days till completion of roadmap in simulation", firstColumn.Header);
+                Assert.Equal("Number of days till completion of 'Roadmap' in simulation", firstColumn.Header);
                 Assert.Equal("EstimatedNumberOfWorkingDaysRequired", ((Binding)firstColumn.Binding).Path.Path);
 
                 var secondColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[1];
-                Assert.Equal("Is roadmap estimation indeterminate", secondColumn.Header);
+                Assert.Equal("Is 'Roadmap' estimation indeterminate", secondColumn.Header);
                 Assert.Equal("IsIndeterminate", ((Binding)secondColumn.Binding).Path.Path);
             }
 

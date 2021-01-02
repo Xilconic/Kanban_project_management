@@ -26,7 +26,7 @@ namespace KanbanProjectManagementApp.Domain
         public WorkEstimate(Project project, double estimatedNumberOfWorkingDaysRequiredToFinishWork) :
             this(estimatedNumberOfWorkingDaysRequiredToFinishWork, GetHasWorkToBeCompleted(project))
         {
-            Identifier = "project";
+            Identifier = project.Name;
         }
 
         /// <exception cref="ArgumentOutOfRangeException">
@@ -35,7 +35,7 @@ namespace KanbanProjectManagementApp.Domain
         public WorkEstimate(Roadmap roadmap, double estimatedNumberOfWorkingDaysRequiredToFinishWork) :
             this(estimatedNumberOfWorkingDaysRequiredToFinishWork, GetHasWorkToBeCompleted(roadmap))
         {
-            Identifier = "roadmap";
+            Identifier = "Roadmap";
         }
 
         /// <exception cref="ArgumentOutOfRangeException">

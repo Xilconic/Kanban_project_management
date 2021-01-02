@@ -106,7 +106,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             var workEstimate = new WorkEstimate(someFinishedProject, 1.1);
 
-            Assert.Equal("project", workEstimate.Identifier);
+            Assert.Equal("Project", workEstimate.Identifier);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             var workEstimate = new WorkEstimate(someFinishedRoadmap, 1.1);
 
-            Assert.Equal("roadmap", workEstimate.Identifier);
+            Assert.Equal("Roadmap", workEstimate.Identifier);
         }
 
         public static IEnumerable<object[]> WorkEstimateToStringScenarios

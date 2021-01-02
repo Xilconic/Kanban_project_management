@@ -76,30 +76,24 @@ namespace KanbanProjectManagementApp.Tests
         public void GIVEN_no_input_metrics_WHEN_estimating_THEN_throw_InvalidOperationException()
         {
             var estimator = new MonteCarloTimeTillCompletionEstimator(1, 1, inputMetrics);
+            var projects = new[] { new Project(1) };
 
-            void call() => estimator.Estimate(1);
+            void call() => estimator.Estimate(projects);
             var actualException = Assert.Throws<InvalidOperationException>(call);
             Assert.Equal("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
         }
 
-        public static IEnumerable<object[]> InvalidNumberOfWorkItemsToCompleteScenarios
-        {
-            get
-            {
-                yield return new object[] { int.MinValue };
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(InvalidNumberOfWorkItemsToCompleteScenarios))]
-        public void GIVEN_invalid_number_of_work_items_to_be_completed_WHEN_estimating_THEN_throw_ArgumentOutOfRangeException(
-            int invalidNumberOfWorkItemsToComplete)
+        [Fact]
+        public void GIVEN_single_completed_project_WHEN_estimating_THEN_throw_ArgumentOutOfRangeException()
         {
             var inputMetrics = new[] { new InputMetric { Throughput = new ThroughputPerDay(2) } };
             var estimator = new MonteCarloTimeTillCompletionEstimator(1, 1, inputMetrics);
 
-            void call() => estimator.Estimate(invalidNumberOfWorkItemsToComplete);
-            AssertActionThrowsArgumentOutOfRangeException(call, "numberOfWorkItemsToComplete", "Number of workitems to complete should be at least 1.");
+            Project project = CreateCompletedProject();
+            var projects = new[] { project };
+
+            void call() => estimator.Estimate(projects);
+            AssertActionThrowsArgumentOutOfRangeException(call, "projectsToComplete", "Number of workitems to complete should be at least 1.");
         }
 
         [Fact]
@@ -109,16 +103,45 @@ namespace KanbanProjectManagementApp.Tests
             {
                 new InputMetric { Throughput = new ThroughputPerDay(2) }
             };
-            var estimator = new MonteCarloTimeTillCompletionEstimator(2, 10, inputMetrics);
+            var numberOfSimulations = 2;
+            var estimator = new MonteCarloTimeTillCompletionEstimator(numberOfSimulations, 10, inputMetrics);
 
-            var estimations = estimator.Estimate(10);
-            Assert.Equal(2, estimations.Count);
-            Assert.Collection(estimations,
+            var projectName = "test";
+            var projects = new[] { new Project(10, projectName) };
+
+            var estimations = estimator.Estimate(projects);
+            Assert.Equal(numberOfSimulations, estimations.RoadmapEstimation.Count);
+            Assert.Collection(estimations.RoadmapEstimation,
+                estimate1 => Assert.Equal("Roadmap", estimate1.Identifier),
+                estimate2 => Assert.Equal("Roadmap", estimate2.Identifier));
+            Assert.Collection(estimations.RoadmapEstimation,
                 estimate1 => Assert.False(estimate1.IsIndeterminate),
                 estimate2 => Assert.False(estimate2.IsIndeterminate));
-            Assert.Collection(estimations,
+            Assert.Collection(estimations.RoadmapEstimation,
                 estimate1 => Assert.Equal(5.0, estimate1.EstimatedNumberOfWorkingDaysRequired),
                 estimate2 => Assert.Equal(5.0, estimate2.EstimatedNumberOfWorkingDaysRequired));
+
+            var projectEstimates = estimations[0];
+            Assert.Equal(numberOfSimulations, projectEstimates.Count);
+            Assert.Collection(projectEstimates,
+                estimate1 => Assert.Equal(projectName, estimate1.Identifier),
+                estimate2 => Assert.Equal(projectName, estimate2.Identifier));
+            Assert.Collection(projectEstimates,
+                estimate1 => Assert.False(estimate1.IsIndeterminate),
+                estimate2 => Assert.False(estimate2.IsIndeterminate));
+            Assert.Collection(projectEstimates,
+                estimate1 => Assert.Equal(5.0, estimate1.EstimatedNumberOfWorkingDaysRequired),
+                estimate2 => Assert.Equal(5.0, estimate2.EstimatedNumberOfWorkingDaysRequired));
+            Assert.Collection(projectEstimates,
+                estimate1 => Assert.Equal(5.0, estimate1.EstimatedNumberOfWorkingDaysRequired),
+                estimate2 => Assert.Equal(5.0, estimate2.EstimatedNumberOfWorkingDaysRequired));
+        }
+
+        private static Project CreateCompletedProject()
+        {
+            var project = new Project(1);
+            project.CompleteWorkItem();
+            return project;
         }
 
         private static void AssertActionThrowsArgumentOutOfRangeException(

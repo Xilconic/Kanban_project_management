@@ -270,10 +270,10 @@ namespace KanbanProjectManagementApp.ViewModels
                     viewModel.NumberOfMonteCarloSimulations,
                     viewModel.MaximumNumberOfIterations,
                     viewModel.InputMetrics);
-                IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted);
+                TimeTillCompletionEstimationsCollection workEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Projects);
 
-                UpdateNumberOfWorkingDaysTillCompletionEstimations(workEstimations);
-                UpdateWorkEstimationDataGridColumns(workEstimations);
+                UpdateNumberOfWorkingDaysTillCompletionEstimations(workEstimations.RoadmapEstimation);
+                UpdateWorkEstimationDataGridColumns(workEstimations.RoadmapEstimation);
             }
 
             private void UpdateNumberOfWorkingDaysTillCompletionEstimations(IReadOnlyCollection<WorkEstimate> workEstimations)
@@ -293,12 +293,12 @@ namespace KanbanProjectManagementApp.ViewModels
                 string identifier = workEstimations.First().Identifier;
                 viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
                 {
-                    Header = $"Number of days till completion of {identifier} in simulation",
+                    Header = $"Number of days till completion of '{identifier}' in simulation",
                     Binding = new Binding(nameof(WorkEstimate.EstimatedNumberOfWorkingDaysRequired))
                 });
                 viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
                 {
-                    Header = $"Is {identifier} estimation indeterminate",
+                    Header = $"Is '{identifier}' estimation indeterminate",
                     Binding = new Binding(nameof(WorkEstimate.IsIndeterminate))
                 });
             }
