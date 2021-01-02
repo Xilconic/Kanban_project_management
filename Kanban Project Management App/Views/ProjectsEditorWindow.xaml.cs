@@ -41,7 +41,7 @@ namespace KanbanProjectManagementApp.Views
 
     public class ProjectRowItem
     {
-        private int numberOfWorkItemsToBeCompleted;
+        private int numberOfWorkItemsToBeCompleted = 1;
 
         public string Name { get; set; } = "Project";
         public int NumberOfWorkItemsToBeCompleted
