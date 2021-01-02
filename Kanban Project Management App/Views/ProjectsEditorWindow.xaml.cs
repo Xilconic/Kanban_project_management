@@ -18,7 +18,6 @@ using KanbanProjectManagementApp.Domain;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Input;
 
 namespace KanbanProjectManagementApp.Views
 {
@@ -68,6 +67,4 @@ namespace KanbanProjectManagementApp.Views
         public Project ToDomain() =>
             new Project(NumberOfWorkItemsToBeCompleted, Name);
     }
-
-
 }
