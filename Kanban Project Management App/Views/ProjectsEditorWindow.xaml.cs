@@ -62,10 +62,11 @@ namespace KanbanProjectManagementApp.Views
             new ProjectRowItem
             {
                 NumberOfWorkItemsToBeCompleted = project.NumberOfWorkItemsRemaining,
+                Name = project.Name,
             };
 
         public Project ToDomain() =>
-            new Project(NumberOfWorkItemsToBeCompleted);
+            new Project(NumberOfWorkItemsToBeCompleted, Name);
     }
 
 
