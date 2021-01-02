@@ -48,29 +48,27 @@ namespace KanbanProjectManagementApp.Views.AttachedProperties
 
         private static void DynamicColumnsPropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            var dataGrid = source as DataGrid;
-            if (dataGrid is null)
+            if (source is DataGrid dataGrid)
+            {
+                ClearDataGridColumns(dataGrid);
+
+                UnsubscribeFromOldValue(dataGrid, e.OldValue);
+
+                if (e.NewValue is ObservableCollection<DataGridColumn> newDataGridColumns)
+                {
+                    AddColumns(dataGrid, newDataGridColumns);
+                    SubscribeToNewValue(dataGrid, newDataGridColumns);
+                }
+            }
+            else
             {
                 throw new InvalidOperationException($"Property should be attached to instance of type {nameof(DataGrid)}.");
             }
-
-            ClearDataGridColumns(dataGrid);
-
-            UnsubscribeFromOldValue(dataGrid, e.OldValue);
-
-            var newDataGridColumns = e.NewValue as ObservableCollection<DataGridColumn>;
-            if (newDataGridColumns is null)
-            {
-                return;
-            }
-
-            AddColumns(dataGrid, newDataGridColumns);
-            SubscribeToNewValue(dataGrid, newDataGridColumns);
         }
 
         private static void SubscribeToNewValue(DataGrid dataGrid, ObservableCollection<DataGridColumn> newDataGridColumns)
         {
-            NotifyCollectionChangedEventHandler eventHandler = (_, collectionChangedEvent) =>
+            void eventHandler(object _, NotifyCollectionChangedEventArgs collectionChangedEvent) =>
                 NewDataGridColumns_CollectionChanged(dataGrid, collectionChangedEvent);
             dynamicColumnCollectionChangedEventHandlersPerDataGrid[dataGrid] = eventHandler;
             newDataGridColumns.CollectionChanged += eventHandler;
@@ -78,8 +76,8 @@ namespace KanbanProjectManagementApp.Views.AttachedProperties
 
         private static void UnsubscribeFromOldValue(DataGrid dataGrid, object oldValue)
         {
-            var originalDataGridColumns = oldValue as ObservableCollection<DataGridColumn>;
-            if (originalDataGridColumns != null && dynamicColumnCollectionChangedEventHandlersPerDataGrid.TryGetValue(dataGrid, out var h))
+            if (oldValue is ObservableCollection<DataGridColumn> originalDataGridColumns &&
+                dynamicColumnCollectionChangedEventHandlersPerDataGrid.TryGetValue(dataGrid, out var h))
             {
                 originalDataGridColumns.CollectionChanged -= h;
                 dynamicColumnCollectionChangedEventHandlersPerDataGrid.Remove(dataGrid);
