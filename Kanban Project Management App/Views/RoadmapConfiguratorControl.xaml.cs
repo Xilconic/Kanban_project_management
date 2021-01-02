@@ -60,10 +60,7 @@ namespace KanbanProjectManagementApp.Views
         private ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
         {
             return new ObservableCollectionThatKeepsAtLeastOneItem<ProjectRowItem>(
-                new[] { new Project(configurationViewModel.NumberOfWorkItemsToBeCompleted) }
-                    .Select(ProjectRowItem.FromDomain),
-                "project of Roadmap"
-            );
+                configurationViewModel.Projects.Select(ProjectRowItem.FromDomain).ToArray(), "project of Roadmap");
         }
 
         private bool reEntrancyGuardWhenSwitchingToSimpleMode = false;
