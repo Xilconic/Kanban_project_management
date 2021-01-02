@@ -40,6 +40,7 @@ namespace KanbanProjectManagementApp.Domain
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsToComplete"/> is not at least 1.</exception>
+        /// <returns>Returns a number of elements equal to the given number of simulations at construction time.</returns>
         public IReadOnlyCollection<WorkEstimate> Estimate(int numberOfWorkItemsToComplete)
         {
             ValidateAtLeastOneInputMetric();

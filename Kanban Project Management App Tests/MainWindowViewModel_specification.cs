@@ -24,6 +24,8 @@ using Moq;
 using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace KanbanProjectManagementApp.Tests
 {
@@ -148,6 +150,12 @@ namespace KanbanProjectManagementApp.Tests
             public void THEN_the_maximum_number_of_iterations_is_twentyfive()
             {
                 Assert.Equal(25, newViewModel.MaximumNumberOfIterations);
+            }
+
+            [Fact]
+            public void THEN_the_work_estimation_datagrid_columns_is_empty()
+            {
+                Assert.Empty(newViewModel.WorkEstimationDataGridColumns);
             }
 
             [Fact]
@@ -501,6 +509,24 @@ namespace KanbanProjectManagementApp.Tests
                     assertEstimateIsDeterminate,
                     assertEstimateIsDeterminate
                 );
+            }
+
+            [Fact]
+            public void WHEN_estimating_completion_time_of_work_items_THEN_work_estimation_datagrid_columns_updated()
+            {
+                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 8;
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                Assert.Equal(2, viewModelWithOneInputMetric.WorkEstimationDataGridColumns.Count);
+
+                var firstColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[0];
+                Assert.Equal("Number of days till completion of roadmap in simulation", firstColumn.Header);
+                Assert.Equal("EstimatedNumberOfWorkingDaysRequired", ((Binding)firstColumn.Binding).Path.Path);
+
+                var secondColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[1];
+                Assert.Equal("Is roadmap estimation indeterminate", secondColumn.Header);
+                Assert.Equal("IsIndeterminate", ((Binding)secondColumn.Binding).Path.Path);
             }
 
             [Fact]

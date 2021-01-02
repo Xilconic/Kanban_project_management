@@ -19,7 +19,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Domain;
 
@@ -93,6 +96,14 @@ namespace KanbanProjectManagementApp.ViewModels
         }
 
         public ObservableCollection<WorkEstimate> NumberOfWorkingDaysTillCompletionEstimations { get; } = new ObservableCollection<WorkEstimate>();
+
+        /// <summary>
+        /// This property controls the <see cref="DataGrid"/> columns that is bound to <see cref="NumberOfWorkingDaysTillCompletionEstimations"/>.
+        /// This has been done to allow for dynamic creation of columns in said <see cref="DataGrid"/>.
+        /// </summary>
+        /// TODO: This property should probably be defined in a View class instead of this ViewModel, as ViewModels should typically not have dependencies
+        /// on View-style objects, like DataGridColumn.
+        public ObservableCollection<DataGridColumn> WorkEstimationDataGridColumns { get; } = new ObservableCollection<DataGridColumn>();
 
         public ICommand ImportThroughputMetricsCommand { get; }
 
@@ -261,11 +272,35 @@ namespace KanbanProjectManagementApp.ViewModels
                     viewModel.InputMetrics);
                 IReadOnlyCollection<WorkEstimate> workEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted);
 
+                UpdateNumberOfWorkingDaysTillCompletionEstimations(workEstimations);
+                UpdateWorkEstimationDataGridColumns(workEstimations);
+            }
+
+            private void UpdateNumberOfWorkingDaysTillCompletionEstimations(IReadOnlyCollection<WorkEstimate> workEstimations)
+            {
                 viewModel.NumberOfWorkingDaysTillCompletionEstimations.Clear();
                 foreach (WorkEstimate estimate in workEstimations)
                 {
                     viewModel.NumberOfWorkingDaysTillCompletionEstimations.Add(estimate);
                 }
+            }
+
+            private void UpdateWorkEstimationDataGridColumns(IReadOnlyCollection<WorkEstimate> workEstimations)
+            {
+                Debug.Assert(workEstimations.Count > 0, $"Precondition failed: Should guarantee at least 1 work estimation.");
+
+                viewModel.WorkEstimationDataGridColumns.Clear();
+                string identifier = workEstimations.First().Identifier;
+                viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
+                {
+                    Header = $"Number of days till completion of {identifier} in simulation",
+                    Binding = new Binding(nameof(WorkEstimate.EstimatedNumberOfWorkingDaysRequired))
+                });
+                viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
+                {
+                    Header = $"Is {identifier} estimation indeterminate",
+                    Binding = new Binding(nameof(WorkEstimate.IsIndeterminate))
+                });
             }
         }
 
