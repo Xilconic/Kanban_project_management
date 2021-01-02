@@ -47,14 +47,15 @@ namespace KanbanProjectManagementApp.Domain
             ValidateAtLeastOneWorkItemToComplete(numberOfWorkItemsToComplete);
 
             var simulationEstimator = new TimeTillCompletionEstimator(inputMetrics, new RandomNumberGenerator(), maximumNumberOfIterations);
-            var simulationResults = new WorkEstimate[numberOfSimulations];
+            var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, 1);
             for (int i = 0; i < numberOfSimulations; i++)
             {
                 var roadmap = new Roadmap(new[] { new Project(numberOfWorkItemsToComplete) });
-                simulationResults[i] = simulationEstimator.Estimate(roadmap).First(); // First estimate is the roadmap
+                var estimations = simulationEstimator.Estimate(roadmap);
+                simulationResults.AddEstimationsForSimulation(estimations[0], estimations.Skip(1).ToArray()); // First estimate is the roadmap
             }
 
-            return simulationResults;
+            return simulationResults.RoadmapEstimation;
         }
 
         private static void ValidateAtLeastOneSimulation(int numberOfSimulations)

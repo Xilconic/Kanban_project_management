@@ -47,6 +47,8 @@ namespace KanbanProjectManagementApp.Domain
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="roadmap"/> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="roadmap"/> has no work to be completed.</exception>
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> doesn't have at least 1 element.</exception>
+        /// <returns>A collection of work estimates. The first element is the estimate the complete the whole <paramref name="roadmap"/>.
+        /// The remaining elements are the work estimates for the projects in <paramref name="roadmap"/>.</returns>
         public IReadOnlyList<WorkEstimate> Estimate(Roadmap roadmap)
         {
             ValidateThatRoadmapHasWorkToBeCompleted(roadmap);
