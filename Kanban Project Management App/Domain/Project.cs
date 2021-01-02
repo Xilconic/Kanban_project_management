@@ -62,5 +62,7 @@ namespace KanbanProjectManagementApp.Domain
 
             NumberOfWorkItemsRemaining -= 1;
         }
+
+        public Project DeepClone() => new Project(NumberOfWorkItemsRemaining, Name);
     }
 }
