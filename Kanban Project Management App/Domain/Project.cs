@@ -20,22 +20,37 @@ namespace KanbanProjectManagementApp.Domain
 {
     public class Project
     {
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsRemaining"/> is less or equal to 0</exception>
-        public Project(int numberOfWorkItemsRemaining)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsRemaining"/> is less or equal to 0.</exception>
+        public Project(int numberOfWorkItemsRemaining) : this(numberOfWorkItemsRemaining, "Project")
         {
-            if(numberOfWorkItemsRemaining <= 0)
+        }
+
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsRemaining"/> is less or equal to 0.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> is null.</exception>
+        public Project(int numberOfWorkItemsRemaining, string name)
+        {
+            if (numberOfWorkItemsRemaining <= 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(numberOfWorkItemsRemaining),
                     "Project should consist out of at least 1 work item.");
             }
 
+            if (name is null)
+            {
+                throw new ArgumentNullException(
+                    nameof(name),
+                    "Project name should not be null.");
+            }
+
             NumberOfWorkItemsRemaining = numberOfWorkItemsRemaining;
+            Name = name;
         }
 
         public bool HasWorkToBeCompleted => NumberOfWorkItemsRemaining > 0;
 
         public int NumberOfWorkItemsRemaining { get; private set; }
+        public string Name { get; private set; }
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="HasWorkToBeCompleted"/> is false.</exception>
         public void CompleteWorkItem()

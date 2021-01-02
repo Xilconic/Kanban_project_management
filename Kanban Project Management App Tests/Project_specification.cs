@@ -44,6 +44,14 @@ namespace KanbanProjectManagementApp.Tests
         }
 
         [Fact]
+        public void GIVEN_valid_number_of_working_items_remaining_THEN_project_name_is_set()
+        {
+            var project = new Project(1);
+
+            Assert.Equal("Project", project.Name);
+        }
+
+        [Fact]
         public void GIVEN_project_that_has_all_work_completed_already_WHEN_completing_work_item_THEN_throw_InvalidOperationException()
         {
             var project = new Project(1);
@@ -53,6 +61,15 @@ namespace KanbanProjectManagementApp.Tests
 
             var actualException = Assert.Throws<InvalidOperationException>(call);
             Assert.Equal("There is no more work to be completed.", actualException.Message);
+        }
+
+        [Fact]
+        public void GIVEN_an_project_name_null_WHEN_constructing_new_instance_THEN_throw_ArgumentNullException()
+        {
+            void call() => new Project(1, null);
+
+            var actualException = Assert.Throws<ArgumentNullException>("name", call);
+            Assert.StartsWith("Project name should not be null.", actualException.Message);
         }
     }
 }
