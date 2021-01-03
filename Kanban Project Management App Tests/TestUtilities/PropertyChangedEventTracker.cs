@@ -47,6 +47,16 @@ namespace KanbanProjectManagementApp.Tests.TestUtilities
             Assert.Single(recordedPropertyChangedEvents, e => e.PropertyName == propertyName);
         }
 
+        public void AssertPropertyChangeNotificationHappenedGivenNumberOfTimesForName(int expectedNumberOfTimes, string propertyName)
+        {
+            if (expectedNumberOfTimes < 0)
+            {
+                throw new ArgumentOutOfRangeException("Value must be 0 or greater.", nameof(expectedNumberOfTimes));
+            }
+
+            Assert.Equal(expectedNumberOfTimes, recordedPropertyChangedEvents.Count(e => e.PropertyName == propertyName));
+        }
+
         internal void AssertNoPropertyChangeNotificationHappenedForName(string propertyName)
         {
             Assert.Empty(recordedPropertyChangedEvents.Where(e => e.PropertyName == propertyName));

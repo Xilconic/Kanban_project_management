@@ -110,14 +110,14 @@ namespace KanbanProjectManagementApp.Tests
             var projects = new[] { new Project(10, projectName) };
 
             var estimations = estimator.Estimate(projects);
-            Assert.Equal(numberOfSimulations, estimations.RoadmapEstimation.Count);
-            Assert.Collection(estimations.RoadmapEstimation,
+            Assert.Equal(numberOfSimulations, estimations.RoadmapEstimations.Count);
+            Assert.Collection(estimations.RoadmapEstimations,
                 estimate1 => Assert.Equal("Roadmap", estimate1.Identifier),
                 estimate2 => Assert.Equal("Roadmap", estimate2.Identifier));
-            Assert.Collection(estimations.RoadmapEstimation,
+            Assert.Collection(estimations.RoadmapEstimations,
                 estimate1 => Assert.False(estimate1.IsIndeterminate),
                 estimate2 => Assert.False(estimate2.IsIndeterminate));
-            Assert.Collection(estimations.RoadmapEstimation,
+            Assert.Collection(estimations.RoadmapEstimations,
                 estimate1 => Assert.Equal(5.0, estimate1.EstimatedNumberOfWorkingDaysRequired),
                 estimate2 => Assert.Equal(5.0, estimate2.EstimatedNumberOfWorkingDaysRequired));
 

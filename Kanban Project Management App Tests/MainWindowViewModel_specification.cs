@@ -24,8 +24,6 @@ using Moq;
 using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace KanbanProjectManagementApp.Tests
 {
@@ -33,6 +31,7 @@ namespace KanbanProjectManagementApp.Tests
     {
         private const string EstimatedMeanOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedMeanOfThroughput);
         private const string EstimatedCorrectedSampleStandardDeviationOfThroughputPropertyName = nameof(MainWindowViewModel.EstimatedCorrectedSampleStandardDeviationOfThroughput);
+        private const string NumberOfWorkingDaysTillCompletionEstimationsPropertyName = nameof(MainWindowViewModel.NumberOfWorkingDaysTillCompletionEstimations);
 
         public class WHEN_constructing_view_model
         {
@@ -153,15 +152,9 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void THEN_the_work_estimation_datagrid_columns_is_empty()
+            public void THEN_the_number_of_working_days_till_completion_estimations_is_null()
             {
-                Assert.Empty(newViewModel.WorkEstimationDataGridColumns);
-            }
-
-            [Fact]
-            public void THEN_the_number_of_working_days_till_completion_estimations_is_an_empty_collection()
-            {
-                Assert.Empty(newViewModel.NumberOfWorkingDaysTillCompletionEstimations);
+                Assert.Null(newViewModel.NumberOfWorkingDaysTillCompletionEstimations);
             }
 
             [Fact]
@@ -474,7 +467,7 @@ namespace KanbanProjectManagementApp.Tests
 
             [Theory]
             [MemberData(nameof(EstimateTimeTillCompletionScenarios))]
-            public void WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_updated(
+            public void WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_estimations_updated(
                 int numberOfWorkItemsToBeCompleted, ThroughputPerDay throughput, WorkEstimate expectedEstimate)
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = throughput };
@@ -482,8 +475,10 @@ namespace KanbanProjectManagementApp.Tests
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
+                Assert.NotNull(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations);
+                var roadmapEstimations = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations;
                 void assertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
-                Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
+                Assert.Collection(roadmapEstimations,
                     assertEstimateHasExpectedNumberOfWorkingDays,
                     assertEstimateHasExpectedNumberOfWorkingDays,
                     assertEstimateHasExpectedNumberOfWorkingDays,
@@ -497,7 +492,7 @@ namespace KanbanProjectManagementApp.Tests
                 );
 
                 static void assertEstimateIsDeterminate(WorkEstimate estimate) => Assert.False(estimate.IsIndeterminate);
-                Assert.Collection(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations,
+                Assert.Collection(roadmapEstimations,
                     assertEstimateIsDeterminate,
                     assertEstimateIsDeterminate,
                     assertEstimateIsDeterminate,
@@ -512,25 +507,7 @@ namespace KanbanProjectManagementApp.Tests
             }
 
             [Fact]
-            public void WHEN_estimating_completion_time_of_work_items_THEN_work_estimation_datagrid_columns_updated()
-            {
-                viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 8;
-
-                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
-
-                Assert.Equal(2, viewModelWithOneInputMetric.WorkEstimationDataGridColumns.Count);
-
-                var firstColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[0];
-                Assert.Equal("Number of days till completion of 'Roadmap' in simulation", firstColumn.Header);
-                Assert.Equal("EstimatedNumberOfWorkingDaysRequired", ((Binding)firstColumn.Binding).Path.Path);
-
-                var secondColumn = (DataGridTextColumn)viewModelWithOneInputMetric.WorkEstimationDataGridColumns[1];
-                Assert.Equal("Is 'Roadmap' estimation indeterminate", secondColumn.Header);
-                Assert.Equal("IsIndeterminate", ((Binding)secondColumn.Binding).Path.Path);
-            }
-
-            [Fact]
-            public void WHEN_estimating_completion_time_of_work_items_multiple_times_THEN_the_number_of_working_days_till_completion_are_updated()
+            public void WHEN_estimating_completion_time_of_work_items_multiple_times_THEN_the_number_of_working_days_till_completion_estimations_are_updated()
             {
                 viewModelWithOneInputMetric.InputMetrics[0] = new InputMetric { Throughput = new ThroughputPerDay(3) };
                 viewModelWithOneInputMetric.RoadmapConfigurator.NumberOfWorkItemsToBeCompleted = 12;
@@ -540,7 +517,10 @@ namespace KanbanProjectManagementApp.Tests
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
-                Assert.Equal(viewModelWithOneInputMetric.NumberOfMonteCarloSimulations, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.Count);
+                propertyChangedEventTracker.AssertPropertyChangeNotificationHappenedGivenNumberOfTimesForName(4, NumberOfWorkingDaysTillCompletionEstimationsPropertyName);
+                Assert.NotNull(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations);
+                var roadmapEstimations = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations;
+                Assert.Equal(viewModelWithOneInputMetric.NumberOfMonteCarloSimulations, roadmapEstimations.Count);
             }
 
             [Fact]
@@ -574,7 +554,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
 
-                workEstimationsFileExporterMock.Verify(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations));
+                workEstimationsFileExporterMock.Verify(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations));
             }
 
             [Fact]
@@ -613,7 +593,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 var expectedException = new FileExportException();
                 workEstimationsFileExporterMock
-                    .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations))
+                    .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations))
                     .Throws(expectedException);
 
                 void call() => viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);

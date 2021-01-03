@@ -15,14 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Domain;
 
@@ -30,10 +26,12 @@ namespace KanbanProjectManagementApp.ViewModels
 {
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
+        private readonly ExportWorkEstimatesToFileCommand exportWorkEstimatesToFileCommand;
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
         private int numberOfMonteCarloSimulations = 10;
         private int maximumNumberOfIterations = 25;
+        private TimeTillCompletionEstimationsCollection estimations = null;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -95,15 +93,16 @@ namespace KanbanProjectManagementApp.ViewModels
             }
         }
 
-        public ObservableCollection<WorkEstimate> NumberOfWorkingDaysTillCompletionEstimations { get; } = new ObservableCollection<WorkEstimate>();
-
-        /// <summary>
-        /// This property controls the <see cref="DataGrid"/> columns that is bound to <see cref="NumberOfWorkingDaysTillCompletionEstimations"/>.
-        /// This has been done to allow for dynamic creation of columns in said <see cref="DataGrid"/>.
-        /// </summary>
-        /// TODO: This property should probably be defined in a View class instead of this ViewModel, as ViewModels should typically not have dependencies
-        /// on View-style objects, like DataGridColumn.
-        public ObservableCollection<DataGridColumn> WorkEstimationDataGridColumns { get; } = new ObservableCollection<DataGridColumn>();
+        public TimeTillCompletionEstimationsCollection NumberOfWorkingDaysTillCompletionEstimations
+        {
+            get => estimations;
+            set
+            {
+                estimations = value;
+                exportWorkEstimatesToFileCommand.CurrentEstimations = estimations;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NumberOfWorkingDaysTillCompletionEstimations)));
+            }
+        }
 
         public ICommand ImportThroughputMetricsCommand { get; }
 
@@ -111,7 +110,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
         public ICommand EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand { get; }
 
-        public ICommand ExportWorkEstimatesCommand { get; }
+        public ICommand ExportWorkEstimatesCommand => exportWorkEstimatesToFileCommand;
 
         public MainWindowViewModel(
             IFileLocationGetter fileLocationToSaveGetter,
@@ -123,7 +122,10 @@ namespace KanbanProjectManagementApp.ViewModels
             ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(InputMetrics, fileToReadGetter, inputMetricsFileImporter);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
-            ExportWorkEstimatesCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter, NumberOfWorkingDaysTillCompletionEstimations);
+            exportWorkEstimatesToFileCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter)
+            {
+                CurrentEstimations = NumberOfWorkingDaysTillCompletionEstimations
+            };
 
             RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
         }
@@ -270,37 +272,7 @@ namespace KanbanProjectManagementApp.ViewModels
                     viewModel.NumberOfMonteCarloSimulations,
                     viewModel.MaximumNumberOfIterations,
                     viewModel.InputMetrics);
-                TimeTillCompletionEstimationsCollection workEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Projects);
-
-                UpdateNumberOfWorkingDaysTillCompletionEstimations(workEstimations.RoadmapEstimation);
-                UpdateWorkEstimationDataGridColumns(workEstimations.RoadmapEstimation);
-            }
-
-            private void UpdateNumberOfWorkingDaysTillCompletionEstimations(IReadOnlyCollection<WorkEstimate> workEstimations)
-            {
-                viewModel.NumberOfWorkingDaysTillCompletionEstimations.Clear();
-                foreach (WorkEstimate estimate in workEstimations)
-                {
-                    viewModel.NumberOfWorkingDaysTillCompletionEstimations.Add(estimate);
-                }
-            }
-
-            private void UpdateWorkEstimationDataGridColumns(IReadOnlyCollection<WorkEstimate> workEstimations)
-            {
-                Debug.Assert(workEstimations.Count > 0, $"Precondition failed: Should guarantee at least 1 work estimation.");
-
-                viewModel.WorkEstimationDataGridColumns.Clear();
-                string identifier = workEstimations.First().Identifier;
-                viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
-                {
-                    Header = $"Number of days till completion of '{identifier}' in simulation",
-                    Binding = new Binding(nameof(WorkEstimate.EstimatedNumberOfWorkingDaysRequired))
-                });
-                viewModel.WorkEstimationDataGridColumns.Add(new DataGridTextColumn
-                {
-                    Header = $"Is '{identifier}' estimation indeterminate",
-                    Binding = new Binding(nameof(WorkEstimate.IsIndeterminate))
-                });
+                viewModel.NumberOfWorkingDaysTillCompletionEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Projects);
             }
         }
 
@@ -308,19 +280,30 @@ namespace KanbanProjectManagementApp.ViewModels
         {
             private readonly IFileLocationGetter fileLocationGetter;
             private readonly IWorkEstimationsFileExporter workEstimationsFileExporter;
-            private readonly ObservableCollection<WorkEstimate> workEstimations;
             private bool canExecute = false;
+            private TimeTillCompletionEstimationsCollection currentEstimations = null;
 
             public ExportWorkEstimatesToFileCommand(
                 IFileLocationGetter fileLocationToSaveGetter,
-                IWorkEstimationsFileExporter workEstimationsFileExporter,
-                ObservableCollection<WorkEstimate> workEstimations)
+                IWorkEstimationsFileExporter workEstimationsFileExporter)
             {
                 this.fileLocationGetter = fileLocationToSaveGetter ?? throw new ArgumentNullException(nameof(fileLocationToSaveGetter));
                 this.workEstimationsFileExporter = workEstimationsFileExporter ?? throw new ArgumentNullException(nameof(workEstimationsFileExporter));
-                this.workEstimations = workEstimations ?? throw new ArgumentNullException(nameof(workEstimations));
-                canExecute = HasWorkEstimations();
-                workEstimations.CollectionChanged += InputMetrics_CollectionChanged;
+            }
+
+            public TimeTillCompletionEstimationsCollection CurrentEstimations
+            {
+                get => currentEstimations;
+                internal set
+                {
+                    currentEstimations = value;
+                    var newValue = HasWorkEstimations();
+                    if (canExecute != newValue)
+                    {
+                        canExecute = newValue;
+                        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                }
             }
 
             public event EventHandler CanExecuteChanged;
@@ -332,25 +315,15 @@ namespace KanbanProjectManagementApp.ViewModels
 
             public void Execute(object parameter)
             {
-                if(fileLocationGetter.TryGetFileLocation(out string filePath))
+                if (fileLocationGetter.TryGetFileLocation(out string filePath))
                 {
-                    workEstimationsFileExporter.Export(filePath, workEstimations);
+                    workEstimationsFileExporter.Export(filePath, currentEstimations.RoadmapEstimations);
                 }
             }
 
             private bool HasWorkEstimations()
             {
-                return workEstimations.Count > 0;
-            }
-
-            private void InputMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-            {
-                var newValue = HasWorkEstimations();
-                if (canExecute != newValue)
-                {
-                    canExecute = newValue;
-                    CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                }
+                return currentEstimations != null && currentEstimations.RoadmapEstimations.Count > 0;
             }
         }
     }

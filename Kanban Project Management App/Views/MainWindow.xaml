@@ -22,12 +22,12 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KanbanProjectManagementApp.Views"
-        xmlns:attachedProperties="clr-namespace:KanbanProjectManagementApp.Views.AttachedProperties"
         xmlns:valueconveters="clr-namespace:KanbanProjectManagementApp.Views.ValueConverters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <valueconveters:ThroughputPerDayValueConverter x:Key="throughputConverter"/>
+        <valueconveters:TimeTillCompletionEstimationsCollectionToDataTableConverter x:Key="estimationsConverter"/>
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
@@ -94,7 +94,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
 
             <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
 
-            <DataGrid Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding NumberOfWorkingDaysTillCompletionEstimations}" AutoGenerateColumns="False" attachedProperties:DataGridAttachedProperties.DynamicColumns="{Binding WorkEstimationDataGridColumns}" CanUserAddRows="False"/>
+            <DataGrid Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding NumberOfWorkingDaysTillCompletionEstimations, Converter={StaticResource estimationsConverter}}" CanUserAddRows="False" CanUserDeleteRows="False"/>
 
             <Button Grid.Row="10" Grid.Column="1" Command="{Binding ExportWorkEstimatesCommand}">Export</Button>
         </Grid>

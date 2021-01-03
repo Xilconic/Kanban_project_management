@@ -46,7 +46,7 @@ namespace KanbanProjectManagementApp.Domain
             }
         }
 
-        public IReadOnlyCollection<WorkEstimate> RoadmapEstimation => roadmapEstimatesOfEachSimulation;
+        public IReadOnlyCollection<WorkEstimate> RoadmapEstimations => roadmapEstimatesOfEachSimulation;
 
         /// <summary>
         /// Adds the time-till-completion estimates of a simulation to the collection.
