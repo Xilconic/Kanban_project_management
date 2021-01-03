@@ -25,11 +25,13 @@ using System.Windows.Data;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {
-    public class TimeTillCompletionEstimationsCollectionToDataTableConverter : IValueConverter
+    public class TimeTillCompletionEstimationsCollectionToDataTableConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is TimeTillCompletionEstimationsCollection estimations)
+            Debug.Assert(values.Length == 1, "Precondition violated: Must pass exactly 1 value into this converter.");
+
+            if (values[0] is TimeTillCompletionEstimationsCollection estimations)
             {
                 Debug.Assert(estimations.RoadmapEstimations.Count > 0, $"Invariant failed: Should guarantee at least 1 work estimation.");
 
@@ -50,15 +52,15 @@ namespace KanbanProjectManagementApp.Views.ValueConverters
             return DependencyProperty.UnsetValue;
         }
 
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void AddReadOnlyColumn(string header, DataTable dataTable)
         {
             var c = dataTable.Columns.Add(header);
             c.ReadOnly = true;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

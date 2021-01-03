@@ -17,10 +17,8 @@
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.Views.ValueConverters;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Text;
 using System.Windows;
 using Xunit;
 
@@ -38,7 +36,7 @@ namespace KanbanProjectManagementApp.Tests
         [Fact]
         public void GIVEN_non_TimeTillCompletionEstimationsCollection_WHEN_converting_THEN_always_return_UnsetValue()
         {
-            var convertedValue = converter.Convert(new object(), null, null, null);
+            var convertedValue = converter.Convert(new[] { new object() }, null, null, null);
             Assert.Equal(DependencyProperty.UnsetValue, convertedValue);
         }
 
@@ -53,7 +51,7 @@ namespace KanbanProjectManagementApp.Tests
 
             someEstimations.AddEstimationsForSimulation(new WorkEstimate(roadmap, 1.1), new[] { new WorkEstimate(project, 1.1) });
 
-            var convertedValue = converter.Convert(someEstimations, null, null, new CultureInfo("en-US"));
+            var convertedValue = converter.Convert(new[] { someEstimations }, null, null, new CultureInfo("en-US"));
 
             var dataView = Assert.IsType<DataView>(convertedValue);
             var rowView = (DataRowView)Assert.Single(dataView);
