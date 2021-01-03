@@ -25,7 +25,7 @@ using System.Windows.Data;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {
-    public class TimeTillCompletionEstimationsCollectionToDataTableConverter : IMultiValueConverter
+    public class TimeTillCompletionEstimationsCollectionToDataViewConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

@@ -24,13 +24,13 @@ using Xunit;
 
 namespace KanbanProjectManagementApp.Tests
 {
-    public class TimeTillCompletionEstimationsCollectionToDataTableConverter_specification
+    public class TimeTillCompletionEstimationsCollectionToDataViewConverter_specification
     {
-        private readonly TimeTillCompletionEstimationsCollectionToDataTableConverter converter;
+        private readonly TimeTillCompletionEstimationsCollectionToDataViewConverter converter;
 
-        public TimeTillCompletionEstimationsCollectionToDataTableConverter_specification()
+        public TimeTillCompletionEstimationsCollectionToDataViewConverter_specification()
         {
-            converter = new TimeTillCompletionEstimationsCollectionToDataTableConverter();
+            converter = new TimeTillCompletionEstimationsCollectionToDataViewConverter();
         }
 
         [Fact]
