@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Views.ValueConverters;
 using System;
 using System.Data;
@@ -36,27 +37,47 @@ namespace KanbanProjectManagementApp.Tests
         [Fact]
         public void GIVEN_non_TimeTillCompletionEstimationsCollection_WHEN_converting_THEN_always_return_UnsetValue()
         {
-            var convertedValue = converter.Convert(new[] { new object() }, null, null, null);
+            var convertedValue = converter.Convert(new[] { new object(), ConfigurationMode.Simple }, null, null, null);
             Assert.Equal(DependencyProperty.UnsetValue, convertedValue);
         }
 
         [Fact]
-        public void GIVEN_some_estimations_WHEN_converting_THEN_return_DataView()
+        public void GIVEN_non_ConfigurationModel_WHEN_converting_THEN_always_return_UnsetValue()
         {
-            var someEstimations = new TimeTillCompletionEstimationsCollection(1, 1);
+            TimeTillCompletionEstimationsCollection someEstimations = CreateSomeRoadmapEstimations();
 
-            Project project = new Project(1);
-            var roadmap = new Roadmap(new[] { project });
-            project.CompleteWorkItem();
+            var convertedValue = converter.Convert(new[] { someEstimations, new object() }, null, null, null);
+            Assert.Equal(DependencyProperty.UnsetValue, convertedValue);
+        }
 
-            someEstimations.AddEstimationsForSimulation(new WorkEstimate(roadmap, 1.1), new[] { new WorkEstimate(project, 1.1) });
+        [Fact]
+        public void GIVEN_some_estimations_and_simple_configuration_WHEN_converting_THEN_return_DataView()
+        {
+            TimeTillCompletionEstimationsCollection someEstimations = CreateSomeRoadmapEstimations();
 
-            var convertedValue = converter.Convert(new[] { someEstimations }, null, null, new CultureInfo("en-US"));
+            var convertedValue = converter.Convert(new object[] { someEstimations, ConfigurationMode.Simple }, null, null, new CultureInfo("en-US"));
 
             var dataView = Assert.IsType<DataView>(convertedValue);
             var rowView = (DataRowView)Assert.Single(dataView);
-            Assert.Equal("1.1", rowView.Row.Field<string>("Number of days till completion of 'Roadmap' in simulation"));
+            Assert.Equal("3.3", rowView.Row.Field<string>("Number of days till completion of 'Roadmap' in simulation"));
             Assert.Equal("False", rowView.Row.Field<string>("Is 'Roadmap' estimation indeterminate"));
+        }
+
+        [Fact]
+        public void GIVEN_some_estimations_and_advanced_configuration_WHEN_converting_THEN_return_DataView()
+        {
+            TimeTillCompletionEstimationsCollection someEstimations = CreateSomeRoadmapEstimations();
+
+            var convertedValue = converter.Convert(new object[] { someEstimations, ConfigurationMode.Advanced }, null, null, new CultureInfo("en-US"));
+
+            var dataView = Assert.IsType<DataView>(convertedValue);
+            var rowView = (DataRowView)Assert.Single(dataView);
+            Assert.Equal("3.3", rowView.Row.Field<string>("Number of days till completion of 'Roadmap' in simulation"));
+            Assert.Equal("False", rowView.Row.Field<string>("Is 'Roadmap' estimation indeterminate"));
+            Assert.Equal("1.1", rowView.Row.Field<string>("Number of days till completion of 'A' in simulation"));
+            Assert.Equal("False", rowView.Row.Field<string>("Is 'A' estimation indeterminate"));
+            Assert.Equal("2.2", rowView.Row.Field<string>("Number of days till completion of 'B' in simulation"));
+            Assert.Equal("False", rowView.Row.Field<string>("Is 'B' estimation indeterminate"));
         }
 
         [Fact]
@@ -64,6 +85,26 @@ namespace KanbanProjectManagementApp.Tests
         {
             void call() => converter.ConvertBack(null, null, null, null);
             Assert.Throws<NotImplementedException>(call);
+        }
+
+        private static TimeTillCompletionEstimationsCollection CreateSomeRoadmapEstimations()
+        {
+            Project projectA = new Project(1, "A");
+            Project projectB = new Project(1, "B");
+            Project[] projects = new[] { projectA, projectB };
+            var roadmap = new Roadmap(projects);
+            projectA.CompleteWorkItem();
+            projectB.CompleteWorkItem();
+
+            var someEstimations = new TimeTillCompletionEstimationsCollection(1, projects.Length);
+            someEstimations.AddEstimationsForSimulation(
+                new WorkEstimate(roadmap, 3.3),
+                new[]
+                {
+                    new WorkEstimate(projectA, 1.1),
+                    new WorkEstimate(projectB, 2.2)
+                });
+            return someEstimations;
         }
     }
 }

@@ -37,16 +37,22 @@ namespace KanbanProjectManagementApp.Domain
                 throw new ArgumentOutOfRangeException(nameof(numberOfProjectsInRoadmap), "Number of projects in roadmap should be at least 1.");
             }
 
-            roadmapEstimatesOfEachSimulation = new List<WorkEstimate>(numberOfSimulations);
+            NumberOfSimulations = numberOfSimulations;
+            NumberOfProjectsInRoadmap = numberOfProjectsInRoadmap;
 
-            projectEstimatesOfEachSimulation = new List<List<WorkEstimate>>(numberOfProjectsInRoadmap);
-            for(int i = 0; i < numberOfProjectsInRoadmap; i++)
+            roadmapEstimatesOfEachSimulation = new List<WorkEstimate>(NumberOfSimulations);
+
+            projectEstimatesOfEachSimulation = new List<List<WorkEstimate>>(NumberOfProjectsInRoadmap);
+            for(int i = 0; i < NumberOfProjectsInRoadmap; i++)
             {
-                projectEstimatesOfEachSimulation.Add(new List<WorkEstimate>(numberOfSimulations));
+                projectEstimatesOfEachSimulation.Add(new List<WorkEstimate>(NumberOfSimulations));
             }
         }
 
         public IReadOnlyCollection<WorkEstimate> RoadmapEstimations => roadmapEstimatesOfEachSimulation;
+
+        public int NumberOfProjectsInRoadmap { get; }
+        public int NumberOfSimulations { get; }
 
         /// <summary>
         /// Adds the time-till-completion estimates of a simulation to the collection.
@@ -83,6 +89,13 @@ namespace KanbanProjectManagementApp.Domain
                 currentProjectEstimatesForProject.Add(newProjectEstimateForThisSimulation);
             }
         }
+
+        /// <exception cref="ArgumentOutOfRangeException"/>
+        internal WorkEstimate GetRoadmapEstimationForSimulation(int simulationIndex) =>
+            roadmapEstimatesOfEachSimulation[simulationIndex];
+
+        internal WorkEstimate GetProjectEstimationForSimulation(int projectIndex, int simulationIndex) =>
+            projectEstimatesOfEachSimulation[projectIndex][simulationIndex];
 
         /// <summary>
         /// Gets the work estimates for a given project.

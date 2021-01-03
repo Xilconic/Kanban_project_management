@@ -98,6 +98,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <DataGrid.ItemsSource>
                     <MultiBinding Converter="{StaticResource estimationsConverter}">
                         <Binding Path="NumberOfWorkingDaysTillCompletionEstimations"/>
+                        <Binding Path="RoadmapConfigurator.ConfigurationMode" />
                     </MultiBinding>
                 </DataGrid.ItemsSource>
             </DataGrid>
