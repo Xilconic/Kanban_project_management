@@ -37,7 +37,7 @@ namespace KanbanProjectManagementApp.ViewModels
         public RoadmapConfigurationViewModel(IAskUserForConfirmationToProceed confirmationAsker)
         {
             projects = new ObservableCollectionThatKeepsAtLeastOneItem<Project>(
-                            new[] { new Project(10) },
+                            new[] { new Project(numberOfWorkItemsToBeCompleted) },
                             "project of Roadmap")
             {
                 AreCollectionChangesAllowed = false, // Simple mode does not allow any modification to the collection
@@ -91,7 +91,7 @@ namespace KanbanProjectManagementApp.ViewModels
             }
         }
 
-        // TODO: It's technically possible for other classes to change stuff to t
+        // TODO: It's technically possible for other classes to change stuff to this collection
         public ObservableCollection<Project> Projects => projects;
 
         public ConfigurationMode ConfigurationMode
