@@ -26,22 +26,19 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
         Title="ProjectsEditorWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock>The projects defined below will be combined into a single one when clicking OK.</TextBlock>
-
-        <DataGrid x:Name="ProjectsDataGrid" Grid.Row="1" ItemsSource="{Binding Projects, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProjectsEditorWindow}}}"
+        <DataGrid x:Name="ProjectsDataGrid" Grid.Row="0" ItemsSource="{Binding Projects, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProjectsEditorWindow}}}"
                   CanUserAddRows="True" CanUserDeleteRows="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Number of work items to be completed" Binding="{Binding NumberOfWorkItemsToBeCompleted, ValidatesOnExceptions=True}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Number of work items to be completed" Binding="{Binding NumberOfWorkItemsToBeCompleted, ValidatesOnExceptions=True}"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" FlowDirection="RightToLeft">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft">
             <Button Margin="4" Width="50" IsCancel="True">Cancel</Button>
             <Button Margin="4" Width="50" IsDefault="True" Click="OkButton_Click">OK</Button>
         </StackPanel>
