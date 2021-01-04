@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace KanbanProjectManagementApp.Domain
 {
-    internal class TimeTillCompletionEstimationsCollection
+    public class TimeTillCompletionEstimationsCollection
     {
         private readonly List<WorkEstimate> roadmapEstimatesOfEachSimulation;
         private readonly List<List<WorkEstimate>> projectEstimatesOfEachSimulation = new List<List<WorkEstimate>>();

@@ -287,7 +287,7 @@ namespace KanbanProjectManagementApp.ViewModels
                 IFileLocationGetter fileLocationToSaveGetter,
                 IWorkEstimationsFileExporter workEstimationsFileExporter)
             {
-                this.fileLocationGetter = fileLocationToSaveGetter ?? throw new ArgumentNullException(nameof(fileLocationToSaveGetter));
+                fileLocationGetter = fileLocationToSaveGetter ?? throw new ArgumentNullException(nameof(fileLocationToSaveGetter));
                 this.workEstimationsFileExporter = workEstimationsFileExporter ?? throw new ArgumentNullException(nameof(workEstimationsFileExporter));
             }
 
@@ -317,7 +317,7 @@ namespace KanbanProjectManagementApp.ViewModels
             {
                 if (fileLocationGetter.TryGetFileLocation(out string filePath))
                 {
-                    workEstimationsFileExporter.Export(filePath, currentEstimations.RoadmapEstimations);
+                    workEstimationsFileExporter.Export(filePath, currentEstimations);
                 }
             }
 

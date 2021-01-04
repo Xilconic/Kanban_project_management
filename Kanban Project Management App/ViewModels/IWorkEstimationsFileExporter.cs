@@ -16,14 +16,13 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
 using System;
-using System.Collections.Generic;
 
 namespace KanbanProjectManagementApp
 {
     public interface IWorkEstimationsFileExporter
     {
         /// <exception cref="FileExportException"/>
-        void Export(string filePath, IReadOnlyCollection<WorkEstimate> workEstimates);
+        void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates);
     }
 
     public class FileExportException : Exception

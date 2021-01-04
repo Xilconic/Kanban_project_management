@@ -554,7 +554,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
 
-                workEstimationsFileExporterMock.Verify(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations));
+                workEstimationsFileExporterMock.Verify(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations));
             }
 
             [Fact]
@@ -573,7 +573,7 @@ namespace KanbanProjectManagementApp.Tests
                 viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
 
                 workEstimationsFileExporterMock.Verify(
-                    e => e.Export(It.IsAny<string>(), It.IsAny<IReadOnlyCollection<WorkEstimate>>()),
+                    e => e.Export(It.IsAny<string>(), It.IsAny<TimeTillCompletionEstimationsCollection>()),
                     Times.Never
                 );
             }
@@ -593,7 +593,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 var expectedException = new FileExportException();
                 workEstimationsFileExporterMock
-                    .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations))
+                    .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations))
                     .Throws(expectedException);
 
                 void call() => viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
