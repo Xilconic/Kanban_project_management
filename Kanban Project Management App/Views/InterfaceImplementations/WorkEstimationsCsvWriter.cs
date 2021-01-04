@@ -14,9 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.Configuration.Attributes;
 using KanbanProjectManagementApp.Domain;
 using System;
 using System.Globalization;
@@ -27,40 +24,55 @@ namespace KanbanProjectManagementApp.Views.InterfaceImplementations
 {
     internal class WorkEstimationsCsvWriter
     {
+        private const string csvDelimiter = ";";
         private readonly TextWriter textWriter;
 
+        /// <remarks>
+        /// This class does not dispose of <paramref name="textWriter"/>.
+        /// </remarks>
         public WorkEstimationsCsvWriter(TextWriter textWriter)
         {
             this.textWriter = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
         }
 
+        /// <exception cref="ArgumentException">Thrown when <paramref name="workEstimates"/> doesn't contain at least 1 simulation.</exception>
         public void Write(TimeTillCompletionEstimationsCollection workEstimates)
         {
-            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            if (workEstimates.Count == 0)
             {
-                Delimiter = ";",
-                SanitizeForInjection = true,
-            };
-            using var csvWriter = new CsvWriter(textWriter, configuration, true);
-            csvWriter.WriteRecords(workEstimates.RoadmapEstimations.Select(WorkEstimateRow.FromDomain));
+                throw new ArgumentException("Work estimations should have at least 1 simulation.", nameof(workEstimates));
+            }
+
+            WriteHeader(workEstimates);
+            WriteRows(workEstimates);
         }
 
-        private class WorkEstimateRow
+        private void WriteHeader(TimeTillCompletionEstimationsCollection workEstimates)
         {
-            [Index(0)]
-            [Name("Number of days till completion in simulation")]
-            public double EstimatedNumberOfWorkingDaysRequired { get; set; }
-
-            [Index(1)]
-            [Name("Is indeterminate")]
-            public bool IsIndeterminate { get; set; }
-
-            public static WorkEstimateRow FromDomain(WorkEstimate we) =>
-                new WorkEstimateRow
-                {
-                    EstimatedNumberOfWorkingDaysRequired = we.EstimatedNumberOfWorkingDaysRequired,
-                    IsIndeterminate = we.IsIndeterminate,
-                };
+            var roadmapIdentifier = workEstimates.RoadmapEstimations.First().Identifier;
+            textWriter.Write($"Number of days till completion of '{roadmapIdentifier}' in simulation");
+            WriteCsvDelimiter();
+            textWriter.Write($"Is '{roadmapIdentifier}' estimation indeterminate");
+            textWriter.WriteLine();
         }
+
+        private void WriteRows(TimeTillCompletionEstimationsCollection workEstimates)
+        {
+            foreach (var estimate in workEstimates.RoadmapEstimations)
+            {
+                WriteRow(estimate);
+            }
+        }
+
+        private void WriteRow(WorkEstimate estimate)
+        {
+            WriteFormattableValue(estimate.EstimatedNumberOfWorkingDaysRequired);
+            WriteCsvDelimiter();
+            textWriter.Write(estimate.IsIndeterminate);
+            textWriter.WriteLine();
+        }
+
+        private void WriteCsvDelimiter() => textWriter.Write(csvDelimiter);
+        private void WriteFormattableValue(IFormattable formattable) => textWriter.Write(formattable.ToString(null, CultureInfo.InvariantCulture));
     }
 }

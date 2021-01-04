@@ -23,8 +23,22 @@ using Xunit;
 
 namespace KanbanProjectManagementApp.Tests
 {
-    public class WorkEstimationsCsvWriter_specification
+    public class WorkEstimationsCsvWriter_specification : IDisposable
     {
+        private readonly StringWriter stringWriter;
+        private readonly WorkEstimationsCsvWriter workEstimationsCsvWriter;
+
+        public WorkEstimationsCsvWriter_specification()
+        {
+            stringWriter = new StringWriter();
+            workEstimationsCsvWriter = new WorkEstimationsCsvWriter(stringWriter);
+        }
+
+        public void Dispose()
+        {
+            stringWriter.Dispose();
+        }
+
         [Fact]
         public void WHEN_constructing_writer_AND_text_writer_is_null_THEN_throw_ArgumentNullException()
         {
@@ -32,17 +46,21 @@ namespace KanbanProjectManagementApp.Tests
             var actualException = Assert.Throws<ArgumentNullException>("textWriter", call);
         }
 
+        [Fact]
+        public void GIVEN_empty_estimations_collection_WHEN_writing_THEN_throw_ArgumentException()
+        {
+            var emptyWorkEstimates = new TimeTillCompletionEstimationsCollection(1, 1);
+
+            void call() => workEstimationsCsvWriter.Write(emptyWorkEstimates);
+
+            var actualException = Assert.Throws<ArgumentException>("workEstimates", call);
+            Assert.StartsWith("Work estimations should have at least 1 simulation.", actualException.Message);
+        }
+
         public static IEnumerable<object[]> WriterScenarios
         {
             get
             {
-                yield return new object[]
-                {
-                    new TimeTillCompletionEstimationsCollection(1, 1),
-@"Number of days till completion in simulation;Is indeterminate
-"
-                };
-
                 var unfinishedProject = new Project(1);
                 var unfinishedRoadmap = new Roadmap(new[] { unfinishedProject });
                 var estimationsForUncompletedRoadmap = new TimeTillCompletionEstimationsCollection(1, 1);
@@ -52,7 +70,7 @@ namespace KanbanProjectManagementApp.Tests
                 yield return new object[]
                 {
                     estimationsForUncompletedRoadmap,
-@"Number of days till completion in simulation;Is indeterminate
+@"Number of days till completion of 'Roadmap' in simulation;Is 'Roadmap' estimation indeterminate
 1.1;True
 "
                 };
@@ -70,7 +88,7 @@ namespace KanbanProjectManagementApp.Tests
                 yield return new object[]
                 {
                     estimationsForMultipleSimulations,
-@"Number of days till completion in simulation;Is indeterminate
+@"Number of days till completion of 'Roadmap' in simulation;Is 'Roadmap' estimation indeterminate
 2.2;True
 3.3;False
 "
@@ -84,8 +102,6 @@ namespace KanbanProjectManagementApp.Tests
             TimeTillCompletionEstimationsCollection workEstimates,
             string expectedOutput)
         {
-            using var stringWriter = new StringWriter();
-            var workEstimationsCsvWriter = new WorkEstimationsCsvWriter(stringWriter);
             workEstimationsCsvWriter.Write(workEstimates);
 
             var output = stringWriter.ToString();

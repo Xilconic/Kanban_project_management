@@ -53,6 +53,7 @@ namespace KanbanProjectManagementApp.Domain
 
         public int NumberOfProjectsInRoadmap { get; }
         public int NumberOfSimulations { get; }
+        public int Count => RoadmapEstimations.Count;
 
         /// <summary>
         /// Adds the time-till-completion estimates of a simulation to the collection.
