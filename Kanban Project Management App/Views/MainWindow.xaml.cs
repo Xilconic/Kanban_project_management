@@ -116,7 +116,7 @@ namespace KanbanProjectManagementApp.Views
                 {
                     using var writer = new StreamWriter(filePath);
                     var csvWriter = new WorkEstimationsCsvWriter(writer);
-                    csvWriter.Write(workEstimates.RoadmapEstimations);
+                    csvWriter.Write(workEstimates);
                 }
                 catch (Exception ex)
                 {

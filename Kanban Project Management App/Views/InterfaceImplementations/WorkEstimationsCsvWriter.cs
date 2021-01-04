@@ -19,7 +19,6 @@ using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
 using KanbanProjectManagementApp.Domain;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -35,7 +34,7 @@ namespace KanbanProjectManagementApp.Views.InterfaceImplementations
             this.textWriter = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
         }
 
-        public void Write(IReadOnlyCollection<WorkEstimate> workEstimates)
+        public void Write(TimeTillCompletionEstimationsCollection workEstimates)
         {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -43,7 +42,7 @@ namespace KanbanProjectManagementApp.Views.InterfaceImplementations
                 SanitizeForInjection = true,
             };
             using var csvWriter = new CsvWriter(textWriter, configuration, true);
-            csvWriter.WriteRecords(workEstimates.Select(WorkEstimateRow.FromDomain));
+            csvWriter.WriteRecords(workEstimates.RoadmapEstimations.Select(WorkEstimateRow.FromDomain));
         }
 
         private class WorkEstimateRow

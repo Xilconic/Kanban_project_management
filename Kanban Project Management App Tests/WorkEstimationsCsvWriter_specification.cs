@@ -38,25 +38,38 @@ namespace KanbanProjectManagementApp.Tests
             {
                 yield return new object[]
                 {
-                    Array.Empty<WorkEstimate>(),
+                    new TimeTillCompletionEstimationsCollection(1, 1),
 @"Number of days till completion in simulation;Is indeterminate
 "
                 };
 
                 var unfinishedProject = new Project(1);
+                var unfinishedRoadmap = new Roadmap(new[] { unfinishedProject });
+                var estimationsForUncompletedRoadmap = new TimeTillCompletionEstimationsCollection(1, 1);
+                estimationsForUncompletedRoadmap.AddEstimationsForSimulation(
+                    new WorkEstimate(unfinishedRoadmap, 1.1),
+                    new[] { new WorkEstimate(unfinishedProject, 1.1) });
                 yield return new object[]
                 {
-                    new[] { new WorkEstimate(unfinishedProject, 1.1) },
+                    estimationsForUncompletedRoadmap,
 @"Number of days till completion in simulation;Is indeterminate
 1.1;True
 "
                 };
 
                 var finishedProject = new Project(1);
+                var finishedRoadmap = new Roadmap(new[] { finishedProject });
                 finishedProject.CompleteWorkItem();
+                var estimationsForMultipleSimulations = new TimeTillCompletionEstimationsCollection(2, 1);
+                estimationsForMultipleSimulations.AddEstimationsForSimulation(
+                    new WorkEstimate(unfinishedRoadmap, 2.2),
+                    new[] { new WorkEstimate(unfinishedProject, 2.2) });
+                estimationsForMultipleSimulations.AddEstimationsForSimulation(
+                    new WorkEstimate(finishedRoadmap, 3.3),
+                    new[] { new WorkEstimate(finishedProject, 3.3) });
                 yield return new object[]
                 {
-                    new[] { new WorkEstimate(unfinishedProject, 2.2), new WorkEstimate(finishedProject, 3.3) },
+                    estimationsForMultipleSimulations,
 @"Number of days till completion in simulation;Is indeterminate
 2.2;True
 3.3;False
@@ -68,7 +81,7 @@ namespace KanbanProjectManagementApp.Tests
         [Theory]
         [MemberData(nameof(WriterScenarios))]
         public void GIVEN_empty_work_estimations_WHEN_writing_THEN_only_header_has_been_written(
-            IReadOnlyCollection<WorkEstimate> workEstimates,
+            TimeTillCompletionEstimationsCollection workEstimates,
             string expectedOutput)
         {
             using var stringWriter = new StringWriter();
