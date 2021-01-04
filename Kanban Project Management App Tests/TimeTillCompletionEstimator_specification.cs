@@ -236,6 +236,58 @@ namespace KanbanProjectManagementApp.Tests
             AssertEstimateIsDeterminate(projectWorkEstimate);
         }
 
+        public static IEnumerable<object[]> MultiProjectRandomisedSelectionEstimationScenarios
+        {
+            get
+            {
+                yield return new object[] { new[] { ConvertToInputMetric(ToThroughput(2)) }, 3, 2, 1, 3 };
+                yield return new object[] { new[] { ConvertToInputMetric(ToThroughput(2.6)) }, 2.357143, 2, 1, 2.357143 };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(MultiProjectRandomisedSelectionEstimationScenarios))]
+        public void GIVEN_single_input_metrics_AND_multiple_projects_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_projects(
+            InputMetric[] inputMetrics, double expectedEstimateRoadmap, double expectedEstimateProjectA, double expectedEstimateProjectB, double expectedEstimateProjectC)
+        {
+            var projectWithOneWorkItem = new Project(1, "A");
+            var projectWithTwoWorkItems = new Project(2, "B");
+            var projectWithThreeWorkItems = new Project(3, "C");
+            var projects = new[] { projectWithOneWorkItem, projectWithTwoWorkItems, projectWithThreeWorkItems };
+            var roadmap = new Roadmap(projects);
+
+            var seletedProjectIndices = new Queue<int>(new[] { 1, 1, 2, 0, 2, 2 });
+            randomNumberGeneratorMock
+                .Setup(rng => rng.GetRandomIndex(projects.Length))
+                .Returns(seletedProjectIndices.Dequeue);
+
+            var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
+
+            var estimations = estimator.Estimate(roadmap);
+
+            Assert.Equal(4, estimations.Count);
+
+            WorkEstimate roadmapWorkEstimate = estimations[0];
+            Assert.Equal("Roadmap", roadmapWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedEstimateRoadmap, roadmapWorkEstimate);
+            AssertEstimateIsDeterminate(roadmapWorkEstimate);
+
+            WorkEstimate projectAWorkEstimate = estimations[1];
+            Assert.Equal("A", projectAWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedEstimateProjectA, projectAWorkEstimate);
+            AssertEstimateIsDeterminate(projectAWorkEstimate);
+
+            WorkEstimate projectBWorkEstimate = estimations[2];
+            Assert.Equal("B", projectBWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedEstimateProjectB, projectBWorkEstimate);
+            AssertEstimateIsDeterminate(projectBWorkEstimate);
+
+            WorkEstimate projectCWorkEstimate = estimations[3];
+            Assert.Equal("C", projectCWorkEstimate.Identifier);
+            AssertExpectedNumberOfWorkingDaysIsEqual(expectedEstimateProjectC, projectCWorkEstimate);
+            AssertEstimateIsDeterminate(projectCWorkEstimate);
+        }
+
         private static IEnumerable<ThroughputPerDay> ToThroughput(params double[] throughputValues)
         {
             foreach(var throughputValue in throughputValues)

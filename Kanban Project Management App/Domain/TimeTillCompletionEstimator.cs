@@ -142,7 +142,7 @@ namespace KanbanProjectManagementApp.Domain
                 leftOverThroughput = throughputOfThatDay - numberOfWorkItemsFinishedThisDay;
                 iterationNumber++;
 
-                foreach (var p in workedProjects)
+                foreach (var p in workedProjects.Where(p => p.HasWorkToBeCompleted))
                 {
                     unworkedProjects.Add(p);
                 }
