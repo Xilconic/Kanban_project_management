@@ -58,15 +58,30 @@ namespace KanbanProjectManagementApp.Tests
         {
             var projectSequenceWithNullElements = new[]
             {
-                new Project(1),
+                new Project(1, "A"),
                 null,
-                new Project(2),
+                new Project(2, "B"),
             };
 
             void call() => new Roadmap(projectSequenceWithNullElements);
 
             var actualException = Assert.Throws<ArgumentException>("projects", call);
             Assert.StartsWith("Sequence of projects for roadmap cannot contain null elements.", actualException.Message);
+        }
+
+        [Fact]
+        public void GIVEN_project_sequence_contains_projects_with_same_name_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentException()
+        {
+            var projectSequenceWithNullElements = new[]
+            {
+                new Project(1, "A"),
+                new Project(2, "A"),
+            };
+
+            void call() => new Roadmap(projectSequenceWithNullElements);
+
+            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            Assert.StartsWith("Sequence of projects for roadmap cannot contain multiple projects with the same name.", actualException.Message);
         }
     }
 }

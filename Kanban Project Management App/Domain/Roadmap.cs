@@ -24,22 +24,33 @@ namespace KanbanProjectManagementApp.Domain
     {
         private readonly Project[] projects;
 
+        /// <exception cref="ArgumentNullException"/>
+        /// <exception cref="ArgumentException">
+        /// Thrown when <paramref name="projects"/> either
+        /// <list type="bullet">
+        /// <item>has no elements;</item>
+        /// <item>contains a null element;</item>
+        /// <item>contains a <see cref="Project"/> without work to be done;</item>
+        /// <item>doesn't have unique names for all <see cref="Project"/> instances.</item>
+        /// </list>
+        /// </exception>
         public Roadmap(IEnumerable<Project> projects)
         {
             this.projects = projects?.ToArray() ?? throw new ArgumentNullException(nameof(projects));
             ValidateProjects(this.projects);
         }
 
+        /// <remarks>
+        /// All <see cref="Project"/> instances in this collection are guaranteed to have a unique <see cref="Project.Name"/>.
+        /// </remarks>
         public IReadOnlyList<Project> Projects => projects;
 
         public bool HasWorkToBeCompleted => projects.Any(p => p.HasWorkToBeCompleted);
 
         public double TotalOfWorkRemaining => projects.Sum(p => p.NumberOfWorkItemsRemaining);
 
-        public IReadOnlyList<Project> GetCurrentAvailableProjectsThatHaveWorkToBeCompleted()
-        {
-            return projects.Where(p => p.HasWorkToBeCompleted).ToArray();
-        }
+        public IReadOnlyList<Project> GetCurrentAvailableProjectsThatHaveWorkToBeCompleted() =>
+            projects.Where(p => p.HasWorkToBeCompleted).ToArray();
 
         private static void ValidateProjects(Project[] projects)
         {
@@ -48,6 +59,7 @@ namespace KanbanProjectManagementApp.Domain
                 throw new ArgumentException("Roadmap should contain at least one project.", nameof(projects));
             }
 
+            var projectNames = new HashSet<string>();
             foreach (Project p in projects)
             {
                 if (p is null)
@@ -57,6 +69,11 @@ namespace KanbanProjectManagementApp.Domain
                 else if (!p.HasWorkToBeCompleted)
                 {
                     throw new ArgumentException("Roadmap should contain only out of projects that has work to be completed.", nameof(projects));
+                }
+
+                if(!projectNames.Add(p.Name))
+                {
+                    throw new ArgumentException("Sequence of projects for roadmap cannot contain multiple projects with the same name.", nameof(projects));
                 }
             }
         }
