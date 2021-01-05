@@ -15,10 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.ViewModels;
+using KanbanProjectManagementApp.Views.ValueConverters;
 using System;
+using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 
 namespace KanbanProjectManagementApp.Views.InterfaceImplementations
 {
@@ -43,36 +45,48 @@ namespace KanbanProjectManagementApp.Views.InterfaceImplementations
                 throw new ArgumentException("Work estimations should have at least 1 simulation.", nameof(workEstimates));
             }
 
-            WriteHeader(workEstimates);
-            WriteRows(workEstimates);
+            DataView dataView = GetDataViewOfData(workEstimates);
+
+            WriteHeader(dataView.Table.Columns);
+            WriteRows(dataView);
         }
 
-        private void WriteHeader(TimeTillCompletionEstimationsCollection workEstimates)
+        /// <remarks>This code ensures the data exported is consistently shaped with the MainWindow's simulation results DataGrid.</remarks>
+        private static DataView GetDataViewOfData(TimeTillCompletionEstimationsCollection workEstimates)
         {
-            var roadmapIdentifier = workEstimates.RoadmapEstimations.First().Identifier;
-            textWriter.Write($"Number of days till completion of '{roadmapIdentifier}' in simulation");
-            WriteCsvDelimiter();
-            textWriter.Write($"Is '{roadmapIdentifier}' estimation indeterminate");
+            var converter = new TimeTillCompletionEstimationsCollectionToDataViewConverter();
+            return (DataView)converter.Convert(new object[] { workEstimates, ConfigurationMode.Simple }, null, null, CultureInfo.InvariantCulture); ;
+        }
+
+        private void WriteHeader(DataColumnCollection columns)
+        {
+            for(int i = 0; i < columns.Count; i++)
+            {
+                textWriter.Write(columns[i].ColumnName);
+                if (i < columns.Count-1)
+                {
+                    WriteCsvDelimiter();
+                }
+            }
             textWriter.WriteLine();
         }
 
-        private void WriteRows(TimeTillCompletionEstimationsCollection workEstimates)
+        private void WriteRows(DataView dataView)
         {
-            foreach (var estimate in workEstimates.RoadmapEstimations)
+            foreach (DataRowView row in dataView)
             {
-                WriteRow(estimate);
+                for (int i = 0; i < row.Row.ItemArray.Length; i++)
+                {
+                    textWriter.Write(row.Row.ItemArray[i]);
+                    if (i < row.Row.ItemArray.Length - 1)
+                    {
+                        WriteCsvDelimiter();
+                    }
+                }
+                textWriter.WriteLine();
             }
         }
 
-        private void WriteRow(WorkEstimate estimate)
-        {
-            WriteFormattableValue(estimate.EstimatedNumberOfWorkingDaysRequired);
-            WriteCsvDelimiter();
-            textWriter.Write(estimate.IsIndeterminate);
-            textWriter.WriteLine();
-        }
-
         private void WriteCsvDelimiter() => textWriter.Write(csvDelimiter);
-        private void WriteFormattableValue(IFormattable formattable) => textWriter.Write(formattable.ToString(null, CultureInfo.InvariantCulture));
     }
 }
