@@ -110,13 +110,13 @@ namespace KanbanProjectManagementApp.Views
 
         private class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
         {
-            public void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates)
+            public void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
             {
                 try
                 {
                     using var writer = new StreamWriter(filePath);
                     var csvWriter = new WorkEstimationsCsvWriter(writer);
-                    csvWriter.Write(workEstimates, ConfigurationMode.Simple);
+                    csvWriter.Write(workEstimates, configurationMode);
                 }
                 catch (Exception ex)
                 {

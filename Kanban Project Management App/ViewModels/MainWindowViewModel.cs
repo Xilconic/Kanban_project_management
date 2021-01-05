@@ -119,15 +119,15 @@ namespace KanbanProjectManagementApp.ViewModels
             IInputMetricsFileImporter inputMetricsFileImporter,
             IAskUserForConfirmationToProceed confirmationAsker)
         {
+            RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
+
             ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(InputMetrics, fileToReadGetter, inputMetricsFileImporter);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
-            exportWorkEstimatesToFileCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter)
+            exportWorkEstimatesToFileCommand = new ExportWorkEstimatesToFileCommand(fileLocationToSaveGetter, workEstimationsFileExporter, RoadmapConfigurator)
             {
                 CurrentEstimations = NumberOfWorkingDaysTillCompletionEstimations
             };
-
-            RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
         }
 
         private void UpdateMeanOfThroughput()
@@ -280,15 +280,18 @@ namespace KanbanProjectManagementApp.ViewModels
         {
             private readonly IFileLocationGetter fileLocationGetter;
             private readonly IWorkEstimationsFileExporter workEstimationsFileExporter;
+            private readonly RoadmapConfigurationViewModel roadmapConfigurationViewModel;
             private bool canExecute = false;
             private TimeTillCompletionEstimationsCollection currentEstimations = null;
 
             public ExportWorkEstimatesToFileCommand(
                 IFileLocationGetter fileLocationToSaveGetter,
-                IWorkEstimationsFileExporter workEstimationsFileExporter)
+                IWorkEstimationsFileExporter workEstimationsFileExporter,
+                RoadmapConfigurationViewModel roadmapConfigurationViewModel)
             {
                 fileLocationGetter = fileLocationToSaveGetter ?? throw new ArgumentNullException(nameof(fileLocationToSaveGetter));
                 this.workEstimationsFileExporter = workEstimationsFileExporter ?? throw new ArgumentNullException(nameof(workEstimationsFileExporter));
+                this.roadmapConfigurationViewModel = roadmapConfigurationViewModel ?? throw new ArgumentNullException(nameof(RoadmapConfigurationViewModel));
             }
 
             public TimeTillCompletionEstimationsCollection CurrentEstimations
@@ -317,7 +320,7 @@ namespace KanbanProjectManagementApp.ViewModels
             {
                 if (fileLocationGetter.TryGetFileLocation(out string filePath))
                 {
-                    workEstimationsFileExporter.Export(filePath, currentEstimations);
+                    workEstimationsFileExporter.Export(filePath, currentEstimations, roadmapConfigurationViewModel.ConfigurationMode);
                 }
             }
 
