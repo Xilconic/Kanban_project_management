@@ -38,24 +38,24 @@ namespace KanbanProjectManagementApp.Views.InterfaceImplementations
         }
 
         /// <exception cref="ArgumentException">Thrown when <paramref name="workEstimates"/> doesn't contain at least 1 simulation.</exception>
-        public void Write(TimeTillCompletionEstimationsCollection workEstimates)
+        public void Write(TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
         {
             if (workEstimates.Count == 0)
             {
                 throw new ArgumentException("Work estimations should have at least 1 simulation.", nameof(workEstimates));
             }
 
-            DataView dataView = GetDataViewOfData(workEstimates);
+            DataView dataView = GetDataViewOfData(workEstimates, configurationMode);
 
             WriteHeader(dataView.Table.Columns);
             WriteRows(dataView);
         }
 
         /// <remarks>This code ensures the data exported is consistently shaped with the MainWindow's simulation results DataGrid.</remarks>
-        private static DataView GetDataViewOfData(TimeTillCompletionEstimationsCollection workEstimates)
+        private static DataView GetDataViewOfData(TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
         {
             var converter = new TimeTillCompletionEstimationsCollectionToDataViewConverter();
-            return (DataView)converter.Convert(new object[] { workEstimates, ConfigurationMode.Simple }, null, null, CultureInfo.InvariantCulture); ;
+            return (DataView)converter.Convert(new object[] { workEstimates, configurationMode }, null, null, CultureInfo.InvariantCulture); ;
         }
 
         private void WriteHeader(DataColumnCollection columns)
