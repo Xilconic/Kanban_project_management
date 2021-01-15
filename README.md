@@ -1,6 +1,11 @@
 # Kanban_project_management
 Tool to help out with project management where Kanban is being used.
 
+# Getting started with a release
+Download the latest release at https://github.com/Xilconic/Kanban_project_management/releases. Download and unzip the file in any location of your choise on your computer. Run the application. 
+In case you don't have .Dot Net Core framework installed on your machine yet, a prompt will point you to the official website where you can download the framework. 
+After installing the framework head to https://github.com/Xilconic/Kanban_project_management/wiki/Introduction to get started!
+
 # Distribution
 Copyright (c) 2020 S.L. des Bouvrie
 
