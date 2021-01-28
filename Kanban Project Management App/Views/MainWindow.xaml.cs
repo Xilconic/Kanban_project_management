@@ -20,9 +20,11 @@ using KanbanProjectManagementApp.Views.InterfaceImplementations;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace KanbanProjectManagementApp.Views
 {
@@ -48,6 +50,12 @@ namespace KanbanProjectManagementApp.Views
                 new IAskUserForConfirmationToProceedUsingMessageBox(this)
             );
         }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e) =>
+            Process.Start(new ProcessStartInfo(e.Uri.ToString())
+            {
+                UseShellExecute = true,
+            });
 
         private class SaveFileDialogDrivenFileLocationGetter : IFileLocationGetter
         {

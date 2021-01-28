@@ -72,6 +72,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
 
             <!-- Metric Statistics section: -->
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="4" TextAlignment="Center" FontWeight="Bold">Statistics</TextBlock>
+            <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Margin="4"><Hyperlink NavigateUri="https://github.com/Xilconic/Kanban_project_management/wiki" RequestNavigate="Hyperlink_RequestNavigate">Documentation...</Hyperlink></TextBlock>
 
             <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Mean:</TextBlock>
             <TextBox x:Name="calculatedMeanTextBox" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding EstimatedMeanOfThroughput, Mode=OneWay}"/>
