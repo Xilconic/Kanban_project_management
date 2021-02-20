@@ -34,6 +34,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                   CanUserAddRows="True" CanUserDeleteRows="True" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Priority weight" Binding="{Binding PriorityWeight, ValidatesOnExceptions=True}"/>
                 <DataGridTextColumn Header="Number of work items to be completed" Binding="{Binding NumberOfWorkItemsToBeCompleted, ValidatesOnExceptions=True}"/>
             </DataGrid.Columns>
         </DataGrid>

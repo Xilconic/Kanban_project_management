@@ -66,7 +66,7 @@ namespace KanbanProjectManagementApp.Tests
         [Fact]
         public void GIVEN_an_project_name_null_WHEN_constructing_new_instance_THEN_throw_ArgumentNullException()
         {
-            void call() => new Project(1, null);
+            static void call() => new Project(1, default, null);
 
             var actualException = Assert.Throws<ArgumentNullException>("name", call);
             Assert.StartsWith("Project name should not be null.", actualException.Message);

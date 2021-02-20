@@ -58,9 +58,9 @@ namespace KanbanProjectManagementApp.Tests
         {
             var projectSequenceWithNullElements = new[]
             {
-                new Project(1, "A"),
+                new Project(1, default, "A"),
                 null,
-                new Project(2, "B"),
+                new Project(2, default, "B"),
             };
 
             void call() => new Roadmap(projectSequenceWithNullElements);
@@ -74,8 +74,8 @@ namespace KanbanProjectManagementApp.Tests
         {
             var projectSequenceWithNullElements = new[]
             {
-                new Project(1, "A"),
-                new Project(2, "A"),
+                new Project(1, default, "A"),
+                new Project(2, default, "A"),
             };
 
             void call() => new Roadmap(projectSequenceWithNullElements);

@@ -152,7 +152,7 @@ namespace KanbanProjectManagementApp.Tests
 
         private Project CreateCompletedProject(string name = "Project")
         {
-            var project = new Project(1, name);
+            var project = new Project(1, default, name);
             project.CompleteWorkItem();
             return project;
         }

@@ -56,15 +56,17 @@ namespace KanbanProjectManagementApp.Views
                 numberOfWorkItemsToBeCompleted = value;
             }
         }
+        public int PriorityWeight { get; set; }
 
         public static ProjectRowItem FromDomain(Project project) =>
             new ProjectRowItem
             {
                 NumberOfWorkItemsToBeCompleted = project.NumberOfWorkItemsRemaining,
                 Name = project.Name,
+                PriorityWeight = project.PriorityWeight,
             };
 
         public Project ToDomain() =>
-            new Project(NumberOfWorkItemsToBeCompleted, Name);
+            new Project(NumberOfWorkItemsToBeCompleted, PriorityWeight, Name);
     }
 }

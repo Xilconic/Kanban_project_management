@@ -89,8 +89,8 @@ namespace KanbanProjectManagementApp.Tests
 
         private static TimeTillCompletionEstimationsCollection CreateSomeRoadmapEstimations()
         {
-            Project projectA = new Project(1, "A");
-            Project projectB = new Project(1, "B");
+            Project projectA = new Project(1, default, "A");
+            Project projectB = new Project(1, default, "B");
             Project[] projects = new[] { projectA, projectB };
             var roadmap = new Roadmap(projects);
             projectA.CompleteWorkItem();

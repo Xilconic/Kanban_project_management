@@ -113,7 +113,7 @@ namespace KanbanProjectManagementApp.Tests
         {
             get
             {
-                var unfinishedProject = new Project(1, "A");
+                var unfinishedProject = new Project(1, default, "A");
                 var unfinishedRoadmap = new Roadmap(new[] { unfinishedProject });
                 var estimationsForUncompletedRoadmap = new TimeTillCompletionEstimationsCollection(1, 1);
                 estimationsForUncompletedRoadmap.AddEstimationsForSimulation(
@@ -127,7 +127,7 @@ namespace KanbanProjectManagementApp.Tests
 "
                 };
 
-                var finishedProject = new Project(1, "A");
+                var finishedProject = new Project(1, default, "A");
                 var finishedRoadmap = new Roadmap(new[] { finishedProject });
                 finishedProject.CompleteWorkItem();
                 var estimationsForMultipleSimulations = new TimeTillCompletionEstimationsCollection(2, 1);

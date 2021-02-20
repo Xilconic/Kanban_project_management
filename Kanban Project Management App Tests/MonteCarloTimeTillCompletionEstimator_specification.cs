@@ -107,7 +107,7 @@ namespace KanbanProjectManagementApp.Tests
             var estimator = new MonteCarloTimeTillCompletionEstimator(numberOfSimulations, 10, inputMetrics);
 
             var projectName = "test";
-            var projects = new[] { new Project(10, projectName) };
+            var projects = new[] { new Project(10, default, projectName) };
 
             var estimations = estimator.Estimate(projects);
             Assert.Equal(numberOfSimulations, estimations.RoadmapEstimations.Count);

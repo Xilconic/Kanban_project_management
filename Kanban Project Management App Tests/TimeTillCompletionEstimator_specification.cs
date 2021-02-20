@@ -250,9 +250,9 @@ namespace KanbanProjectManagementApp.Tests
         public void GIVEN_single_input_metrics_AND_multiple_projects_WHEN_estimating_time_to_completion_THEN_returned_number_of_work_days_depends_on_randomly_selected_projects(
             InputMetric[] inputMetrics, double expectedEstimateRoadmap, double expectedEstimateProjectA, double expectedEstimateProjectB, double expectedEstimateProjectC)
         {
-            var projectWithOneWorkItem = new Project(1, "A");
-            var projectWithTwoWorkItems = new Project(2, "B");
-            var projectWithThreeWorkItems = new Project(3, "C");
+            var projectWithOneWorkItem = new Project(1, default, "A");
+            var projectWithTwoWorkItems = new Project(2, default, "B");
+            var projectWithThreeWorkItems = new Project(3, default, "C");
             var projects = new[] { projectWithOneWorkItem, projectWithTwoWorkItems, projectWithThreeWorkItems };
             var roadmap = new Roadmap(projects);
 

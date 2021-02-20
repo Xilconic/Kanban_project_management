@@ -21,13 +21,13 @@ namespace KanbanProjectManagementApp.Domain
     public class Project
     {
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsRemaining"/> is less or equal to 0.</exception>
-        public Project(int numberOfWorkItemsRemaining) : this(numberOfWorkItemsRemaining, "Project")
+        public Project(int numberOfWorkItemsRemaining) : this(numberOfWorkItemsRemaining, default, "Project")
         {
         }
 
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsRemaining"/> is less or equal to 0.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> is null.</exception>
-        public Project(int numberOfWorkItemsRemaining, string name)
+        public Project(int numberOfWorkItemsRemaining, int priorityWeight, string name)
         {
             if (numberOfWorkItemsRemaining <= 0)
             {
@@ -44,6 +44,7 @@ namespace KanbanProjectManagementApp.Domain
             }
 
             NumberOfWorkItemsRemaining = numberOfWorkItemsRemaining;
+            PriorityWeight = priorityWeight;
             Name = name;
         }
 
@@ -51,6 +52,10 @@ namespace KanbanProjectManagementApp.Domain
 
         public int NumberOfWorkItemsRemaining { get; private set; }
         public string Name { get; private set; }
+        /// <summary>
+        /// Represents the priority. The higher the value, the more priority it gets in being worked on.
+        /// </summary>
+        public int PriorityWeight { get; private set; }
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="HasWorkToBeCompleted"/> is false.</exception>
         public void CompleteWorkItem()
@@ -63,6 +68,6 @@ namespace KanbanProjectManagementApp.Domain
             NumberOfWorkItemsRemaining -= 1;
         }
 
-        public Project DeepClone() => new Project(NumberOfWorkItemsRemaining, Name);
+        public Project DeepClone() => new Project(NumberOfWorkItemsRemaining, PriorityWeight, Name);
     }
 }
