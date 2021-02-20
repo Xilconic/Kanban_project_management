@@ -477,33 +477,7 @@ namespace KanbanProjectManagementApp.Tests
 
                 Assert.NotNull(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations);
                 var roadmapEstimations = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations;
-                void assertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
-                Assert.Collection(roadmapEstimations,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays,
-                    assertEstimateHasExpectedNumberOfWorkingDays
-                );
-
-                static void assertEstimateIsDeterminate(WorkEstimate estimate) => Assert.False(estimate.IsIndeterminate);
-                Assert.Collection(roadmapEstimations,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate,
-                    assertEstimateIsDeterminate
-                );
+                AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(roadmapEstimations, expectedEstimate);
             }
 
             [Fact]
@@ -537,6 +511,46 @@ namespace KanbanProjectManagementApp.Tests
                     },
                     true,
                     1);
+            }
+
+            [Fact]
+            public void AND_advanced_mode_roadmap_with_two_projects_with_same_priorities_WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_estimations()
+            {
+                viewModelWithOneInputMetric.RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
+                viewModelWithOneInputMetric.RoadmapConfigurator.Projects[0] = new Project(6, 10, "A");
+                viewModelWithOneInputMetric.RoadmapConfigurator.Projects.Add(new Project(4, 10, "B"));
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                Assert.NotNull(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations);
+                var roadmapEstimations = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations;
+
+                var expectedEstimate = new WorkEstimate(5.0, false);
+                AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(roadmapEstimations, expectedEstimate);
+            }
+
+            [Fact]
+            public void AND_advanced_mode_roadmap_with_two_projects_with_Different_priorities_WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_estimations()
+            {
+                viewModelWithOneInputMetric.RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
+                viewModelWithOneInputMetric.RoadmapConfigurator.Projects[0] = new Project(6, 0, "A");
+                viewModelWithOneInputMetric.RoadmapConfigurator.Projects.Add(new Project(4, 10, "B"));
+
+                viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+
+                Assert.NotNull(viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations);
+                var roadmapEstimations = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations.RoadmapEstimations;
+
+                var expectedEstimate = new WorkEstimate(5.0, false);
+                AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(roadmapEstimations, expectedEstimate);
+
+                var estimationsProjectB = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations[0];
+                var expectedEstimateProjectB = new WorkEstimate(2.0, false);
+                AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(estimationsProjectB, expectedEstimateProjectB);
+
+                var estimationsProjectA = viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations[1];
+                var expectedEstimateProjectA = new WorkEstimate(5.0, false); // 3 workdays to complete the work, started after 2nd workday: 2+3 = 5
+                AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(estimationsProjectA, expectedEstimateProjectA);
             }
 
             [Theory]
@@ -606,6 +620,20 @@ namespace KanbanProjectManagementApp.Tests
 
                 var actualException = Assert.Throws<FileExportException>(call);
                 Assert.Same(expectedException, actualException);
+            }
+
+            private static void AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(IReadOnlyCollection<WorkEstimate> roadmapEstimations, WorkEstimate expectedEstimate)
+            {
+                void assertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
+
+                Assert.Collection(roadmapEstimations,
+                    Enumerable.Repeat<Action<WorkEstimate>>(assertEstimateHasExpectedNumberOfWorkingDays, roadmapEstimations.Count).ToArray()
+                );
+
+                static void assertEstimateIsDeterminate(WorkEstimate estimate) => Assert.False(estimate.IsIndeterminate);
+                Assert.Collection(roadmapEstimations,
+                    Enumerable.Repeat<Action<WorkEstimate>>(assertEstimateIsDeterminate, roadmapEstimations.Count).ToArray()
+                );
             }
         }
 

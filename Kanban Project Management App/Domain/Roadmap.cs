@@ -22,7 +22,7 @@ namespace KanbanProjectManagementApp.Domain
 {
     public class Roadmap
     {
-        private readonly Project[] projects;
+        private readonly IGrouping<int, Project>[] projectsSortedAndGroupedByPriority;
 
         /// <exception cref="ArgumentNullException"/>
         /// <exception cref="ArgumentException">
@@ -36,29 +36,41 @@ namespace KanbanProjectManagementApp.Domain
         /// </exception>
         public Roadmap(IEnumerable<Project> projects)
         {
-            this.projects = projects?.ToArray() ?? throw new ArgumentNullException(nameof(projects));
-            ValidateProjects(this.projects);
+            if(projects is null)
+            {
+                throw new ArgumentNullException(nameof(projects));
+            }
+            ValidateProjects(projects);
+
+            projectsSortedAndGroupedByPriority = projects.GroupBy(p => p.PriorityWeight).OrderByDescending(g => g.Key).ToArray();
+            Projects = projectsSortedAndGroupedByPriority.SelectMany(p => p).ToArray();
         }
 
         /// <remarks>
         /// All <see cref="Project"/> instances in this collection are guaranteed to have a unique <see cref="Project.Name"/>.
         /// </remarks>
-        public IReadOnlyList<Project> Projects => projects;
+        public IReadOnlyList<Project> Projects;
 
-        public bool HasWorkToBeCompleted => projects.Any(p => p.HasWorkToBeCompleted);
+        public bool HasWorkToBeCompleted => Projects.Any(p => p.HasWorkToBeCompleted);
 
-        public double TotalOfWorkRemaining => projects.Sum(p => p.NumberOfWorkItemsRemaining);
+        public double TotalOfWorkRemaining => Projects.Sum(p => p.NumberOfWorkItemsRemaining);
 
-        public IReadOnlyList<Project> GetCurrentAvailableProjectsThatHaveWorkToBeCompleted() =>
-            projects.Where(p => p.HasWorkToBeCompleted).ToArray();
-
-        private static void ValidateProjects(Project[] projects)
+        public IReadOnlyList<Project> GetCurrentAvailableProjectsThatHaveWorkToBeCompleted()
         {
-            if (projects.Length == 0)
+            IGrouping<int, Project> highestPriorityGroupThatHasWorkToBeCompleted = projectsSortedAndGroupedByPriority.FirstOrDefault(grouping => grouping.Any(p => p.HasWorkToBeCompleted));
+            if(highestPriorityGroupThatHasWorkToBeCompleted is null)
             {
-                throw new ArgumentException("Roadmap should contain at least one project.", nameof(projects));
+                return Array.Empty<Project>();
             }
 
+            // Note: Some project, but perhaps not all, have work to be completed:
+            return highestPriorityGroupThatHasWorkToBeCompleted
+                .Where(p => p.HasWorkToBeCompleted)
+                .ToArray();
+        }
+
+        private static void ValidateProjects(IEnumerable<Project> projects)
+        {
             var projectNames = new HashSet<string>();
             foreach (Project p in projects)
             {
@@ -75,6 +87,10 @@ namespace KanbanProjectManagementApp.Domain
                 {
                     throw new ArgumentException("Sequence of projects for roadmap cannot contain multiple projects with the same name.", nameof(projects));
                 }
+            }
+            if (projectNames.Count == 0)
+            {
+                throw new ArgumentException("Roadmap should contain at least one project.", nameof(projects));
             }
         }
     }
