@@ -16,7 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 namespace KanbanProjectManagementApp.ViewModels
 {
-    public interface IFileLocationGetter
+    public interface IExportFileLocator
     {
         bool TryGetFileLocation(out string filePath);
     }

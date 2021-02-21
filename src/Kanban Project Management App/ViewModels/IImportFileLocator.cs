@@ -17,7 +17,7 @@
 
 namespace KanbanProjectManagementApp.ViewModels
 {
-    public interface IFileToReadGetter
+    public interface IImportFileLocator
     {
         bool TryGetFileToRead(out string filePath);
     }

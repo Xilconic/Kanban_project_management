@@ -37,37 +37,37 @@ namespace KanbanProjectManagementApp.Tests.Unit
         public class WHEN_constructing_view_model
         {
             [Fact]
-            public void AND_file_location_getter_is_null_THEN_throw_ArgumentNullException()
+            public void AND_export_file_locator_is_null_THEN_throw_ArgumentNullException()
             {
                 static void call() => new MainWindowViewModel(
                     null,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("fileLocationToSaveGetter", call);
+                Assert.Throws<ArgumentNullException>("exportFileLocator", call);
             }
 
             [Fact]
-            public void AND_file_to_read_getter_is_null_THEN_throw_ArgumentNullException()
+            public void AND_import_file_locator_is_null_THEN_throw_ArgumentNullException()
             {
                 static void call() => new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
                     null,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("fileToReadGetter", call);
+                Assert.Throws<ArgumentNullException>("importFileLocator", call);
             }
 
             [Fact]
             public void AND_work_estimation_file_exporter_is_null_THEN_throw_ArgumentNullException()
             {
                 static void call() => new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     null,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
@@ -79,8 +79,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void AND_input_metrics_file_importer_is_null_THEN_throw_ArgumentNullException()
             {
                 static void call() => new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     null,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
@@ -92,8 +92,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void AND_user_confirmation_asker_is_null_THEN_throw_ArgumentNullException()
             {
                 static void call() => new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     null);
@@ -109,8 +109,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public GIVEN_a_newly_constructed_view_model()
             {
                 newViewModel = new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
@@ -255,14 +255,14 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
         public class GIVEN_an_empty_InputMetrics_collection
         {
-            private readonly Mock<IFileToReadGetter> fileToReadGetterMock = new Mock<IFileToReadGetter>();
+            private readonly Mock<IImportFileLocator> fileToReadGetterMock = new Mock<IImportFileLocator>();
             private readonly Mock<IInputMetricsFileImporter> inputMetricsFileImporterMock = new Mock<IInputMetricsFileImporter>();
             private readonly MainWindowViewModel viewModel;
 
             public GIVEN_an_empty_InputMetrics_collection()
             {
                 viewModel = new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
                     fileToReadGetterMock.Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     inputMetricsFileImporterMock.Object,
@@ -350,7 +350,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
         public class GIVEN_one_input_metric_in_the_collection : IDisposable
         {
-            private readonly Mock<IFileLocationGetter> fileLocationGetterMock;
+            private readonly Mock<IExportFileLocator> fileLocationGetterMock;
             private readonly Mock<IWorkEstimationsFileExporter> workEstimationsFileExporterMock;
             private readonly MainWindowViewModel viewModelWithOneInputMetric;
             private readonly InputMetric metric;
@@ -358,11 +358,11 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
             public GIVEN_one_input_metric_in_the_collection()
             {
-                fileLocationGetterMock = new Mock<IFileLocationGetter>();
+                fileLocationGetterMock = new Mock<IExportFileLocator>();
                 workEstimationsFileExporterMock = new Mock<IWorkEstimationsFileExporter>();
                 viewModelWithOneInputMetric = new MainWindowViewModel(
                     fileLocationGetterMock.Object,
-                    new Mock<IFileToReadGetter>().Object,
+                    new Mock<IImportFileLocator>().Object,
                     workEstimationsFileExporterMock.Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
@@ -640,14 +640,14 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
         public class GIVEN_multiple_input_metrics_in_the_collection : IDisposable
         {
-            private readonly Mock<IFileToReadGetter> fileToReadGetterMock = new Mock<IFileToReadGetter>();
+            private readonly Mock<IImportFileLocator> fileToReadGetterMock = new Mock<IImportFileLocator>();
             private readonly MainWindowViewModel viewModelWithMultipleInputMetrics;
             private readonly PropertyChangedEventTracker propertyChangedEventTracker;
 
             public GIVEN_multiple_input_metrics_in_the_collection()
             {
                 viewModelWithMultipleInputMetrics = new MainWindowViewModel(
-                    new Mock<IFileLocationGetter>().Object,
+                    new Mock<IExportFileLocator>().Object,
                     fileToReadGetterMock.Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,

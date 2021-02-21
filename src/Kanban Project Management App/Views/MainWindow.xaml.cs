@@ -56,7 +56,7 @@ namespace KanbanProjectManagementApp.Views
                 UseShellExecute = true,
             });
 
-        private class SaveFileDialogDrivenFileLocationGetter : IFileLocationGetter
+        private class SaveFileDialogDrivenFileLocationGetter : IExportFileLocator
         {
             private readonly Window owner;
 
@@ -86,7 +86,7 @@ namespace KanbanProjectManagementApp.Views
             }
         }
 
-        private class OpenFileDialogDrivenFileToReadGetter : IFileToReadGetter
+        private class OpenFileDialogDrivenFileToReadGetter : IImportFileLocator
         {
             private readonly Window owner;
 
