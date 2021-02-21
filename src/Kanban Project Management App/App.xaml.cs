@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using KanbanProjectManagementApp.Views;
 using System.Windows;
 using System.Windows.Threading;
 using WpfApplication = System.Windows.Application;
@@ -33,6 +34,12 @@ namespace KanbanProjectManagementApp
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             e.Handled = true;
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
         }
     }
 }
