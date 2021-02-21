@@ -24,6 +24,7 @@ using Moq;
 using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
+using KanbanProjectManagementApp.Application;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

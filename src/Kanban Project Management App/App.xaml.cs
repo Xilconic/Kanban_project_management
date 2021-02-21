@@ -16,13 +16,14 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using System.Windows;
 using System.Windows.Threading;
+using WpfApplication = System.Windows.Application;
 
 namespace KanbanProjectManagementApp
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : WpfApplication
     {
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {

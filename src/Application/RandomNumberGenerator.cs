@@ -14,10 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-namespace KanbanProjectManagementApp.Domain
+using System;
+
+namespace KanbanProjectManagementApp.Application
 {
-    public interface IRandomNumberGenerator
+    public class RandomNumberGenerator : IRandomNumberGenerator
     {
-        int GetRandomIndex(int count);
+        private readonly Random random = new Random();
+
+        public int GetRandomIndex(int count)
+        {
+            return random.Next(count);
+        }
     }
 }

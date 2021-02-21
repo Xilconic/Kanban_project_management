@@ -14,12 +14,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests.Unit.Domain
+namespace KanbanProjectManagementApp.Tests.Unit.Application
 {
     public class TimeTillCompletionEstimationsCollection_specification
     {

@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>KanbanProjectManagementApp.Tests.Unit</RootNamespace>
 
     <IsPackable>false</IsPackable>
+
+    <AssemblyName>KanbanProjectManagementApp.Tests.Unit.Application</AssemblyName>
+
+    <RootNamespace>KanbanProjectManagementApp.Tests.Unit.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Application\Application.csproj" />
-    <ProjectReference Include="..\..\src\Kanban Project Management App\Kanban Project Management App.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -20,8 +20,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.Application;
 
-namespace KanbanProjectManagementApp.Tests.Unit.Domain
+namespace KanbanProjectManagementApp.Tests.Unit.Application
 {
     public class TimeTillCompletionEstimator_specification
     {
