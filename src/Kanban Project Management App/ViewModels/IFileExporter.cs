@@ -14,32 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
-using KanbanProjectManagementApp.ViewModels;
-using System;
-
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.ViewModels
 {
-    public interface IWorkEstimationsFileExporter : IFileExporter
+    public interface IFileExporter
     {
-        /// <exception cref="FileExportException"/>
-        void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode);
-    }
-
-    public class FileExportException : Exception
-    {
-        public FileExportException()
-        {
-        }
-
-        public FileExportException(string message)
-            : base(message)
-        {
-        }
-
-        public FileExportException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+        string DefaultFileName { get; }
+        string ExportFileExtension { get; }
+        string FileTypeDescription { get; }
     }
 }

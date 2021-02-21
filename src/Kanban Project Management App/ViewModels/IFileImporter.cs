@@ -14,11 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.ViewModels
 {
-    public interface IExportFileLocator
+    public interface IFileImporter
     {
-        /// <exception cref="System.ArgumentNullException"/>
-        bool TryGetFileLocation(IFileExporter exporter, out string filePath);
+        string ImportFileExtension { get; }
+        string FileTypeDescription { get; }
     }
 }
