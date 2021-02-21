@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.TextFileProcessing;
 using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Views.InterfaceImplementations;
 using Microsoft.Win32;
@@ -114,25 +114,6 @@ namespace KanbanProjectManagementApp.Views
 
                 filePath = string.Empty;
                 return false;
-            }
-        }
-
-        private class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
-        {
-            public void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
-            {
-                try
-                {
-                    using var writer = new StreamWriter(filePath);
-                    var csvWriter = new WorkEstimationsCsvWriter(writer);
-                    csvWriter.Write(workEstimates, configurationMode);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileExportException(
-                        $"Failed to export work estimation to file '{filePath}', due to an unexpected error.",
-                        ex);
-                }
             }
         }
 
