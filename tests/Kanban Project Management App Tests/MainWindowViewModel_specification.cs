@@ -25,6 +25,7 @@ using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Application;
+using KanbanProjectManagementApp.TextFileProcessing;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

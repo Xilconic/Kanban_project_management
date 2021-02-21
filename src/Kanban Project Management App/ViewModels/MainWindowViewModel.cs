@@ -22,6 +22,7 @@ using System.Linq;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.TextFileProcessing;
 
 namespace KanbanProjectManagementApp.ViewModels
 {
