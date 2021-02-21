@@ -32,7 +32,9 @@ namespace KanbanProjectManagementApp.Views
     {
         private readonly CultureInfo applicationCultureInfo = new CultureInfo("en-US", false);
 
-        public MainWindow()
+        public MainWindow(
+            IInputMetricsFileImporter inputMetricsFileImporter,
+            IWorkEstimationsFileExporter workEstimationsFileExporter)
         {
             InitializeComponent();
 
@@ -42,8 +44,8 @@ namespace KanbanProjectManagementApp.Views
             MainGrid.DataContext = new MainWindowViewModel(
                 new SaveFileDialogDrivenFileLocationGetter(this),
                 new OpenFileDialogDrivenFileToReadGetter(this),
-                new WorkEstimationsToCsvFileExporter(),
-                new InputMetricsFromCsvFileImporter(),
+                workEstimationsFileExporter,
+                inputMetricsFileImporter,
                 new IAskUserForConfirmationToProceedUsingMessageBox(this)
             );
         }

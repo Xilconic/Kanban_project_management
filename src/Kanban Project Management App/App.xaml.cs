@@ -14,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+using KanbanProjectManagementApp.TextFileProcessing;
 using KanbanProjectManagementApp.Views;
 using System.Windows;
 using System.Windows.Threading;
@@ -38,7 +39,9 @@ namespace KanbanProjectManagementApp
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var mainWindow = new MainWindow();
+            var mainWindow = new MainWindow(
+                new InputMetricsFromCsvFileImporter(),
+                new WorkEstimationsToCsvFileExporter());
             mainWindow.Show();
         }
     }
