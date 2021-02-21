@@ -309,7 +309,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 string filePath = "c:/some/folder/and/someFile.csv";
                 fileToReadGetterMock
-                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Setup(g => g.TryGetFileToRead(inputMetricsFileImporterMock.Object, out filePath))
                     .Returns(true);
 
                 var expectedMetrics = new[]
@@ -334,7 +334,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 string filePath = "c:/some/folder/and/someFile.csv";
                 fileToReadGetterMock
-                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Setup(g => g.TryGetFileToRead(inputMetricsFileImporterMock.Object, out filePath))
                     .Returns(true);
 
                 var expectedException = new FileImportException();
@@ -571,7 +571,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 string expectedFilePath = "c:/some/folder/and/someFile.csv";
                 fileLocationGetterMock
-                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Setup(g => g.TryGetFileLocation(workEstimationsFileExporterMock.Object, out expectedFilePath))
                     .Returns(true);
 
                 viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
@@ -589,7 +589,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 string expectedFilePath = null;
                 fileLocationGetterMock
-                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Setup(g => g.TryGetFileLocation(workEstimationsFileExporterMock.Object, out expectedFilePath))
                     .Returns(false);
 
                 viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
@@ -610,7 +610,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 string expectedFilePath = "c:/some/folder/and/someFile.csv";
                 fileLocationGetterMock
-                    .Setup(g => g.TryGetFileLocation(out expectedFilePath))
+                    .Setup(g => g.TryGetFileLocation(workEstimationsFileExporterMock.Object, out expectedFilePath))
                     .Returns(true);
 
                 var expectedException = new FileExportException();
@@ -719,7 +719,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 string filePath = string.Empty;
                 fileToReadGetterMock
-                    .Setup(g => g.TryGetFileToRead(out filePath))
+                    .Setup(g => g.TryGetFileToRead(It.IsAny<IFileImporter>(), out filePath))
                     .Returns(false);
 
                 var expectedMetrics = new[]

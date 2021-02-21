@@ -21,8 +21,12 @@ using System.IO;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {
-    internal class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
+    public class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
     {
+        public string DefaultFileName => "work_estimations";
+        public string ExportFileExtension => ".csv";
+        public string FileTypeDescription => "Comma separated values file";
+
         public void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
         {
             try

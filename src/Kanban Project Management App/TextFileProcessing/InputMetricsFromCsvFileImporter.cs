@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +23,10 @@ namespace KanbanProjectManagementApp.TextFileProcessing
 {
     internal class InputMetricsFromCsvFileImporter : IInputMetricsFileImporter
 	{
-		public IReadOnlyCollection<InputMetric> Import(string filePath)
+        public string ImportFileExtension => ".csv";
+        public string FileTypeDescription => "Comma separated values file";
+
+        public IReadOnlyCollection<InputMetric> Import(string filePath)
 		{
 			try
 			{

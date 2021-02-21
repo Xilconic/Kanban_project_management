@@ -20,7 +20,7 @@ using System;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {
-    public interface IWorkEstimationsFileExporter
+    public interface IWorkEstimationsFileExporter : IFileExporter
     {
         /// <exception cref="FileExportException"/>
         void Export(string filePath, TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode);

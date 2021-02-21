@@ -18,6 +18,7 @@ namespace KanbanProjectManagementApp.TextFileProcessing
 {
     public interface IExportFileLocator
     {
-        bool TryGetFileLocation(out string filePath);
+        /// <exception cref="System.ArgumentNullException"/>
+        bool TryGetFileLocation(IFileExporter exporter, out string filePath);
     }
 }

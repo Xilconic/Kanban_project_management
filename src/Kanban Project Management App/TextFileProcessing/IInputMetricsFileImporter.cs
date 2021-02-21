@@ -20,7 +20,7 @@ using System.Collections.Generic;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {
-    public interface IInputMetricsFileImporter
+    public interface IInputMetricsFileImporter : IFileImporter
     {
         /// <exception cref="FileImportException"/>
         IReadOnlyCollection<InputMetric> Import(string filePath);

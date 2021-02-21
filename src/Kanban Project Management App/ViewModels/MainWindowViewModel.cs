@@ -184,8 +184,8 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private class ImportThroughputMetricsFromFileCommand : ICommand
         {
-            private readonly IImportFileLocator fileToReadGetter;
-            private readonly IInputMetricsFileImporter inputMetricsFileImporter;
+            private readonly IImportFileLocator locator;
+            private readonly IInputMetricsFileImporter importer;
             private readonly ObservableCollection<InputMetric> inputMetrics;
 
             public ImportThroughputMetricsFromFileCommand(
@@ -194,8 +194,8 @@ namespace KanbanProjectManagementApp.ViewModels
                 IInputMetricsFileImporter importer)
             {
                 this.inputMetrics = inputMetrics ?? throw new ArgumentNullException(nameof(inputMetrics));
-                this.fileToReadGetter = locator ?? throw new ArgumentNullException(nameof(locator));
-                this.inputMetricsFileImporter = importer ?? throw new ArgumentNullException(nameof(importer));
+                this.locator = locator ?? throw new ArgumentNullException(nameof(locator));
+                this.importer = importer ?? throw new ArgumentNullException(nameof(importer));
             }
 
             public event EventHandler CanExecuteChanged;
@@ -207,9 +207,9 @@ namespace KanbanProjectManagementApp.ViewModels
 
             public void Execute(object parameter)
             {
-                if(fileToReadGetter.TryGetFileToRead(out string filePath))
+                if(locator.TryGetFileToRead(importer, out string filePath))
                 {
-                    foreach (InputMetric metric in inputMetricsFileImporter.Import(filePath))
+                    foreach (InputMetric metric in importer.Import(filePath))
                     {
                         inputMetrics.Add(metric);
                     }
@@ -285,9 +285,9 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private class ExportWorkEstimatesToFileCommand : ICommand
         {
-            private readonly IExportFileLocator fileLocationGetter;
-            private readonly IWorkEstimationsFileExporter workEstimationsFileExporter;
-            private readonly RoadmapConfigurationViewModel roadmapConfigurationViewModel;
+            private readonly IExportFileLocator exportFileLocator;
+            private readonly IWorkEstimationsFileExporter exporter;
+            private readonly RoadmapConfigurationViewModel viewModel;
             private bool canExecute = false;
             private TimeTillCompletionEstimationsCollection currentEstimations = null;
 
@@ -296,9 +296,9 @@ namespace KanbanProjectManagementApp.ViewModels
                 IWorkEstimationsFileExporter exporter,
                 RoadmapConfigurationViewModel roadmapConfigurationViewModel)
             {
-                fileLocationGetter = locator ?? throw new ArgumentNullException(nameof(locator));
-                this.workEstimationsFileExporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-                this.roadmapConfigurationViewModel = roadmapConfigurationViewModel ?? throw new ArgumentNullException(nameof(RoadmapConfigurationViewModel));
+                exportFileLocator = locator ?? throw new ArgumentNullException(nameof(locator));
+                this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+                this.viewModel = roadmapConfigurationViewModel ?? throw new ArgumentNullException(nameof(RoadmapConfigurationViewModel));
             }
 
             public TimeTillCompletionEstimationsCollection CurrentEstimations
@@ -325,9 +325,9 @@ namespace KanbanProjectManagementApp.ViewModels
 
             public void Execute(object parameter)
             {
-                if (fileLocationGetter.TryGetFileLocation(out string filePath))
+                if (exportFileLocator.TryGetFileLocation(exporter, out string filePath))
                 {
-                    workEstimationsFileExporter.Export(filePath, currentEstimations, roadmapConfigurationViewModel.ConfigurationMode);
+                    exporter.Export(filePath, currentEstimations, viewModel.ConfigurationMode);
                 }
             }
 

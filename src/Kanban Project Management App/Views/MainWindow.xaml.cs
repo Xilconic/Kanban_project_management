@@ -65,14 +65,16 @@ namespace KanbanProjectManagementApp.Views
                 this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
             }
 
-            public bool TryGetFileLocation(out string filePath)
+            public bool TryGetFileLocation(IFileExporter exporter, out string filePath)
             {
+                if (exporter is null) throw new ArgumentNullException(nameof(exporter));
+
                 var saveFileDialog = new SaveFileDialog
                 {
                     AddExtension = true,
-                    FileName = "work_estimations",
-                    DefaultExt = ".csv",
-                    Filter = "Comma separated values file (.csv)|*.csv"
+                    FileName = exporter.DefaultFileName,
+                    DefaultExt = exporter.ExportFileExtension,
+                    Filter = $"{exporter.FileTypeDescription} ({exporter.ExportFileExtension})|*{exporter.ExportFileExtension}"
                 };
                 var dialogResult = saveFileDialog.ShowDialog(owner);
                 if (dialogResult.HasValue && dialogResult.Value)
@@ -95,13 +97,15 @@ namespace KanbanProjectManagementApp.Views
                 this.owner = owner;
             }
 
-            public bool TryGetFileToRead(out string filePath)
+            public bool TryGetFileToRead(IFileImporter importer, out string filePath)
             {
+                if (importer is null) throw new ArgumentNullException(nameof(importer));
+
                 var openFileDialog = new OpenFileDialog
                 {
                     AddExtension = true,
-                    DefaultExt = ".csv",
-                    Filter = "Comma separated values file (.csv)|*.csv"
+                    DefaultExt = importer.ImportFileExtension,
+                    Filter = $"{importer.FileTypeDescription} ({importer.ImportFileExtension})|*{importer.ImportFileExtension}"
                 };
                 var dialogResult = openFileDialog.ShowDialog(owner);
                 if (dialogResult.HasValue && dialogResult.Value)
