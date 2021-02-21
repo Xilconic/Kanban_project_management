@@ -14,16 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.TextFileProcessing;
 using KanbanProjectManagementApp.ViewModels;
-using KanbanProjectManagementApp.Views.InterfaceImplementations;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -114,24 +110,6 @@ namespace KanbanProjectManagementApp.Views
 
                 filePath = string.Empty;
                 return false;
-            }
-        }
-
-        private class InputMetricsFromCsvFileImporter : IInputMetricsFileImporter
-        {
-            public IReadOnlyCollection<InputMetric> Import(string filePath)
-            {
-                try
-                {
-                    using var reader = new StreamReader(filePath);
-                    return InputMetricsCsvReader.Read(reader);
-                }
-                catch(Exception ex)
-                {
-                    throw new FileImportException(
-                        $"Failed to import input metrics from file '{filePath}', due to an unexpected error.",
-                        ex);
-                }
             }
         }
 
