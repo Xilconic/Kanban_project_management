@@ -18,28 +18,30 @@ using KanbanProjectManagementApp.Domain;
 using System;
 using System.Collections.Generic;
 
-namespace KanbanProjectManagementApp.ViewModels
+namespace KanbanProjectManagementApp.Application
 {
-    public interface IInputMetricsFileImporter : IFileImporter
+    public class ImportThroughputMetricsFromFileUsecase
     {
-        /// <exception cref="FileImportException"/>
-        IReadOnlyCollection<InputMetric> Import(string filePath);
-    }
+        private readonly IImportFileLocator locator;
+        private readonly IInputMetricsFileImporter importer;
 
-    public class FileImportException : Exception
-    {
-        public FileImportException()
+        public ImportThroughputMetricsFromFileUsecase(
+            IImportFileLocator locator,
+            IInputMetricsFileImporter importer)
         {
+            this.locator = locator ?? throw new ArgumentNullException(nameof(locator));
+            this.importer = importer ?? throw new ArgumentNullException(nameof(importer));
         }
 
-        public FileImportException(string message)
-            : base(message)
+        public void ApendThroughputMetricsFromImportFile(ICollection<InputMetric> inputMetrics)
         {
-        }
-
-        public FileImportException(string message, Exception inner)
-            : base(message, inner)
-        {
+            if (locator.TryGetFileToRead(importer, out string filePath))
+            {
+                foreach (InputMetric metric in importer.Import(filePath))
+                {
+                    inputMetrics.Add(metric);
+                }
+            }
         }
     }
 }

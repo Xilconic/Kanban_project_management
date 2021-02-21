@@ -128,7 +128,8 @@ namespace KanbanProjectManagementApp.ViewModels
 
             RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
 
-            ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(InputMetrics, importFileLocator, inputMetricsFileImporter);
+            var throughputMetricsImportUsecase = new ImportThroughputMetricsFromFileUsecase(importFileLocator, inputMetricsFileImporter);
+            ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(throughputMetricsImportUsecase, InputMetrics);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
             exportWorkEstimatesToFileCommand = new ExportWorkEstimatesToFileCommand(exportFileLocator, workEstimationsFileExporter, RoadmapConfigurator)
@@ -184,18 +185,15 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private class ImportThroughputMetricsFromFileCommand : ICommand
         {
-            private readonly IImportFileLocator locator;
-            private readonly IInputMetricsFileImporter importer;
+            private readonly ImportThroughputMetricsFromFileUsecase usecase;
             private readonly ObservableCollection<InputMetric> inputMetrics;
 
             public ImportThroughputMetricsFromFileCommand(
-                ObservableCollection<InputMetric> inputMetrics,
-                IImportFileLocator locator,
-                IInputMetricsFileImporter importer)
+                ImportThroughputMetricsFromFileUsecase usecase,
+                ObservableCollection<InputMetric> inputMetrics)
             {
+                this.usecase = usecase ?? throw new ArgumentNullException(nameof(usecase));
                 this.inputMetrics = inputMetrics ?? throw new ArgumentNullException(nameof(inputMetrics));
-                this.locator = locator ?? throw new ArgumentNullException(nameof(locator));
-                this.importer = importer ?? throw new ArgumentNullException(nameof(importer));
             }
 
             public event EventHandler CanExecuteChanged;
@@ -207,13 +205,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
             public void Execute(object parameter)
             {
-                if(locator.TryGetFileToRead(importer, out string filePath))
-                {
-                    foreach (InputMetric metric in importer.Import(filePath))
-                    {
-                        inputMetrics.Add(metric);
-                    }
-                }
+                usecase.ApendThroughputMetricsFromImportFile(inputMetrics);
             }
         }
 
