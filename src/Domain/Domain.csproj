@@ -4,6 +4,24 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>KanbanProjectManagementApp.Domain</RootNamespace>
     <AssemblyName>KanbanProjectManagementApp.Domain</AssemblyName>
+    <Version>0.4.0</Version>
+    <Authors>S.L. des Bouvrie</Authors>
+    <Product>Kanban Project Management App</Product>
+    <Description>Domain layer object library for concepts relevant to project management where Kanban is being used.</Description>
+    <Copyright>Copyright (c) 2020 S.L. des Bouvrie</Copyright>
+    <PackageLicenseFile>COPYING</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/Xilconic/Kanban_project_management</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Xilconic/Kanban_project_management</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>kanban;estimate;estimations;throughput;metric;project;management</PackageTags>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\COPYING">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>

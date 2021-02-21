@@ -5,6 +5,30 @@
     <RootNamespace>KanbanProjectManagementApp.Tests.Unit</RootNamespace>
 
     <IsPackable>false</IsPackable>
+
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+    <PackageId>KanbanProjectManagementApp.Tests.Unit</PackageId>
+
+    <Version>0.4.0</Version>
+
+    <Authors>S.L. des Bouvrie</Authors>
+
+    <Product>Kanban Project Management App</Product>
+
+    <Description>Unit tests for the Kanban Project Management App.</Description>
+
+    <Copyright>Copyright (c) 2020 S.L. des Bouvrie</Copyright>
+
+    <PackageLicenseFile>COPYING</PackageLicenseFile>
+
+    <PackageProjectUrl>https://github.com/Xilconic/Kanban_project_management</PackageProjectUrl>
+
+    <RepositoryUrl>https://github.com/Xilconic/Kanban_project_management</RepositoryUrl>
+
+    <RepositoryType>git</RepositoryType>
+
+    <PackageTags>kanban;estimate;estimations;throughput;metric;project;management</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +42,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Application\Application.csproj" />
     <ProjectReference Include="..\..\src\Kanban Project Management App\Kanban Project Management App.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\COPYING">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

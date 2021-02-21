@@ -4,10 +4,28 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>KanbanProjectManagementApp.Application</AssemblyName>
     <RootNamespace>KanbanProjectManagementApp.Application</RootNamespace>
+    <Version>0.4.0</Version>
+    <Authors>S.L. des Bouvrie</Authors>
+    <Product>Kanban Project Management App</Product>
+    <Copyright>Copyright (c) 2020 S.L. des Bouvrie</Copyright>
+    <Description>Application layer object library for concepts relevant to project management where Kanban is being used.</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>COPYING</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/Xilconic/Kanban_project_management</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Xilconic/Kanban_project_management</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>kanban;estimate;estimations;throughput;metric;project;management</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\COPYING">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
