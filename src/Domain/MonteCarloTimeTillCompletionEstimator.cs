@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
-    internal class MonteCarloTimeTillCompletionEstimator
+    public class MonteCarloTimeTillCompletionEstimator
     {
         private readonly int numberOfSimulations;
         private readonly int maximumNumberOfIterations;
@@ -84,14 +84,6 @@ namespace KanbanProjectManagementApp.Domain
             if (inputMetrics.Count == 0)
             {
                 throw new InvalidOperationException("At least 1 datapoint of input metrics is required for estimation.");
-            }
-        }
-
-        private static void ValidateAtLeastOneWorkItemToComplete(int numberOfWorkItemsToComplete)
-        {
-            if (numberOfWorkItemsToComplete <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberOfWorkItemsToComplete), "Number of workitems to complete should be at least 1.");
             }
         }
 

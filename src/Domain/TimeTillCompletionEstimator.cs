@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace KanbanProjectManagementApp.Domain
 {
-    internal class TimeTillCompletionEstimator
+    public class TimeTillCompletionEstimator
     {
         private readonly IReadOnlyList<InputMetric> inputMetrics;
         private readonly IRandomNumberGenerator rng;

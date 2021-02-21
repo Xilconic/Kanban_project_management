@@ -92,10 +92,10 @@ namespace KanbanProjectManagementApp.Domain
         }
 
         /// <exception cref="ArgumentOutOfRangeException"/>
-        internal WorkEstimate GetRoadmapEstimationForSimulation(int simulationIndex) =>
+        public WorkEstimate GetRoadmapEstimationForSimulation(int simulationIndex) =>
             roadmapEstimatesOfEachSimulation[simulationIndex];
 
-        internal WorkEstimate GetProjectEstimationForSimulation(int projectIndex, int simulationIndex) =>
+        public WorkEstimate GetProjectEstimationForSimulation(int projectIndex, int simulationIndex) =>
             projectEstimatesOfEachSimulation[projectIndex][simulationIndex];
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace KanbanProjectManagementApp.Domain
         /// <param name="projectIndex">The 0-based project that was added using <see cref="AddEstimationsForSimulation"/>.</param>
         /// <returns>The work estimates for the given project.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="projectIndex"/> is outside the domain of available projects.</exception>
-        internal IReadOnlyCollection<WorkEstimate> this[int projectIndex]
+        public IReadOnlyCollection<WorkEstimate> this[int projectIndex]
         {
             get
             {
