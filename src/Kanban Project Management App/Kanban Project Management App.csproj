@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\COPYING">
+    <None Include="..\..\COPYING">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
