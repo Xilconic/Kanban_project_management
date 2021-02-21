@@ -24,7 +24,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace KanbanProjectManagementApp.Views.InterfaceImplementations
+namespace KanbanProjectManagementApp.TextFileProcessing
 {
     internal class InputMetricsCsvReader
     {

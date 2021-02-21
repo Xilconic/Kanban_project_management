@@ -22,7 +22,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 
-namespace KanbanProjectManagementApp.Views.InterfaceImplementations
+namespace KanbanProjectManagementApp.TextFileProcessing
 {
     internal class WorkEstimationsCsvWriter
     {
