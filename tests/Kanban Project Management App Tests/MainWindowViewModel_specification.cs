@@ -25,7 +25,7 @@ using System.Collections.Specialized;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit
 {
     public class MainWindowViewModel_specification
     {

@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit.Domain
 {
     public class MonteCarloTimeTillCompletionEstimator_specification
     {

@@ -21,7 +21,7 @@ using Xunit;
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.Views.ValueConverters;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit
 {
     public class ThroughputPerDayValueConverter_specification : IDisposable
     {

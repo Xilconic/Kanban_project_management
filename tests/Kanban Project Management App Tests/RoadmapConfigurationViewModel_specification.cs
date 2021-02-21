@@ -24,7 +24,7 @@ using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit
 {
     public class RoadmapConfigurationViewModel_specification
     {

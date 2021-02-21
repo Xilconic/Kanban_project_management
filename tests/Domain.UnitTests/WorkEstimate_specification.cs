@@ -20,7 +20,7 @@ using Xunit;
 using KanbanProjectManagementApp.Domain;
 using System.Globalization;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit.Domain
 {
     public class WorkEstimate_specification : IDisposable
     {

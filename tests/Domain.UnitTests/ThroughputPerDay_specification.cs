@@ -20,7 +20,7 @@ using System.Globalization;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit.Domain
 {
     public class ThroughputPerDay_specification
     {

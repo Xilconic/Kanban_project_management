@@ -18,7 +18,7 @@ using KanbanProjectManagementApp.Domain;
 using System;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit.Domain
 {
     public class Roadmap_specification
     {

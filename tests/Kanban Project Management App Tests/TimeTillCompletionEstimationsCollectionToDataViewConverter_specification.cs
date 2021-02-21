@@ -23,7 +23,7 @@ using System.Globalization;
 using System.Windows;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit
 {
     public class TimeTillCompletionEstimationsCollectionToDataViewConverter_specification
     {

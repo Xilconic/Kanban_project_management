@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit
 {
     public class InputMetricsCsvReader_specification
     {

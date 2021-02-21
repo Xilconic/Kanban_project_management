@@ -19,7 +19,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests
+namespace KanbanProjectManagementApp.Tests.Unit.Domain
 {
     public class TimeTillCompletionEstimationsCollection_specification
     {
