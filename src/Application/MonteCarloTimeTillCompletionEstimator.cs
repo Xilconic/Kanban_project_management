@@ -46,17 +46,15 @@ namespace KanbanProjectManagementApp.Application
         /// in the first level collection represents the first simulation.
         /// The first element in the second level collection is the estimate for completing the roadmap.
         /// All remaining elements in the second level collection represent the work estimates for the individual projects.</returns>
-        public TimeTillCompletionEstimationsCollection Estimate(IReadOnlyCollection<Project> projectsToComplete)
+        public TimeTillCompletionEstimationsCollection Estimate(RoadmapConfiguration roadmapConfiguration)
         {
             ValidateAtLeastOneInputMetric();
-            ValidateAtLeastOneWorkItemToComplete(projectsToComplete);
 
             var simulationEstimator = new TimeTillCompletionEstimator(inputMetrics, new RandomNumberGenerator(), maximumNumberOfIterations);
-            var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, projectsToComplete.Count);
+            var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, roadmapConfiguration.Projects.Count);
             for (int i = 0; i < numberOfSimulations; i++)
             {
-                var copyOfProjects = projectsToComplete.Select(p => p.DeepClone());
-                var roadmap = new Roadmap(copyOfProjects);
+                var roadmap = roadmapConfiguration.ToWorkableRoadmap();
                 var estimations = simulationEstimator.Estimate(roadmap);
                 simulationResults.AddEstimationsForSimulation(estimations[0], estimations.Skip(1).ToArray()); // First estimate is the roadmap
             }

@@ -518,8 +518,12 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void AND_advanced_mode_roadmap_with_two_projects_with_same_priorities_WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_estimations()
             {
                 viewModelWithOneInputMetric.RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
-                viewModelWithOneInputMetric.RoadmapConfigurator.Projects[0] = new Project(6, 10, "A");
-                viewModelWithOneInputMetric.RoadmapConfigurator.Projects.Add(new Project(4, 10, "B"));
+                viewModelWithOneInputMetric.RoadmapConfigurator.ResetRoadmap(
+                    new[]
+                    {
+                        new ProjectConfiguration("A", 6, 10),
+                        new ProjectConfiguration("B", 4, 10),
+                    });
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 
@@ -534,8 +538,12 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void AND_advanced_mode_roadmap_with_two_projects_with_Different_priorities_WHEN_estimating_completion_time_of_work_items_THEN_estimated_number_of_working_days_till_completion_estimations()
             {
                 viewModelWithOneInputMetric.RoadmapConfigurator.SwitchToAdvancedConfigurationMode();
-                viewModelWithOneInputMetric.RoadmapConfigurator.Projects[0] = new Project(6, 0, "A");
-                viewModelWithOneInputMetric.RoadmapConfigurator.Projects.Add(new Project(4, 10, "B"));
+                viewModelWithOneInputMetric.RoadmapConfigurator.ResetRoadmap(
+                    new[]
+                    {
+                        new ProjectConfiguration("A", 6, 0),
+                        new ProjectConfiguration("B", 4, 10),
+                    });
 
                 viewModelWithOneInputMetric.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
 

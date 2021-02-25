@@ -271,7 +271,7 @@ namespace KanbanProjectManagementApp.ViewModels
                     viewModel.NumberOfMonteCarloSimulations,
                     viewModel.MaximumNumberOfIterations,
                     viewModel.InputMetrics);
-                viewModel.NumberOfWorkingDaysTillCompletionEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Projects);
+                viewModel.NumberOfWorkingDaysTillCompletionEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Roadmap);
             }
         }
 

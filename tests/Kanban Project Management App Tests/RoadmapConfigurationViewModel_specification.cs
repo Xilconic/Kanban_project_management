@@ -14,14 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests.Unit
@@ -68,8 +68,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void THEN_number_of_projects_is_one_and_project_is_initialized_with_some_defaults()
             {
-                var theProject = Assert.Single(newlyCreatedViewModel.Projects);
-                Assert.Equal(10, theProject.NumberOfWorkItemsRemaining);
+                var theProject = Assert.Single(newlyCreatedViewModel.Roadmap.Projects);
+                Assert.Equal(10, theProject.NumberOfWorkItemsToBeCompleted);
             }
         }
 
@@ -77,7 +77,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
         {
             private readonly RoadmapConfigurationViewModel viewModel;
             private readonly PropertyChangedEventTracker propertyChangedTracker;
-            private readonly CollectionChangedEventTracker projectsCollectionChangedTracker;
 
             public GIVEN_view_model_configured_in_simple_mode()
             {
@@ -86,12 +85,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(ConfigurationMode.Simple, viewModel.ConfigurationMode);
 
                 propertyChangedTracker = new PropertyChangedEventTracker(viewModel);
-                projectsCollectionChangedTracker = new CollectionChangedEventTracker(viewModel.Projects);
             }
 
             public void Dispose()
             {
-                projectsCollectionChangedTracker.Dispose();
                 propertyChangedTracker.Dispose();
             }
 
@@ -107,7 +104,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.StartsWith("Number of work items to be completed must be at least 1.", actualException.Message);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
@@ -117,11 +113,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 viewModel.NumberOfWorkItemsToBeCompleted = newNumberOfWorkItemsToBeCompleted;
 
                 Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.NumberOfWorkItemsToBeCompleted);
-                Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.Projects[0].NumberOfWorkItemsRemaining);
+                Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.Roadmap.Projects.First().NumberOfWorkItemsToBeCompleted);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
-                projectsCollectionChangedTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Replace, 1);
             }
 
             [Fact]
@@ -130,7 +125,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 viewModel.NumberOfWorkItemsToBeCompleted = viewModel.NumberOfWorkItemsToBeCompleted;
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
@@ -139,20 +133,21 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 viewModel.SwitchToAdvancedConfigurationMode();
 
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.ConfigurationMode));
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
             public void WHEN_resetting_to_single_project_THEN_projects_and_related_properties_updated()
             {
                 const int NumberOfWorkItemsRemaining = 2;
-                var projects = new[] { new Project(NumberOfWorkItemsRemaining) };
+                var projects = new[] { new ProjectConfiguration("A", NumberOfWorkItemsRemaining, 7) };
 
                 viewModel.ResetRoadmap(projects);
 
-                var actualProject = Assert.Single(viewModel.Projects);
-                Assert.Same(projects[0], actualProject);
-                projectsCollectionChangedTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Replace, 1);
+                var actualProject = Assert.Single(viewModel.Roadmap.Projects);
+                Assert.NotSame(projects[0], actualProject);
+                Assert.Equal("Project", actualProject.Name);
+                Assert.Equal(NumberOfWorkItemsRemaining, actualProject.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(0, actualProject.PriorityWeight);
 
                 Assert.Equal(1, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
@@ -166,8 +161,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 var projects = new[]
                 {
-                    new Project(1),
-                    new Project(2)
+                    new ProjectConfiguration("A", 1, default),
+                    new ProjectConfiguration("B", 2, default)
                 };
 
                 void call() => viewModel.ResetRoadmap(projects);
@@ -179,7 +174,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
@@ -187,7 +181,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 viewModel.SwitchToSimpleConfigurationMode();
 
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
             }
         }
@@ -196,7 +189,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
         {
             private readonly RoadmapConfigurationViewModel viewModel;
             private readonly PropertyChangedEventTracker propertyChangedTracker;
-            private readonly CollectionChangedEventTracker projectsCollectionChangedTracker;
             private readonly Mock<IAskUserForConfirmationToProceed> askUserForConfirmationToProceedMock;
 
             public GIVEN_view_model_configured_in_advanced_mode()
@@ -209,12 +201,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(ConfigurationMode.Advanced, viewModel.ConfigurationMode);
 
                 propertyChangedTracker = new PropertyChangedEventTracker(viewModel);
-                projectsCollectionChangedTracker = new CollectionChangedEventTracker(viewModel.Projects);
             }
 
             public void Dispose()
             {
-                projectsCollectionChangedTracker.Dispose();
                 propertyChangedTracker.Dispose();
             }
 
@@ -234,41 +224,17 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 Assert.Equal(ConfigurationMode.Advanced, viewModel.ConfigurationMode);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
-            }
-
-            [Fact]
-            public void WHEN_removing_last_project_THEN_throw_InvalidOperationException()
-            {
-                void assertThatActionThrowsInvalidOperationExceptionAndRetainsProject(Action call)
-                {
-                    var exception = Assert.Throws<InvalidOperationException>(call);
-                    Assert.Equal("Cannot delete last project of Roadmap.", exception.Message);
-
-                    Assert.Single(viewModel.Projects);
-                    Assert.Equal(1, viewModel.NumberOfProjects);
-                    Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
-
-                    propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                    projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
-                }
-
-                assertThatActionThrowsInvalidOperationExceptionAndRetainsProject(
-                    () => viewModel.Projects.RemoveAt(0));
-
-                assertThatActionThrowsInvalidOperationExceptionAndRetainsProject(
-                    () => viewModel.Projects.Remove(viewModel.Projects[0]));
-
-                assertThatActionThrowsInvalidOperationExceptionAndRetainsProject(
-                    () => viewModel.Projects.Clear());
             }
 
             [Fact]
             public void WHEN_adding_new_project_THEN_number_of_projects_and_work_items_updated()
             {
-                viewModel.Projects.Add(new Project(1));
-
-                projectsCollectionChangedTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Add, 1);
+                var newProjects = new[]
+                {
+                    viewModel.Roadmap.Projects.First(),
+                    new ProjectConfiguration("A", 1, default)
+                };
+                viewModel.ResetRoadmap(newProjects);
 
                 Assert.Equal(2, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
@@ -280,7 +246,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void AND_an_empty_collection_of_projects_WHEN_resetting_roadmap_THEN_throw_ArgumentException()
             {
-                var newProjects = Array.Empty<Project>();
+                var newProjects = Array.Empty<ProjectConfiguration>();
 
                 void call() => viewModel.ResetRoadmap(newProjects);
 
@@ -289,10 +255,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 Assert.Equal(1, viewModel.NumberOfProjects);
                 Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
-                var actualProject = Assert.Single(viewModel.Projects);
-                Assert.Equal(10, actualProject.NumberOfWorkItemsRemaining);
+                var actualProject = Assert.Single(viewModel.Roadmap.Projects);
+                Assert.Equal(10, actualProject.NumberOfWorkItemsToBeCompleted);
 
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
             }
 
@@ -301,14 +266,13 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 var newProjects = new[]
                 {
-                    new Project(1),
-                    new Project(2)
+                    new ProjectConfiguration("A", 1, default),
+                    new ProjectConfiguration("B", 2, default),
                 };
 
                 viewModel.ResetRoadmap(newProjects);
 
-                Assert.Equal(newProjects, viewModel.Projects, new ProjectEqualityComparer());
-                projectsCollectionChangedTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Reset, 1);
+                Assert.Equal(newProjects, viewModel.Roadmap.Projects, new ProjectConfigurationEqualityComparer());
 
                 Assert.Equal(newProjects.Length, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
@@ -330,8 +294,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
-
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
@@ -343,11 +305,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 viewModel.ResetRoadmap(new[]
                 {
-                    new Project(1),
-                    new Project(2),
+                    new ProjectConfiguration("A", 1, default),
+                    new ProjectConfiguration("B", 2, default),
                 });
 
-                projectsCollectionChangedTracker.ClearAllRecordedEvents();
                 propertyChangedTracker.ClearAllRecordedEvents();
 
                 viewModel.SwitchToSimpleConfigurationMode();
@@ -355,7 +316,6 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(ConfigurationMode.Advanced, viewModel.ConfigurationMode);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
-                projectsCollectionChangedTracker.AssertNoCollectionChangeNotificationsHappened();
             }
 
             [Fact]
@@ -367,11 +327,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
 
                 viewModel.ResetRoadmap(new[]
                 {
-                    new Project(1),
-                    new Project(1),
+                    new ProjectConfiguration("A", 1, default),
+                    new ProjectConfiguration("B", 1, default),
                 });
 
-                projectsCollectionChangedTracker.ClearAllRecordedEvents();
                 propertyChangedTracker.ClearAllRecordedEvents();
 
                 viewModel.SwitchToSimpleConfigurationMode();
@@ -385,14 +344,13 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(2, viewModel.NumberOfWorkItemsToBeCompleted);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
 
-                var actualProject = Assert.Single(viewModel.Projects);
-                Assert.Equal(2, actualProject.NumberOfWorkItemsRemaining);
-                projectsCollectionChangedTracker.AssertCollectionChangeNotificationsHappenedForAction(NotifyCollectionChangedAction.Reset, 1); ;
+                var actualProject = Assert.Single(viewModel.Roadmap.Projects);
+                Assert.Equal(2, actualProject.NumberOfWorkItemsToBeCompleted);
             }
 
-            internal class ProjectEqualityComparer : IEqualityComparer<Project>
+            internal class ProjectConfigurationEqualityComparer : IEqualityComparer<ProjectConfiguration>
             {
-                public bool Equals([AllowNull] Project x, [AllowNull] Project y)
+                public bool Equals([AllowNull] ProjectConfiguration x, [AllowNull] ProjectConfiguration y)
                 {
                     if (x is null)
                     {
@@ -404,12 +362,12 @@ namespace KanbanProjectManagementApp.Tests.Unit
                         return false;
                     }
 
-                    return x.NumberOfWorkItemsRemaining == y.NumberOfWorkItemsRemaining;
+                    return x.NumberOfWorkItemsToBeCompleted == y.NumberOfWorkItemsToBeCompleted;
                 }
 
-                public int GetHashCode([DisallowNull] Project obj)
+                public int GetHashCode([DisallowNull] ProjectConfiguration obj)
                 {
-                    return obj.NumberOfWorkItemsRemaining.GetHashCode();
+                    return obj.NumberOfWorkItemsToBeCompleted.GetHashCode();
                 }
             }
         }

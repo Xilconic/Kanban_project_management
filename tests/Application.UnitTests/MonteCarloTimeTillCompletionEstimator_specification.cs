@@ -77,24 +77,12 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         public void GIVEN_no_input_metrics_WHEN_estimating_THEN_throw_InvalidOperationException()
         {
             var estimator = new MonteCarloTimeTillCompletionEstimator(1, 1, inputMetrics);
-            var projects = new[] { new Project(1) };
+            var projects = new[] { new ProjectConfiguration("A", 1, default) };
+            var roadmapConfiguration = new RoadmapConfiguration(projects);
 
-            void call() => estimator.Estimate(projects);
+            void call() => estimator.Estimate(roadmapConfiguration);
             var actualException = Assert.Throws<InvalidOperationException>(call);
             Assert.Equal("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
-        }
-
-        [Fact]
-        public void GIVEN_single_completed_project_WHEN_estimating_THEN_throw_ArgumentOutOfRangeException()
-        {
-            var inputMetrics = new[] { new InputMetric { Throughput = new ThroughputPerDay(2) } };
-            var estimator = new MonteCarloTimeTillCompletionEstimator(1, 1, inputMetrics);
-
-            Project project = CreateCompletedProject();
-            var projects = new[] { project };
-
-            void call() => estimator.Estimate(projects);
-            AssertActionThrowsArgumentOutOfRangeException(call, "projectsToComplete", "Number of workitems to complete should be at least 1.");
         }
 
         [Fact]
@@ -108,9 +96,10 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             var estimator = new MonteCarloTimeTillCompletionEstimator(numberOfSimulations, 10, inputMetrics);
 
             var projectName = "test";
-            var projects = new[] { new Project(10, default, projectName) };
+            var projects = new[] { new ProjectConfiguration(projectName, 10, default) };
+            var roadmapConfiguration = new RoadmapConfiguration(projects);
 
-            var estimations = estimator.Estimate(projects);
+            var estimations = estimator.Estimate(roadmapConfiguration);
             Assert.Equal(numberOfSimulations, estimations.RoadmapEstimations.Count);
             Assert.Collection(estimations.RoadmapEstimations,
                 estimate1 => Assert.Equal("Roadmap", estimate1.Identifier),
@@ -136,13 +125,6 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             Assert.Collection(projectEstimates,
                 estimate1 => Assert.Equal(5.0, estimate1.EstimatedNumberOfWorkingDaysRequired),
                 estimate2 => Assert.Equal(5.0, estimate2.EstimatedNumberOfWorkingDaysRequired));
-        }
-
-        private static Project CreateCompletedProject()
-        {
-            var project = new Project(1);
-            project.CompleteWorkItem();
-            return project;
         }
 
         private static void AssertActionThrowsArgumentOutOfRangeException(

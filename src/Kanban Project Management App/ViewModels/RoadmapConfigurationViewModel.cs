@@ -14,11 +14,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.Application;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 
@@ -26,9 +24,12 @@ namespace KanbanProjectManagementApp.ViewModels
 {
     public class RoadmapConfigurationViewModel : INotifyPropertyChanged
     {
+        private const string DefaultProjectName = "Project";
+        private const int DefaultPriorityWeight = 0;
+
         private int numberOfWorkItemsToBeCompleted = 10;
         private ConfigurationMode configurationMode = ConfigurationMode.Simple;
-        private readonly ObservableCollectionThatKeepsAtLeastOneItem<Project> projects;
+        private readonly RoadmapConfiguration roadmapConfiguration;
 
         private readonly IAskUserForConfirmationToProceed confirmationAsker;
 
@@ -36,13 +37,11 @@ namespace KanbanProjectManagementApp.ViewModels
 
         public RoadmapConfigurationViewModel(IAskUserForConfirmationToProceed confirmationAsker)
         {
-            projects = new ObservableCollectionThatKeepsAtLeastOneItem<Project>(
-                            new[] { new Project(numberOfWorkItemsToBeCompleted) },
-                            "project of Roadmap")
-            {
-                AreCollectionChangesAllowed = false, // Simple mode does not allow any modification to the collection
-            };
-            projects.CollectionChanged += Projects_CollectionChanged;
+            roadmapConfiguration = new RoadmapConfiguration(new[]
+                {
+                    new ProjectConfiguration(DefaultProjectName, numberOfWorkItemsToBeCompleted, DefaultPriorityWeight)
+                });
+
             this.confirmationAsker = confirmationAsker ?? throw new ArgumentNullException(nameof(confirmationAsker));
         }
 
@@ -50,7 +49,7 @@ namespace KanbanProjectManagementApp.ViewModels
         {
             get
             {
-                return projects.Sum(p => p.NumberOfWorkItemsRemaining);
+                return roadmapConfiguration.Projects.Sum(p => p.NumberOfWorkItemsToBeCompleted);
             }
             set
             {
@@ -59,7 +58,7 @@ namespace KanbanProjectManagementApp.ViewModels
                     throw new InvalidOperationException($"Cannot set a value for '{nameof(NumberOfWorkItemsToBeCompleted)}' when in {ConfigurationMode.Advanced} configuration mode.");
                 }
 
-                TemporarilyAllowProjectsToBeUpdated(() => SetNumberOfWorkItemsToBeCompleted(value));
+                SetNumberOfWorkItemsToBeCompleted(value);
             }
         }
 
@@ -76,23 +75,17 @@ namespace KanbanProjectManagementApp.ViewModels
 
                 if (ConfigurationMode == ConfigurationMode.Simple)
                 {
-                    projects[0] = new Project(value);
+                    roadmapConfiguration.Projects.First().NumberOfWorkItemsToBeCompleted = value;
                 }
 
                 NotifyNumberOfWorkItemsToBeCompletedChanged();
             }
         }
 
-        public int NumberOfProjects
-        {
-            get
-            {
-                return projects.Count;
-            }
-        }
+        public int NumberOfProjects => roadmapConfiguration.Projects.Count;
 
-        // TODO: It's technically possible for other classes to change stuff to this collection
-        public ObservableCollection<Project> Projects => projects;
+        // TODO: It's technically possible for other classes to change stuff to this Roadmap
+        public RoadmapConfiguration Roadmap => roadmapConfiguration;
 
         public ConfigurationMode ConfigurationMode
         {
@@ -102,7 +95,6 @@ namespace KanbanProjectManagementApp.ViewModels
                 if (configurationMode != value)
                 {
                     configurationMode = value;
-                    projects.AreCollectionChangesAllowed = value != ConfigurationMode.Simple;
                     NotifyConfigurationModeChanged();
                 }
             }
@@ -115,7 +107,8 @@ namespace KanbanProjectManagementApp.ViewModels
 
         public void SwitchToSimpleConfigurationMode()
         {
-            if (projects.Count > 1 && !confirmationAsker.ConfirmToProceed("Switching to 'Simple Mode' will cause all projects to be flattened into one. Do you want to continue?"))
+            if (roadmapConfiguration.Projects.Count > 1 &&
+                !confirmationAsker.ConfirmToProceed("Switching to 'Simple Mode' will cause all projects to be flattened into one. Do you want to continue?"))
             {
                 return;
             }
@@ -127,26 +120,25 @@ namespace KanbanProjectManagementApp.ViewModels
         /// <exception cref="ArgumentException">Thrown when <paramref name="newProjects"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">Thrown when <paramref name="newProjects"/> doesn't contain
         /// exactly 1 project when <see cref="ConfigurationMode"/> equals to <see cref="ConfigurationMode.Simple"/>.</exception>
-        public void ResetRoadmap(IEnumerable<Project> newProjects)
+        public void ResetRoadmap(IReadOnlyCollection<ProjectConfiguration> newProjects)
         {
             if (ConfigurationMode == ConfigurationMode.Simple)
             {
-                if(newProjects.Count() != 1)
+                if(newProjects.Count != 1)
                 {
                     throw new InvalidOperationException("When in simple mode, can only reset using a single project.");
                 }
 
-                TemporarilyAllowProjectsToBeUpdated(() =>
-                {
-                    projects[0] = newProjects.First();
-                    NotifyNumberOfWorkItemsToBeCompletedChanged();
-                });
+                roadmapConfiguration.Projects.First().NumberOfWorkItemsToBeCompleted = newProjects.First().NumberOfWorkItemsToBeCompleted;
+                NotifyNumberOfWorkItemsToBeCompletedChanged();
             }
             else
             {
                 try
                 {
-                    projects.ResetElements(newProjects);
+                    roadmapConfiguration.Projects = newProjects;
+                    NotifyNumberOfProjectsChanged();
+                    SetNumberOfWorkItemsToBeCompleted(newProjects.Sum(p => p.NumberOfWorkItemsToBeCompleted));
                 }
                 catch (ArgumentException ex)
                 {
@@ -158,52 +150,17 @@ namespace KanbanProjectManagementApp.ViewModels
             }
         }
 
-        private void TemporarilyAllowProjectsToBeUpdated(Action call)
-        {
-            projects.AreCollectionChangesAllowed = true;
-            try
-            {
-                call();
-            }
-            finally
-            {
-                projects.AreCollectionChangesAllowed = false;
-            }
-        }
-
         private void FlattenProjectsIntoOne()
         {
-            if (projects.Count > 1)
+            if (roadmapConfiguration.Projects.Count > 1)
             {
-                ResetRoadmap(new[] { new Project(projects.Sum(p => p.NumberOfWorkItemsRemaining)) });
-            }
-        }
-
-        private void Projects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Reset:
-                    NotifyNumberOfProjectsChanged();
-                    SetNumberOfWorkItemsToBeCompleted(projects.Sum(p => p.NumberOfWorkItemsRemaining));
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    // Note: Number of projects never changed because of a replacement.
-                    if(ConfigurationMode == ConfigurationMode.Simple)
-                    {
-                        numberOfWorkItemsToBeCompleted = projects.Sum(p => p.NumberOfWorkItemsRemaining);
-                    }
-                    else
-                    {
-                        SetNumberOfWorkItemsToBeCompleted(projects.Sum(p => p.NumberOfWorkItemsRemaining));
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    // Do Nothing, as moving elements around in Projects doesn't affect NumberOfProjects nor NumberofWorkItemsToBeCompleted.
-                    break;
-                default: throw new InvalidEnumArgumentException(nameof(e.Action), (int)e.Action, typeof(NotifyCollectionChangedAction));
+                ResetRoadmap(new[]
+                {
+                    new ProjectConfiguration(
+                        DefaultProjectName,
+                        roadmapConfiguration.Projects.Sum(p => p.NumberOfWorkItemsToBeCompleted),
+                        DefaultPriorityWeight)
+                });
             }
         }
 

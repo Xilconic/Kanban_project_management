@@ -14,7 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.Application;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -41,14 +41,24 @@ namespace KanbanProjectManagementApp.Views
     public class ProjectRowItem
     {
         private int numberOfWorkItemsToBeCompleted = 1;
+        private string name = "Project";
 
-        public string Name { get; set; } = "Project";
+        public string Name
+        {
+            get => name;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("Name must be specified");
+                name = value;
+            }
+        }
+
         public int NumberOfWorkItemsToBeCompleted
         {
             get => numberOfWorkItemsToBeCompleted;
             set
             {
-                if(value <= 0)
+                if (value <= 0)
                 {
                     throw new ArgumentOutOfRangeException("Number of work items should be at least 1.");
                 }
@@ -56,17 +66,18 @@ namespace KanbanProjectManagementApp.Views
                 numberOfWorkItemsToBeCompleted = value;
             }
         }
+
         public int PriorityWeight { get; set; }
 
-        public static ProjectRowItem FromDomain(Project project) =>
+        public static ProjectRowItem FromDomain(ProjectConfiguration projectConfiguration) =>
             new ProjectRowItem
             {
-                NumberOfWorkItemsToBeCompleted = project.NumberOfWorkItemsRemaining,
-                Name = project.Name,
-                PriorityWeight = project.PriorityWeight,
+                NumberOfWorkItemsToBeCompleted = projectConfiguration.NumberOfWorkItemsToBeCompleted,
+                Name = projectConfiguration.Name,
+                PriorityWeight = projectConfiguration.PriorityWeight,
             };
 
-        public Project ToDomain() =>
-            new Project(NumberOfWorkItemsToBeCompleted, PriorityWeight, Name);
+        public ProjectConfiguration ToConfiguration() =>
+            new ProjectConfiguration(Name, NumberOfWorkItemsToBeCompleted, PriorityWeight);
     }
 }

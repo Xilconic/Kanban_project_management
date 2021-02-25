@@ -53,14 +53,14 @@ namespace KanbanProjectManagementApp.Views
             var result = projectedEditorWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                RoadmapConfigurator.ResetRoadmap(projectsRowItems.Select(i => i.ToDomain()));
+                RoadmapConfigurator.ResetRoadmap(projectsRowItems.Select(i => i.ToConfiguration()).ToArray());
             }
         }
 
         private ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
         {
             return new ObservableCollectionThatKeepsAtLeastOneItem<ProjectRowItem>(
-                configurationViewModel.Projects.Select(ProjectRowItem.FromDomain).ToArray(), "project of Roadmap");
+                configurationViewModel.Roadmap.Projects.Select(ProjectRowItem.FromDomain).ToArray(), "project of Roadmap");
         }
 
         private bool reEntrancyGuardWhenSwitchingToSimpleMode = false;
