@@ -17,11 +17,11 @@
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.TextFileProcessing;
-using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

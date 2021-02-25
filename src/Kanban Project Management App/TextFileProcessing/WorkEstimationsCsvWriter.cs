@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Application;
-using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Views.ValueConverters;
 using System;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {

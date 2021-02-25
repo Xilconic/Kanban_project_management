@@ -16,7 +16,6 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -24,6 +23,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {

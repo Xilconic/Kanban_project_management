@@ -16,6 +16,7 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Application;
 using System;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.ViewModels
 {

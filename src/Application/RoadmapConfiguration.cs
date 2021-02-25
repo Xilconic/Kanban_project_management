@@ -25,12 +25,14 @@ namespace KanbanProjectManagementApp.Application
     {
         private IReadOnlyCollection<ProjectConfiguration> configuredProjects;
 
+        /// <exception cref="ArgumentException">Thrown when <paramref name="configuredProjects"/> is invalid.</exception>
         public RoadmapConfiguration(IEnumerable<ProjectConfiguration> configuredProjects)
         {
             ValidateProjects(configuredProjects);
             this.configuredProjects = configuredProjects.ToArray();
         }
 
+        /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> is invalid.</exception>
         public IReadOnlyCollection<ProjectConfiguration> Projects
         {
             get => configuredProjects;
@@ -43,6 +45,7 @@ namespace KanbanProjectManagementApp.Application
 
         public Roadmap ToWorkableRoadmap() => new Roadmap(configuredProjects.Select(prop => prop.ToWorkableProject()));
 
+        /// <exception cref="ArgumentException">Thrown when <paramref name="configuredProjects"/> is invalid.</exception>
         private static void ValidateProjects(IEnumerable<ProjectConfiguration> configuredProjects)
         {
             if (configuredProjects is null) throw new ArgumentNullException(nameof(configuredProjects));

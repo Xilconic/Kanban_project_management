@@ -18,103 +18,61 @@ using KanbanProjectManagementApp.Application;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.ViewModels
 {
     public class RoadmapConfigurationViewModel : INotifyPropertyChanged
     {
-        private const string DefaultProjectName = "Project";
-        private const int DefaultPriorityWeight = 0;
-
-        private int numberOfWorkItemsToBeCompleted = 10;
-        private ConfigurationMode configurationMode = ConfigurationMode.Simple;
-        private readonly RoadmapConfiguration roadmapConfiguration;
-
-        private readonly IAskUserForConfirmationToProceed confirmationAsker;
+        private readonly RoadmapConfigurator configurator;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public RoadmapConfigurationViewModel(IAskUserForConfirmationToProceed confirmationAsker)
         {
-            roadmapConfiguration = new RoadmapConfiguration(new[]
-                {
-                    new ProjectConfiguration(DefaultProjectName, numberOfWorkItemsToBeCompleted, DefaultPriorityWeight)
-                });
-
-            this.confirmationAsker = confirmationAsker ?? throw new ArgumentNullException(nameof(confirmationAsker));
+            configurator = new RoadmapConfigurator(confirmationAsker);
         }
 
-        public int NumberOfWorkItemsToBeCompleted
+        public int TotalNumberOfWorkItemsToBeCompleted
         {
             get
             {
-                return roadmapConfiguration.Projects.Sum(p => p.NumberOfWorkItemsToBeCompleted);
+                return configurator.TotalNumberOfWorkItemsToBeCompleted;
             }
             set
             {
-                if (ConfigurationMode == ConfigurationMode.Advanced)
+                if (value != configurator.TotalNumberOfWorkItemsToBeCompleted)
                 {
-                    throw new InvalidOperationException($"Cannot set a value for '{nameof(NumberOfWorkItemsToBeCompleted)}' when in {ConfigurationMode.Advanced} configuration mode.");
-                }
-
-                SetNumberOfWorkItemsToBeCompleted(value);
-            }
-        }
-
-        private void SetNumberOfWorkItemsToBeCompleted(int value)
-        {
-            if (value <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Number of work items to be completed must be at least 1.");
-            }
-
-            if (value != numberOfWorkItemsToBeCompleted)
-            {
-                numberOfWorkItemsToBeCompleted = value;
-
-                if (ConfigurationMode == ConfigurationMode.Simple)
-                {
-                    roadmapConfiguration.Projects.First().NumberOfWorkItemsToBeCompleted = value;
-                }
-
-                NotifyNumberOfWorkItemsToBeCompletedChanged();
-            }
-        }
-
-        public int NumberOfProjects => roadmapConfiguration.Projects.Count;
-
-        // TODO: It's technically possible for other classes to change stuff to this Roadmap
-        public RoadmapConfiguration Roadmap => roadmapConfiguration;
-
-        public ConfigurationMode ConfigurationMode
-        {
-            get => configurationMode;
-            private set
-            {
-                if (configurationMode != value)
-                {
-                    configurationMode = value;
-                    NotifyConfigurationModeChanged();
+                    configurator.TotalNumberOfWorkItemsToBeCompleted = value;
+                    NotifyNumberOfWorkItemsToBeCompletedChanged();
                 }
             }
         }
+
+        public int NumberOfProjects => configurator.NumberOfProjects;
+        public RoadmapConfiguration Roadmap => configurator.Configuration;
+        public ConfigurationMode ConfigurationMode => configurator.Mode;
 
         public void SwitchToAdvancedConfigurationMode()
         {
-            ConfigurationMode = ConfigurationMode.Advanced;
+            if (configurator.SwitchToAdvancedConfigurationMode())
+            {
+                NotifyConfigurationModeChanged();
+            }
         }
 
         public void SwitchToSimpleConfigurationMode()
         {
-            if (roadmapConfiguration.Projects.Count > 1 &&
-                !confirmationAsker.ConfirmToProceed("Switching to 'Simple Mode' will cause all projects to be flattened into one. Do you want to continue?"))
+            var originalNumberOfProjects = configurator.NumberOfProjects;
+            if (configurator.SwitchToSimpleConfigurationMode())
             {
-                return;
-            }
+                if(originalNumberOfProjects != configurator.NumberOfProjects)
+                {
+                    NotifyNumberOfProjectsChanged();
+                }
 
-            FlattenProjectsIntoOne();
-            ConfigurationMode = ConfigurationMode.Simple;
+                NotifyConfigurationModeChanged();
+            }
         }
 
         /// <exception cref="ArgumentException">Thrown when <paramref name="newProjects"/> is empty.</exception>
@@ -122,50 +80,24 @@ namespace KanbanProjectManagementApp.ViewModels
         /// exactly 1 project when <see cref="ConfigurationMode"/> equals to <see cref="ConfigurationMode.Simple"/>.</exception>
         public void ResetRoadmap(IReadOnlyCollection<ProjectConfiguration> newProjects)
         {
-            if (ConfigurationMode == ConfigurationMode.Simple)
-            {
-                if(newProjects.Count != 1)
-                {
-                    throw new InvalidOperationException("When in simple mode, can only reset using a single project.");
-                }
+            var originalNumberOfProjects = configurator.NumberOfProjects;
+            var originalNumberOfWorkItems = configurator.TotalNumberOfWorkItemsToBeCompleted;
 
-                roadmapConfiguration.Projects.First().NumberOfWorkItemsToBeCompleted = newProjects.First().NumberOfWorkItemsToBeCompleted;
+            configurator.ResetRoadmap(newProjects);
+
+            if(originalNumberOfWorkItems != configurator.TotalNumberOfWorkItemsToBeCompleted)
+            {
                 NotifyNumberOfWorkItemsToBeCompletedChanged();
             }
-            else
-            {
-                try
-                {
-                    roadmapConfiguration.Projects = newProjects;
-                    NotifyNumberOfProjectsChanged();
-                    SetNumberOfWorkItemsToBeCompleted(newProjects.Sum(p => p.NumberOfWorkItemsToBeCompleted));
-                }
-                catch (ArgumentException ex)
-                {
-                    throw new ArgumentException(
-                        "Requires at least one project when resetting a Roadmap.",
-                        nameof(newProjects),
-                        ex);
-                }
-            }
-        }
 
-        private void FlattenProjectsIntoOne()
-        {
-            if (roadmapConfiguration.Projects.Count > 1)
+            if (originalNumberOfProjects != configurator.NumberOfProjects)
             {
-                ResetRoadmap(new[]
-                {
-                    new ProjectConfiguration(
-                        DefaultProjectName,
-                        roadmapConfiguration.Projects.Sum(p => p.NumberOfWorkItemsToBeCompleted),
-                        DefaultPriorityWeight)
-                });
+                NotifyNumberOfProjectsChanged();
             }
         }
 
         private void NotifyNumberOfWorkItemsToBeCompletedChanged() =>
-            NotifyPropertyChange(nameof(NumberOfWorkItemsToBeCompleted));
+            NotifyPropertyChange(nameof(TotalNumberOfWorkItemsToBeCompleted));
 
         private void NotifyNumberOfProjectsChanged() =>
             NotifyPropertyChange(nameof(NumberOfProjects));
@@ -175,11 +107,5 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private void NotifyPropertyChange(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    public enum ConfigurationMode
-    {
-        Simple,
-        Advanced
     }
 }

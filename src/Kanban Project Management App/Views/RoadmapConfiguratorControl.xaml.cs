@@ -14,7 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Views
 {
@@ -87,7 +88,7 @@ namespace KanbanProjectManagementApp.Views
                         else
                         {
                             RoadmapConfigurator.SwitchToSimpleConfigurationMode();
-                            if (RoadmapConfigurator.ConfigurationMode == ViewModels.ConfigurationMode.Advanced)
+                            if (RoadmapConfigurator.ConfigurationMode == ConfigurationMode.Advanced)
                             {
                                 reEntrancyGuardWhenSwitchingToSimpleMode = true;
                                 ModeSelectorControl.SelectedIndex = 1;
@@ -114,12 +115,6 @@ namespace KanbanProjectManagementApp.Views
                 1 => ConfigurationMode.Advanced,
                 _ => throw new ArgumentOutOfRangeException(nameof(selectedIndex)),
             };
-        }
-
-        private enum ConfigurationMode
-        {
-            Simple,
-            Advanced,
         }
 
         private class IAskUserForConfirmationToProceedStub : IAskUserForConfirmationToProceed

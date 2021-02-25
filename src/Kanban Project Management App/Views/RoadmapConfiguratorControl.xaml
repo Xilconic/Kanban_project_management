@@ -40,7 +40,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding RoadmapConfigurator.NumberOfWorkItemsToBeCompleted, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
+                <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding RoadmapConfigurator.TotalNumberOfWorkItemsToBeCompleted, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
             </Grid>
         </TabItem>
 
@@ -64,7 +64,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 <TextBox Grid.Column="1" Grid.Row="0" Margin="4" IsReadOnly="True" Text="{Binding RoadmapConfigurator.NumberOfProjects, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
 
                 <TextBlock Grid.Column="0" Grid.Row="1" Margin="4" TextAlignment="Right">Number of Work Items:</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="1" Margin="4" IsReadOnly="True" Text="{Binding RoadmapConfigurator.NumberOfWorkItemsToBeCompleted, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
+                <TextBox Grid.Column="1" Grid.Row="1" Margin="4" IsReadOnly="True" Text="{Binding RoadmapConfigurator.TotalNumberOfWorkItemsToBeCompleted, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:RoadmapConfiguratorControl}}}"/>
 
                 <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Click="EditRoadmapProjectsButton_Click">Edit...</Button>
             </Grid>

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Xunit;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {
@@ -56,7 +57,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void THEN_number_of_work_items_to_be_completed_is_ten()
             {
-                Assert.Equal(10, newlyCreatedViewModel.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(10, newlyCreatedViewModel.TotalNumberOfWorkItemsToBeCompleted);
             }
 
             [Fact]
@@ -98,7 +99,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_invalid_number_of_work_items_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfWorkItems)
             {
-                void call() => viewModel.NumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                void call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
 
                 var actualException = Assert.Throws<ArgumentOutOfRangeException>("value", call);
                 Assert.StartsWith("Number of work items to be completed must be at least 1.", actualException.Message);
@@ -110,19 +111,19 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_new_number_of_work_items_THEN_number_of_work_items_changed()
             {
                 const int newNumberOfWorkItemsToBeCompleted = 35;
-                viewModel.NumberOfWorkItemsToBeCompleted = newNumberOfWorkItemsToBeCompleted;
+                viewModel.TotalNumberOfWorkItemsToBeCompleted = newNumberOfWorkItemsToBeCompleted;
 
-                Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.TotalNumberOfWorkItemsToBeCompleted);
                 Assert.Equal(newNumberOfWorkItemsToBeCompleted, viewModel.Roadmap.Projects.First().NumberOfWorkItemsToBeCompleted);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
-                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
             }
 
             [Fact]
             public void WHEN_setting_same_number_of_work_items_THEN_nothing_happens()
             {
-                viewModel.NumberOfWorkItemsToBeCompleted = viewModel.NumberOfWorkItemsToBeCompleted;
+                viewModel.TotalNumberOfWorkItemsToBeCompleted = viewModel.TotalNumberOfWorkItemsToBeCompleted;
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
             }
@@ -152,8 +153,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(1, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
 
-                Assert.Equal(NumberOfWorkItemsRemaining, viewModel.NumberOfWorkItemsToBeCompleted);
-                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                Assert.Equal(NumberOfWorkItemsRemaining, viewModel.TotalNumberOfWorkItemsToBeCompleted);
+                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
             }
 
             [Fact]
@@ -171,7 +172,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal("When in simple mode, can only reset using a single project.", actualException.Message);
 
                 Assert.Equal(1, viewModel.NumberOfProjects);
-                Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(10, viewModel.TotalNumberOfWorkItemsToBeCompleted);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
             }
@@ -211,10 +212,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void WHEN_setting_number_of_work_items_to_be_completed_THEN_throw_InvalidOperationException()
             {
-                void call() => viewModel.NumberOfWorkItemsToBeCompleted = 1;
+                void call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = 1;
 
                 var actualException = Assert.Throws<InvalidOperationException>(call);
-                Assert.Equal("Cannot set a value for 'NumberOfWorkItemsToBeCompleted' when in Advanced configuration mode.", actualException.Message);
+                Assert.Equal("Cannot set a value for 'TotalNumberOfWorkItemsToBeCompleted' when in Advanced configuration mode.", actualException.Message);
             }
 
             [Fact]
@@ -239,8 +240,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(2, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
 
-                Assert.Equal(11, viewModel.NumberOfWorkItemsToBeCompleted);
-                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                Assert.Equal(11, viewModel.TotalNumberOfWorkItemsToBeCompleted);
+                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
             }
 
             [Fact]
@@ -254,7 +255,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.StartsWith("Requires at least one project when resetting a Roadmap.", actualException.Message);
 
                 Assert.Equal(1, viewModel.NumberOfProjects);
-                Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
+                Assert.Equal(10, viewModel.TotalNumberOfWorkItemsToBeCompleted);
                 var actualProject = Assert.Single(viewModel.Roadmap.Projects);
                 Assert.Equal(10, actualProject.NumberOfWorkItemsToBeCompleted);
 
@@ -277,8 +278,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(newProjects.Length, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
 
-                Assert.Equal(3, viewModel.NumberOfWorkItemsToBeCompleted);
-                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                Assert.Equal(3, viewModel.TotalNumberOfWorkItemsToBeCompleted);
+                propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
             }
 
             [Fact]
@@ -292,8 +293,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(1, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
 
-                Assert.Equal(10, viewModel.NumberOfWorkItemsToBeCompleted);
-                propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                Assert.Equal(10, viewModel.TotalNumberOfWorkItemsToBeCompleted);
+                propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
             }
 
             [Fact]
@@ -341,8 +342,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 Assert.Equal(1, viewModel.NumberOfProjects);
                 propertyChangedTracker.AssertOnlyOnePropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfProjects));
 
-                Assert.Equal(2, viewModel.NumberOfWorkItemsToBeCompleted);
-                propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.NumberOfWorkItemsToBeCompleted));
+                Assert.Equal(2, viewModel.TotalNumberOfWorkItemsToBeCompleted);
+                propertyChangedTracker.AssertNoPropertyChangeNotificationHappenedForName(nameof(viewModel.TotalNumberOfWorkItemsToBeCompleted));
 
                 var actualProject = Assert.Single(viewModel.Roadmap.Projects);
                 Assert.Equal(2, actualProject.NumberOfWorkItemsToBeCompleted);

@@ -16,13 +16,13 @@
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Views.ValueConverters;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Windows;
 using Xunit;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {
