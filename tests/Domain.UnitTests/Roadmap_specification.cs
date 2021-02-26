@@ -25,7 +25,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
         [Fact]
         public void GIVEN_projects_collection_null_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentNullException()
         {
-            void Call() => new Roadmap(null);
+            static void Call() => new Roadmap(null);
 
             Assert.Throws<ArgumentNullException>("projects", Call);
         }
