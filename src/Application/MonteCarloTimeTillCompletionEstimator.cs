@@ -40,7 +40,6 @@ namespace KanbanProjectManagementApp.Application
         }
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> is empty.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfWorkItemsToComplete"/> is not at least 1.</exception>
         /// <returns>The simulation results for multiple individual projects that make up a roadmap.
         /// The elements in the first level collection represent the simulation results: the first element
         /// in the first level collection represents the first simulation.
