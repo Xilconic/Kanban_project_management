@@ -30,7 +30,7 @@ namespace KanbanProjectManagementApp.Views.ValueConverters
                 return t.ToString(null, culture);
             }
 
-            return value.ToString();
+            return value?.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -28,7 +28,7 @@ namespace KanbanProjectManagementApp.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private readonly CultureInfo applicationCultureInfo = new CultureInfo("en-US", false);
 
@@ -46,7 +46,7 @@ namespace KanbanProjectManagementApp.Views
                 new OpenFileDialogDrivenFileToReadGetter(this),
                 workEstimationsFileExporter,
                 inputMetricsFileImporter,
-                new IAskUserForConfirmationToProceedUsingMessageBox(this)
+                new AskUserForConfirmationToProceedUsingMessageBox(this)
             );
         }
 
@@ -119,11 +119,11 @@ namespace KanbanProjectManagementApp.Views
             }
         }
 
-        private class IAskUserForConfirmationToProceedUsingMessageBox : IAskUserForConfirmationToProceed
+        private class AskUserForConfirmationToProceedUsingMessageBox : IAskUserForConfirmationToProceed
         {
             private readonly Window owner;
 
-            public IAskUserForConfirmationToProceedUsingMessageBox(Window owner)
+            public AskUserForConfirmationToProceedUsingMessageBox(Window owner)
             {
                 this.owner = owner;
             }

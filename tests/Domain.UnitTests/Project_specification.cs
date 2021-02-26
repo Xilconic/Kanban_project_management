@@ -37,9 +37,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
         public void GIVEN_an_invalid_number_of_working_items_remaining_WHEN_constructing_new_instance_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfWorkItemsRemaining)
         {
-            void call() => new Project(invalidNumberOfWorkItemsRemaining);
+            void Call() => new Project(invalidNumberOfWorkItemsRemaining);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsRemaining", call);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsRemaining", Call);
             Assert.StartsWith("Project should consist out of at least 1 work item.", actualException.Message);
         }
 
@@ -57,18 +57,18 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
             var project = new Project(1);
             project.CompleteWorkItem();
 
-            void call() => project.CompleteWorkItem();
+            void Call() => project.CompleteWorkItem();
 
-            var actualException = Assert.Throws<InvalidOperationException>(call);
+            var actualException = Assert.Throws<InvalidOperationException>(Call);
             Assert.Equal("There is no more work to be completed.", actualException.Message);
         }
 
         [Fact]
         public void GIVEN_an_project_name_null_WHEN_constructing_new_instance_THEN_throw_ArgumentNullException()
         {
-            static void call() => new Project(1, default, null);
+            static void Call() => new Project(1, default, null);
 
-            var actualException = Assert.Throws<ArgumentNullException>("name", call);
+            var actualException = Assert.Throws<ArgumentNullException>("name", Call);
             Assert.StartsWith("Project name should not be null.", actualException.Message);
         }
     }

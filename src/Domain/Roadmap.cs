@@ -34,7 +34,7 @@ namespace KanbanProjectManagementApp.Domain
         /// <item>doesn't have unique names for all <see cref="Project"/> instances.</item>
         /// </list>
         /// </exception>
-        public Roadmap(IEnumerable<Project> projects)
+        public Roadmap(IReadOnlyCollection<Project> projects)
         {
             if(projects is null)
             {
@@ -49,7 +49,7 @@ namespace KanbanProjectManagementApp.Domain
         /// <remarks>
         /// All <see cref="Project"/> instances in this collection are guaranteed to have a unique <see cref="Project.Name"/>.
         /// </remarks>
-        public IReadOnlyList<Project> Projects;
+        public IReadOnlyList<Project> Projects { get; }
 
         public bool HasWorkToBeCompleted => Projects.Any(p => p.HasWorkToBeCompleted);
 

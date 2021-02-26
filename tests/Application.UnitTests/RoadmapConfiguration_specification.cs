@@ -28,9 +28,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             var projects = new[] { new ProjectConfiguration("A", 10, default) };
             var roadmap = new RoadmapConfiguration(projects);
 
-            void call() => roadmap.Projects = Array.Empty<ProjectConfiguration>();
+            void Call() => roadmap.Projects = Array.Empty<ProjectConfiguration>();
 
-            var exception = Assert.Throws<ArgumentException>(call);
+            var exception = Assert.Throws<ArgumentException>(Call);
             Assert.StartsWith("Roadmap should contain at least one project.", exception.Message);
             Assert.Equal("configuredProjects", exception.ParamName);
 

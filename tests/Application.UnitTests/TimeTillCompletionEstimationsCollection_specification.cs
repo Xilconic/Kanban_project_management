@@ -30,9 +30,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         public void GIVEN_an_invalid_number_of_simulations_WHEN_constructing_new_instance_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfSimulations)
         {
-            void call() => new TimeTillCompletionEstimationsCollection(invalidNumberOfSimulations, 1);
+            void Call() => new TimeTillCompletionEstimationsCollection(invalidNumberOfSimulations, 1);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfSimulations", call);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfSimulations", Call);
             Assert.StartsWith("Number of simulations should be at least 1.", actualException.Message);
         }
 
@@ -42,9 +42,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         public void GIVEN_an_invalid_number_of_projects_in_roadmap_WHEN_constructing_new_instance_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfProjectsInRoadmap)
         {
-            void call() => new TimeTillCompletionEstimationsCollection(1, invalidNumberOfProjectsInRoadmap);
+            void Call() => new TimeTillCompletionEstimationsCollection(1, invalidNumberOfProjectsInRoadmap);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfProjectsInRoadmap", call);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfProjectsInRoadmap", Call);
             Assert.StartsWith("Number of projects in roadmap should be at least 1.", actualException.Message);
         }
 
@@ -55,9 +55,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
 
             var someProjectEstimates = new[] { new WorkEstimate(CreateCompletedProject(), 1.0) };
 
-            void call() => estimates.AddEstimationsForSimulation(null, someProjectEstimates);
+            void Call() => estimates.AddEstimationsForSimulation(null, someProjectEstimates);
 
-            Assert.Throws<ArgumentNullException>("roadmapEstimate", call);
+            Assert.Throws<ArgumentNullException>("roadmapEstimate", Call);
         }
 
         [Fact]
@@ -65,9 +65,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         {
             var estimates = new TimeTillCompletionEstimationsCollection(1, 1);
 
-            void call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), null);
+            void Call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), null);
 
-            Assert.Throws<ArgumentNullException>("projectEstimates", call);
+            Assert.Throws<ArgumentNullException>("projectEstimates", Call);
         }
 
         [Fact]
@@ -75,9 +75,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         {
             var estimates = new TimeTillCompletionEstimationsCollection(1, 1);
 
-            void call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), Array.Empty<WorkEstimate>());
+            void Call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), Array.Empty<WorkEstimate>());
 
-            var actualException = Assert.Throws<ArgumentException>("projectEstimates", call);
+            var actualException = Assert.Throws<ArgumentException>("projectEstimates", Call);
             Assert.StartsWith("Expected 1 project estimate(s), but got provided 0.", actualException.Message);
         }
 
@@ -89,9 +89,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             var tooManyProjects = new[] { CreateCompletedProject(), CreateCompletedProject() };
             var tooManyProjectEstimates = tooManyProjects.Select(p => new WorkEstimate(p, 1.0)).ToArray();
 
-            void call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), tooManyProjectEstimates);
+            void Call() => estimates.AddEstimationsForSimulation(new WorkEstimate(CreateCompletedRoadmap(), 1.0), tooManyProjectEstimates);
 
-            var actualException = Assert.Throws<ArgumentException>("projectEstimates", call);
+            var actualException = Assert.Throws<ArgumentException>("projectEstimates", Call);
             Assert.StartsWith("Expected 1 project estimate(s), but got provided 2.", actualException.Message);
         }
 
@@ -105,9 +105,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             var projectEstimates = roadmap.Projects.Select(p => new WorkEstimate(p, 1.0)).ToArray();
 
             estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
-            void secondCall() => estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
+            void SecondCall() => estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
 
-            var actualException = Assert.Throws<InvalidOperationException>(secondCall);
+            var actualException = Assert.Throws<InvalidOperationException>(SecondCall);
             Assert.Equal("Adding these estimation would exceed the expected number of simulations.", actualException.Message);
         }
 
@@ -122,9 +122,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
 
             var differentProjectEstimates = new[] { new WorkEstimate(CreateCompletedProject("someUniqueName"), 1.0) };
-            void secondCall() => estimates.AddEstimationsForSimulation(roadmapEstimate, differentProjectEstimates);
+            void SecondCall() => estimates.AddEstimationsForSimulation(roadmapEstimate, differentProjectEstimates);
 
-            var actualException = Assert.Throws<ArgumentException>("projectEstimates", secondCall);
+            var actualException = Assert.Throws<ArgumentException>("projectEstimates", SecondCall);
             Assert.StartsWith("A project estimate's identifier mismatches a the expected project's identifier.", actualException.Message);
         }
 
@@ -145,22 +145,22 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
             estimates.AddEstimationsForSimulation(roadmapEstimate, projectEstimates);
 
-            object call() => estimates[invalidProjectIndex];
+            object Call() => estimates[invalidProjectIndex];
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("projectIndex", call);
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("projectIndex", Call);
             Assert.StartsWith("Project index must be in range [0, 0].", actualException.Message);
         }
 
-        private Project CreateCompletedProject(string name = "Project")
+        private static Project CreateCompletedProject(string name = "Project")
         {
             var project = new Project(1, default, name);
             project.CompleteWorkItem();
             return project;
         }
 
-        private Roadmap CreateCompletedRoadmap()
+        private static Roadmap CreateCompletedRoadmap()
         {
-            Project project = new Project(1);
+            var project = new Project(1);
             var projects = new[] { project };
             var roadmap = new Roadmap(projects);
 

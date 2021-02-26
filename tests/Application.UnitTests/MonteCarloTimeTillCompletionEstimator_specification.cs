@@ -26,7 +26,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
     {
         private readonly IReadOnlyList<InputMetric> inputMetrics = Array.Empty<InputMetric>();
 
-        public static IEnumerable<object[]> InvalidNumberOfSimulationsScenarions
+        public static IEnumerable<object[]> InvalidNumberOfSimulationsScenarios
         {
             get
             {
@@ -36,17 +36,17 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         }
 
         [Theory]
-        [MemberData(nameof(InvalidNumberOfSimulationsScenarions))]
+        [MemberData(nameof(InvalidNumberOfSimulationsScenarios))]
         public void WHEN_constructing_new_instance_AND_number_of_simulations_is_less_than_1_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfSimulations)
         {
-            void call() => new MonteCarloTimeTillCompletionEstimator(invalidNumberOfSimulations, 1, inputMetrics);
+            void Call() => new MonteCarloTimeTillCompletionEstimator(invalidNumberOfSimulations, 1, inputMetrics);
 
 
-            AssertActionThrowsArgumentOutOfRangeException(call, "numberOfSimulations", "Number of simulations should be at least 1.");
+            AssertActionThrowsArgumentOutOfRangeException(Call, "numberOfSimulations", "Number of simulations should be at least 1.");
         }
 
-        public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarions
+        public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarios
         {
             get
             {
@@ -56,21 +56,21 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         }
 
         [Theory]
-        [MemberData(nameof(InvalidMaximumNumberOfIterationsScenarions))]
+        [MemberData(nameof(InvalidMaximumNumberOfIterationsScenarios))]
         public void WHEN_constructing_new_instance_AND_maximum_number_of_iterations_is_less_than_1_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfIterations)
         {
-            void call() => new MonteCarloTimeTillCompletionEstimator(1, invalidNumberOfIterations, inputMetrics);
+            void Call() => new MonteCarloTimeTillCompletionEstimator(1, invalidNumberOfIterations, inputMetrics);
 
-            AssertActionThrowsArgumentOutOfRangeException(call, "maximumNumberOfIterations", "Maximum number of iterations should be at least 1.");
+            AssertActionThrowsArgumentOutOfRangeException(Call, "maximumNumberOfIterations", "Maximum number of iterations should be at least 1.");
         }
 
         [Fact]
         public void WHEN_constructing_new_instance_AND_input_metrics_are_null_THEN_throw_ArgumentNullException()
         {
-            static void call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
+            static void Call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
 
-            var actualException = Assert.Throws<ArgumentNullException>("inputMetrics", call);
+            Assert.Throws<ArgumentNullException>("inputMetrics", Call);
         }
 
         [Fact]
@@ -80,8 +80,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             var projects = new[] { new ProjectConfiguration("A", 1, default) };
             var roadmapConfiguration = new RoadmapConfiguration(projects);
 
-            void call() => estimator.Estimate(roadmapConfiguration);
-            var actualException = Assert.Throws<InvalidOperationException>(call);
+            void Call() => estimator.Estimate(roadmapConfiguration);
+
+            var actualException = Assert.Throws<InvalidOperationException>(Call);
             Assert.Equal("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
         }
 

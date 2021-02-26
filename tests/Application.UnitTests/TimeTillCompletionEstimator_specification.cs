@@ -42,8 +42,8 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         {
             IReadOnlyList<InputMetric> inputMetrics = null;
 
-            void call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
-            Assert.Throws<ArgumentNullException>("inputMetrics", call);
+            void Call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
+            Assert.Throws<ArgumentNullException>("inputMetrics", Call);
         }
 
         [Fact]
@@ -51,9 +51,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         {
             var inputMetrics = Array.Empty<InputMetric>();
 
-            void call() => new TimeTillCompletionEstimator(inputMetrics, null, someMaximumNumberOfIterations);
+            void Call() => new TimeTillCompletionEstimator(inputMetrics, null, someMaximumNumberOfIterations);
 
-            Assert.Throws<ArgumentNullException>("rng", call);
+            Assert.Throws<ArgumentNullException>("rng", Call);
         }
 
         public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarios
@@ -73,9 +73,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         {
             var inputMetrics = Array.Empty<InputMetric>();
 
-            void call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, maximumNumberOfIterations);
+            void Call() => new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, maximumNumberOfIterations);
 
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("maximumNumberOfIterations", call);
+            Assert.Throws<ArgumentOutOfRangeException>("maximumNumberOfIterations", Call);
         }
 
         [Fact]
@@ -85,9 +85,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            void call() => estimator.Estimate(null);
+            void Call() => estimator.Estimate(null);
 
-            var actualException = Assert.Throws<ArgumentNullException>("roadmap", call);
+            Assert.Throws<ArgumentNullException>("roadmap", Call);
         }
 
         [Fact]
@@ -97,9 +97,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
 
             var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
 
-            void call() => estimator.Estimate(someRoadmap);
+            void Call() => estimator.Estimate(someRoadmap);
 
-            var actualException = Assert.Throws<InvalidOperationException>(call);
+            var actualException = Assert.Throws<InvalidOperationException>(Call);
             Assert.StartsWith("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
         }
 

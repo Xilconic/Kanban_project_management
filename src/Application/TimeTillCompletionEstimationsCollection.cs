@@ -23,7 +23,7 @@ namespace KanbanProjectManagementApp.Application
     public class TimeTillCompletionEstimationsCollection
     {
         private readonly List<WorkEstimate> roadmapEstimatesOfEachSimulation;
-        private readonly List<List<WorkEstimate>> projectEstimatesOfEachSimulation = new List<List<WorkEstimate>>();
+        private readonly List<List<WorkEstimate>> projectEstimatesOfEachSimulation;
 
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="numberOfSimulations"/> or <paramref name="numberOfProjectsInRoadmap"/>
         /// are not at least 1.</exception>
@@ -126,7 +126,9 @@ namespace KanbanProjectManagementApp.Application
             }
         }
 
-        private void ValidateThatProjectIdentifiersAreConsistent(List<WorkEstimate> currentProjectEstimatesForProject, WorkEstimate newProjectEstimateForThisSimulation)
+        private static void ValidateThatProjectIdentifiersAreConsistent(
+            IReadOnlyList<WorkEstimate> currentProjectEstimatesForProject,
+            WorkEstimate newProjectEstimateForThisSimulation)
         {
             if (!IsProjectIdentifierConsistentWithPriorProjectSimulations(newProjectEstimateForThisSimulation, currentProjectEstimatesForProject))
             {
@@ -134,7 +136,9 @@ namespace KanbanProjectManagementApp.Application
             }
         }
 
-        private bool IsProjectIdentifierConsistentWithPriorProjectSimulations(WorkEstimate newProjectEstimate, IReadOnlyList<WorkEstimate> currentProjectEstimatesForProject)
+        private static bool IsProjectIdentifierConsistentWithPriorProjectSimulations(
+            WorkEstimate newProjectEstimate,
+            IReadOnlyList<WorkEstimate> currentProjectEstimatesForProject)
         {
             return currentProjectEstimatesForProject.Count == 0 ||
                    newProjectEstimate.Identifier == currentProjectEstimatesForProject[0].Identifier;

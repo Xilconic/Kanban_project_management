@@ -84,13 +84,5 @@ namespace KanbanProjectManagementApp.Application
                 throw new InvalidOperationException("At least 1 datapoint of input metrics is required for estimation.");
             }
         }
-
-        private static void ValidateAtLeastOneWorkItemToComplete(IReadOnlyCollection<Project> projectsToComplete)
-        {
-            if (projectsToComplete.Sum(p => p.NumberOfWorkItemsRemaining) <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(projectsToComplete), "Number of workitems to complete should be at least 1.");
-            }
-        }
     }
 }

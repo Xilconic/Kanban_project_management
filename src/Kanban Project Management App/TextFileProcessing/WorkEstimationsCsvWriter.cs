@@ -26,7 +26,8 @@ namespace KanbanProjectManagementApp.TextFileProcessing
 {
     internal class WorkEstimationsCsvWriter
     {
-        private const string csvDelimiter = ";";
+        private const string CsvDelimiter = ";";
+
         private readonly TextWriter textWriter;
 
         /// <remarks>
@@ -55,7 +56,7 @@ namespace KanbanProjectManagementApp.TextFileProcessing
         private static DataView GetDataViewOfData(TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
         {
             var converter = new TimeTillCompletionEstimationsCollectionToDataViewConverter();
-            return (DataView)converter.Convert(new object[] { workEstimates, configurationMode }, null, null, CultureInfo.InvariantCulture); ;
+            return (DataView)converter.Convert(new object[] { workEstimates, configurationMode }, null, null, CultureInfo.InvariantCulture);
         }
 
         private void WriteHeader(DataColumnCollection columns)
@@ -87,6 +88,6 @@ namespace KanbanProjectManagementApp.TextFileProcessing
             }
         }
 
-        private void WriteCsvDelimiter() => textWriter.Write(csvDelimiter);
+        private void WriteCsvDelimiter() => textWriter.Write(CsvDelimiter);
     }
 }

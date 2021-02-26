@@ -42,7 +42,7 @@ namespace KanbanProjectManagementApp.Domain
             obj is ThroughputPerDay mys && Equals(mys);
 
         public bool Equals(ThroughputPerDay other) =>
-            numberOfWorkItemsFinished == other.numberOfWorkItemsFinished;
+            numberOfWorkItemsFinished.Equals(other.numberOfWorkItemsFinished); // Direct floating-point comparison intentional
 
         public override int GetHashCode() =>
             numberOfWorkItemsFinished.GetHashCode();

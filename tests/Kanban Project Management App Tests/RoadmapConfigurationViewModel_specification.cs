@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 using KanbanProjectManagementApp.Application;
-using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using KanbanProjectManagementApp.Tests.Unit.TestUtilities;
 using Xunit;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
@@ -34,8 +34,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void GIVEN_IAskUserForConfirmationToProceed_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new RoadmapConfigurationViewModel(null);
-                Assert.Throws<ArgumentNullException>("confirmationAsker", call);
+                static void Call() => new RoadmapConfigurationViewModel(null);
+                Assert.Throws<ArgumentNullException>("confirmationAsker", Call);
             }
         }
 
@@ -99,9 +99,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_invalid_number_of_work_items_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfWorkItems)
             {
-                void call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                void Call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
 
-                var actualException = Assert.Throws<ArgumentOutOfRangeException>("value", call);
+                var actualException = Assert.Throws<ArgumentOutOfRangeException>("value", Call);
                 Assert.StartsWith("Number of work items to be completed must be at least 1.", actualException.Message);
 
                 propertyChangedTracker.AssertNoPropertyChangeNotificationsHappened();
@@ -166,9 +166,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
                     new ProjectConfiguration("B", 2, default)
                 };
 
-                void call() => viewModel.ResetRoadmap(projects);
+                void Call() => viewModel.ResetRoadmap(projects);
 
-                var actualException = Assert.Throws<InvalidOperationException>(call);
+                var actualException = Assert.Throws<InvalidOperationException>(Call);
                 Assert.Equal("When in simple mode, can only reset using a single project.", actualException.Message);
 
                 Assert.Equal(1, viewModel.NumberOfProjects);
@@ -212,9 +212,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void WHEN_setting_number_of_work_items_to_be_completed_THEN_throw_InvalidOperationException()
             {
-                void call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = 1;
+                void Call() => viewModel.TotalNumberOfWorkItemsToBeCompleted = 1;
 
-                var actualException = Assert.Throws<InvalidOperationException>(call);
+                var actualException = Assert.Throws<InvalidOperationException>(Call);
                 Assert.Equal("Cannot set a value for 'TotalNumberOfWorkItemsToBeCompleted' when in Advanced configuration mode.", actualException.Message);
             }
 
@@ -249,9 +249,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             {
                 var newProjects = Array.Empty<ProjectConfiguration>();
 
-                void call() => viewModel.ResetRoadmap(newProjects);
+                void Call() => viewModel.ResetRoadmap(newProjects);
 
-                var actualException = Assert.Throws<ArgumentException>("newProjects", call);
+                var actualException = Assert.Throws<ArgumentException>("newProjects", Call);
                 Assert.StartsWith("Requires at least one project when resetting a Roadmap.", actualException.Message);
 
                 Assert.Equal(1, viewModel.NumberOfProjects);

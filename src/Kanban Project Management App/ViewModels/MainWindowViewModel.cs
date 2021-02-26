@@ -22,18 +22,18 @@ using System.Linq;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.TextFileProcessing;
 
 namespace KanbanProjectManagementApp.ViewModels
 {
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly ExportWorkEstimatesToFileCommand exportWorkEstimatesToFileCommand;
+
         private ThroughputPerDay? estimatedMeanOfThroughputNew;
         private double? estimatedCorrectedSampleStandardDeviationOfThroughputNew;
         private int numberOfMonteCarloSimulations = 10;
         private int maximumNumberOfIterations = 25;
-        private TimeTillCompletionEstimationsCollection estimations = null;
+        private TimeTillCompletionEstimationsCollection estimations;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -57,6 +57,7 @@ namespace KanbanProjectManagementApp.ViewModels
             get => estimatedCorrectedSampleStandardDeviationOfThroughputNew;
             private set
             {
+                // Direct floating-point comparison intentional
                 if (value != estimatedCorrectedSampleStandardDeviationOfThroughputNew)
                 {
                     estimatedCorrectedSampleStandardDeviationOfThroughputNew = value;
@@ -158,7 +159,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private void UpdateCorrectedSampleStandardDeviationOfThroughput(ThroughputPerDay? estimatedMeanOfThroughput)
         {
-            if (InputMetrics.Count == 0)
+            if (InputMetrics.Count == 0 || estimatedMeanOfThroughput is null)
             {
                 EstimatedCorrectedSampleStandardDeviationOfThroughput = null;
             }
@@ -168,13 +169,13 @@ namespace KanbanProjectManagementApp.ViewModels
             }
             else
             {
-                EstimatedCorrectedSampleStandardDeviationOfThroughput = CalculateCorrectedSampleStandardDeviationOfThroughput(estimatedMeanOfThroughput);
+                EstimatedCorrectedSampleStandardDeviationOfThroughput = CalculateCorrectedSampleStandardDeviationOfThroughput(estimatedMeanOfThroughput.Value);
             }
         }
 
-        private double CalculateCorrectedSampleStandardDeviationOfThroughput(ThroughputPerDay? estimatedMeanOfThroughput)
+        private double CalculateCorrectedSampleStandardDeviationOfThroughput(ThroughputPerDay estimatedMeanOfThroughput)
         {
-            double meanNumberOfDaysCompleted = estimatedMeanOfThroughput.Value.GetNumberOfWorkItemsPerDay();
+            double meanNumberOfDaysCompleted = estimatedMeanOfThroughput.GetNumberOfWorkItemsPerDay();
             var sumSquaredDifferencesFromMean = InputMetrics
                 .Select(e => e.Throughput.GetNumberOfWorkItemsPerDay() - meanNumberOfDaysCompleted)
                 .Select(difference => Math.Pow(difference, 2))
@@ -235,6 +236,7 @@ namespace KanbanProjectManagementApp.ViewModels
         private class PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand : ICommand
         {
             private readonly MainWindowViewModel viewModel;
+
             private bool canExecute = false;
 
             public PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(MainWindowViewModel viewModel)
@@ -280,6 +282,7 @@ namespace KanbanProjectManagementApp.ViewModels
             private readonly IExportFileLocator exportFileLocator;
             private readonly IWorkEstimationsFileExporter exporter;
             private readonly RoadmapConfigurationViewModel viewModel;
+
             private bool canExecute = false;
             private TimeTillCompletionEstimationsCollection currentEstimations = null;
 

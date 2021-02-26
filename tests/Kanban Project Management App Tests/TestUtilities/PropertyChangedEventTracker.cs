@@ -14,13 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests.TestUtilities
+namespace KanbanProjectManagementApp.Tests.Unit.TestUtilities
 {
     internal sealed class PropertyChangedEventTracker : IDisposable
     {
@@ -51,7 +52,7 @@ namespace KanbanProjectManagementApp.Tests.TestUtilities
         {
             if (expectedNumberOfTimes < 0)
             {
-                throw new ArgumentOutOfRangeException("Value must be 0 or greater.", nameof(expectedNumberOfTimes));
+                throw new ArgumentOutOfRangeException(nameof(expectedNumberOfTimes), "Value must be 0 or greater.");
             }
 
             Assert.Equal(expectedNumberOfTimes, recordedPropertyChangedEvents.Count(e => e.PropertyName == propertyName));

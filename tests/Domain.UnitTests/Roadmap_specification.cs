@@ -25,9 +25,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
         [Fact]
         public void GIVEN_projects_collection_null_WHEN_constructing_new_instance_of_roadmap_THEN_throw_ArgumentNullException()
         {
-            static void call() => new Roadmap(null);
+            void Call() => new Roadmap(null);
 
-            Assert.Throws<ArgumentNullException>("projects", call);
+            Assert.Throws<ArgumentNullException>("projects", Call);
         }
 
         [Fact]
@@ -35,9 +35,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
         {
             var emptyProjectsCollection = Array.Empty<Project>();
 
-            void call() => new Roadmap(emptyProjectsCollection);
+            void Call() => new Roadmap(emptyProjectsCollection);
 
-            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            var actualException = Assert.Throws<ArgumentException>("projects", Call);
             Assert.StartsWith("Roadmap should contain at least one project.", actualException.Message);
         }
 
@@ -47,9 +47,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
             var completedProject = new Project(1);
             completedProject.CompleteWorkItem();
 
-            void call() => new Roadmap(new[] { completedProject });
+            void Call() => new Roadmap(new[] { completedProject });
 
-            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            var actualException = Assert.Throws<ArgumentException>("projects", Call);
             Assert.StartsWith("Roadmap should contain only out of projects that has work to be completed.", actualException.Message);
         }
 
@@ -63,9 +63,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
                 new Project(2, default, "B"),
             };
 
-            void call() => new Roadmap(projectSequenceWithNullElements);
+            void Call() => new Roadmap(projectSequenceWithNullElements);
 
-            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            var actualException = Assert.Throws<ArgumentException>("projects", Call);
             Assert.StartsWith("Sequence of projects for roadmap cannot contain null elements.", actualException.Message);
         }
 
@@ -78,9 +78,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
                 new Project(2, default, "A"),
             };
 
-            void call() => new Roadmap(projectSequenceWithNullElements);
+            void Call() => new Roadmap(projectSequenceWithNullElements);
 
-            var actualException = Assert.Throws<ArgumentException>("projects", call);
+            var actualException = Assert.Throws<ArgumentException>("projects", Call);
             Assert.StartsWith("Sequence of projects for roadmap cannot contain multiple projects with the same name.", actualException.Message);
         }
     }

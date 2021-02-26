@@ -28,8 +28,8 @@ namespace KanbanProjectManagementApp.Application
         /// <exception cref="ArgumentException">Thrown when <paramref name="configuredProjects"/> is invalid.</exception>
         public RoadmapConfiguration(IEnumerable<ProjectConfiguration> configuredProjects)
         {
-            ValidateProjects(configuredProjects);
-            this.configuredProjects = configuredProjects.ToArray();
+            this.configuredProjects = configuredProjects?.ToArray();
+            ValidateProjects(this.configuredProjects);
         }
 
         /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> is invalid.</exception>
@@ -43,12 +43,26 @@ namespace KanbanProjectManagementApp.Application
             }
         }
 
-        public Roadmap ToWorkableRoadmap() => new Roadmap(configuredProjects.Select(prop => prop.ToWorkableProject()));
+        public Roadmap ToWorkableRoadmap()
+        {
+            var projects = configuredProjects
+                .Select(prop => prop.ToWorkableProject())
+                .ToArray();
+            return new Roadmap(projects);
+        }
 
         /// <exception cref="ArgumentException">Thrown when <paramref name="configuredProjects"/> is invalid.</exception>
-        private static void ValidateProjects(IEnumerable<ProjectConfiguration> configuredProjects)
+        private static void ValidateProjects(IReadOnlyCollection<ProjectConfiguration> configuredProjects)
         {
-            if (configuredProjects is null) throw new ArgumentNullException(nameof(configuredProjects));
+            if (configuredProjects is null)
+            {
+                throw new ArgumentNullException(nameof(configuredProjects));
+            }
+
+            if (configuredProjects.Count == 0)
+            {
+                throw new ArgumentException("Roadmap should contain at least one project.", nameof(configuredProjects));
+            }
 
             var projectNames = new HashSet<string>();
             foreach (ProjectConfiguration p in configuredProjects)
@@ -62,10 +76,6 @@ namespace KanbanProjectManagementApp.Application
                 {
                     throw new ArgumentException("Sequence of projects for roadmap cannot contain multiple projects with the same name.", nameof(configuredProjects));
                 }
-            }
-            if (projectNames.Count == 0)
-            {
-                throw new ArgumentException("Roadmap should contain at least one project.", nameof(configuredProjects));
             }
         }
     }

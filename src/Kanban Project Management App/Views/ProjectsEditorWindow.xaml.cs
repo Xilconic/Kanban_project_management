@@ -24,7 +24,7 @@ namespace KanbanProjectManagementApp.Views
     /// <summary>
     /// Interaction logic for ProjectsEditorWindow.xaml
     /// </summary>
-    public partial class ProjectsEditorWindow : Window
+    public partial class ProjectsEditorWindow
     {
         public ProjectsEditorWindow(ObservableCollection<ProjectRowItem> projectsRowItems)
         {
@@ -48,7 +48,11 @@ namespace KanbanProjectManagementApp.Views
             get => name;
             set
             {
-                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("Name must be specified");
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Name must be specified");
+                }
+
                 name = value;
             }
         }
@@ -60,7 +64,7 @@ namespace KanbanProjectManagementApp.Views
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("Number of work items should be at least 1.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Number of work items should be at least 1.");
                 }
 
                 numberOfWorkItemsToBeCompleted = value;

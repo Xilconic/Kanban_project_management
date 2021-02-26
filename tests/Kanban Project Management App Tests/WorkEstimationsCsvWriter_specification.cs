@@ -44,8 +44,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         [Fact]
         public void WHEN_constructing_writer_AND_text_writer_is_null_THEN_throw_ArgumentNullException()
         {
-            static void call() => new WorkEstimationsCsvWriter(null);
-            var actualException = Assert.Throws<ArgumentNullException>("textWriter", call);
+            static void Call() => new WorkEstimationsCsvWriter(null);
+
+            Assert.Throws<ArgumentNullException>("textWriter", Call);
         }
 
         [Fact]
@@ -53,9 +54,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         {
             var emptyWorkEstimates = new TimeTillCompletionEstimationsCollection(1, 1);
 
-            void call() => workEstimationsCsvWriter.Write(emptyWorkEstimates, ConfigurationMode.Simple);
+            void Call() => workEstimationsCsvWriter.Write(emptyWorkEstimates, ConfigurationMode.Simple);
 
-            var actualException = Assert.Throws<ArgumentException>("workEstimates", call);
+            var actualException = Assert.Throws<ArgumentException>("workEstimates", Call);
             Assert.StartsWith("Work estimations should have at least 1 simulation.", actualException.Message);
         }
 

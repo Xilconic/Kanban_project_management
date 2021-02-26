@@ -26,7 +26,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
     public class ThroughputPerDayValueConverter_specification : IDisposable
     {
         private readonly ThroughputPerDayValueConverter converter;
-        private static readonly CultureInfo culture = new CultureInfo("en-US", false);
+        private static readonly CultureInfo Culture = new CultureInfo("en-US", false);
         private readonly CultureInfo? originalDefaultThreadCulture;
 
         public ThroughputPerDayValueConverter_specification()
@@ -45,8 +45,10 @@ namespace KanbanProjectManagementApp.Tests.Unit
         public void GIVEN_null_value_WHEN_converting_to_throughput_per_day_THEN_throw_ArgumentNullException()
         {
             object value = null;
-            void call() => ConvertToThroughputPerDay(value);
-            var actualException = Assert.Throws<ArgumentNullException>("value", call);
+
+            void Call() => ConvertToThroughputPerDay(value);
+
+            Assert.Throws<ArgumentNullException>("value", Call);
         }
 
         public static IEnumerable<object[]> NonNumberStringScenarios
@@ -64,8 +66,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         public void GIVEN_empty_string_WHEN_converting_to_throughput_per_day_THEN_throw_FormatException(
             string text)
         {
-            void call() => ConvertToThroughputPerDay(text);
-            var actualException = Assert.Throws<FormatException>(call);
+            void Call() => ConvertToThroughputPerDay(text);
+
+            var actualException = Assert.Throws<FormatException>(Call);
             Assert.Equal("Value should represent a number.", actualException.Message);
         }
 
@@ -86,22 +89,23 @@ namespace KanbanProjectManagementApp.Tests.Unit
         public void GIVEN_invalid_throughput_values_WHEN_converting_to_throughput_per_day_THEN_throw_ArgumentException(
             string text)
         {
-            void call() => ConvertToThroughputPerDay(text);
-            var actualException = Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsFinished", call);
+            void Call() => ConvertToThroughputPerDay(text);
+
+            Assert.Throws<ArgumentOutOfRangeException>("numberOfWorkItemsFinished", Call);
         }
 
         public static IEnumerable<object[]> ValidThroughputNumberAsStringScenarios
         {
             get
             {
-                static object[] createInputAndExpectedResultPair(double value) =>
+                static object[] CreateInputAndExpectedResultPair(double value) =>
                     new object[] { DoubleToCulturedString(value), new ThroughputPerDay(value) };
 
-                yield return createInputAndExpectedResultPair(0.0);
-                yield return createInputAndExpectedResultPair(double.Epsilon);
-                yield return createInputAndExpectedResultPair(3.4);
-                yield return createInputAndExpectedResultPair(double.MaxValue);
-                yield return createInputAndExpectedResultPair(double.PositiveInfinity);
+                yield return CreateInputAndExpectedResultPair(0.0);
+                yield return CreateInputAndExpectedResultPair(double.Epsilon);
+                yield return CreateInputAndExpectedResultPair(3.4);
+                yield return CreateInputAndExpectedResultPair(double.MaxValue);
+                yield return CreateInputAndExpectedResultPair(double.PositiveInfinity);
             }
         }
 
@@ -118,11 +122,11 @@ namespace KanbanProjectManagementApp.Tests.Unit
         {
             get
             {
-                static object[] createInputAndExpectedResultPair(double value) =>
+                static object[] CreateInputAndExpectedResultPair(double value) =>
                     new object[] { new ThroughputPerDay(value), $"{DoubleToCulturedString(value)} / day" };
 
-                yield return createInputAndExpectedResultPair(3.4);
-                yield return createInputAndExpectedResultPair(double.PositiveInfinity);
+                yield return CreateInputAndExpectedResultPair(3.4);
+                yield return CreateInputAndExpectedResultPair(double.PositiveInfinity);
             }
         }
 
@@ -131,19 +135,19 @@ namespace KanbanProjectManagementApp.Tests.Unit
         public void GIVEN_some_throughput_value_WHEN_converting_to_string_THEN_return_string_representation(
             ThroughputPerDay inputThroughput, string expectedResult)
         {
-            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = Culture;
 
             object result = ConvertToString(inputThroughput);
             Assert.Equal(expectedResult, result);
         }
 
         private object ConvertToString(object value) =>
-            converter.Convert(value, typeof(string), null, culture);
+            converter.Convert(value, typeof(string), null, Culture);
 
         private object ConvertToThroughputPerDay(object value) =>
-            converter.ConvertBack(value, typeof(ThroughputPerDay), null, culture);
+            converter.ConvertBack(value, typeof(ThroughputPerDay), null, Culture);
 
         private static string DoubleToCulturedString(double value) =>
-            value.ToString(culture);
+            value.ToString(Culture);
     }
 }

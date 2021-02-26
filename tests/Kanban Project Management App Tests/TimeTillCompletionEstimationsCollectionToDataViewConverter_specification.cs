@@ -84,8 +84,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         [Fact]
         public void WHEN_converting_back_THEN_always_throw_NotImplementedException()
         {
-            void call() => converter.ConvertBack(null, null, null, null);
-            Assert.Throws<NotImplementedException>(call);
+            void Call() => converter.ConvertBack(null, null, null, null);
+
+            Assert.Throws<NotImplementedException>(Call);
         }
 
         private static TimeTillCompletionEstimationsCollection CreateSomeRoadmapEstimations()

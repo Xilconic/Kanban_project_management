@@ -33,16 +33,16 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
             [InlineData(double.NegativeInfinity)]
             public void AND_a_negative_value_is_used_THEN_throw_ArgumentOutOfRangeException(double invalidThroughput)
             {
-                void call() => new ThroughputPerDay(invalidThroughput);
-                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+                void Call() => new ThroughputPerDay(invalidThroughput);
+                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Call, invalidThroughput);
             }
 
             [Fact]
             public void AND_a_NaN_value_is_used_THEN_throw_ArgumentOutOfRangeException()
             {
                 var invalidThroughput = double.NaN;
-                void call() => new ThroughputPerDay(invalidThroughput);
-                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(call, invalidThroughput);
+                void Call() => new ThroughputPerDay(invalidThroughput);
+                AssertThatArgumentOutOfRangeExceptionIfThrownForInvalidThroughputValue(Call, invalidThroughput);
             }
 
             [Fact]
@@ -64,8 +64,8 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
         public class GIVEN_some_throughput : IDisposable
         {
             private readonly ThroughputPerDay someThroughput;
-            private static readonly CultureInfo englishUsCultureInfo = new CultureInfo("en-US", false);
-            private static readonly CultureInfo dutchNetherlandsCultureInfo = new CultureInfo("nl-NL", false);
+            private static readonly CultureInfo EnglishUsCultureInfo = new CultureInfo("en-US", false);
+            private static readonly CultureInfo DutchNetherlandsCultureInfo = new CultureInfo("nl-NL", false);
             private readonly CultureInfo? originalDefaultThreadCulture;
 
             public GIVEN_some_throughput()
@@ -108,7 +108,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
             public void WHEN_converting_to_string_THEN_string_is_as_expected(
                 ThroughputPerDay throughput, string expectedString)
             {
-                CultureInfo.DefaultThreadCurrentCulture = englishUsCultureInfo;
+                CultureInfo.DefaultThreadCurrentCulture = EnglishUsCultureInfo;
                 string actualString = throughput.ToString();
                 Assert.Equal(expectedString, actualString);
             }
@@ -118,11 +118,11 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
                 get
                 {
                     yield return new object[] { new ThroughputPerDay(0), null, null, "0 / day" };
-                    yield return new object[] { new ThroughputPerDay(1.1), null, englishUsCultureInfo, "1.1 / day" };
-                    yield return new object[] { new ThroughputPerDay(1.1), null, dutchNetherlandsCultureInfo, "1,1 / day" };
-                    yield return new object[] { new ThroughputPerDay(11), "e2", englishUsCultureInfo, "1.10e+001 / day" };
-                    yield return new object[] { new ThroughputPerDay(11), "e2", dutchNetherlandsCultureInfo, "1,10e+001 / day" };
-                    yield return new object[] { new ThroughputPerDay(2), "N3", englishUsCultureInfo, "2.000 / day" };
+                    yield return new object[] { new ThroughputPerDay(1.1), null, EnglishUsCultureInfo, "1.1 / day" };
+                    yield return new object[] { new ThroughputPerDay(1.1), null, DutchNetherlandsCultureInfo, "1,1 / day" };
+                    yield return new object[] { new ThroughputPerDay(11), "e2", EnglishUsCultureInfo, "1.10e+001 / day" };
+                    yield return new object[] { new ThroughputPerDay(11), "e2", DutchNetherlandsCultureInfo, "1,10e+001 / day" };
+                    yield return new object[] { new ThroughputPerDay(2), "N3", EnglishUsCultureInfo, "2.000 / day" };
                 }
             }
 
@@ -155,7 +155,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
                 const double someThroughputValue = 5.0;
                 someThroughput = new ThroughputPerDay(someThroughputValue);
                 anotherThroughputWithSameValue = new ThroughputPerDay(someThroughputValue);
-                anotherThroughputBoxedAsObject = (object)anotherThroughputWithSameValue;
+                anotherThroughputBoxedAsObject = anotherThroughputWithSameValue;
             }
 
             [Fact]
@@ -269,8 +269,8 @@ namespace KanbanProjectManagementApp.Tests.Unit.Domain
             [Fact]
             public void WHEN_dividing_an_infinite_throughput_by_infinite_THEN_ArithmeticException_is_thrown()
             {
-                static void call() => _ = new ThroughputPerDay(double.PositiveInfinity) / double.PositiveInfinity;
-                var actualException = Assert.Throws<ArithmeticException>(call);
+                static void Call() => _ = new ThroughputPerDay(double.PositiveInfinity) / double.PositiveInfinity;
+                var actualException = Assert.Throws<ArithmeticException>(Call);
                 Assert.Equal("Cannot divide an infinite throughput by infinite, as the result is indeterminate.", actualException.Message);
             }
 

@@ -14,13 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests.TestUtilities
+namespace KanbanProjectManagementApp.Tests.Unit.TestUtilities
 {
     internal sealed class CollectionChangedEventTracker : IDisposable
     {

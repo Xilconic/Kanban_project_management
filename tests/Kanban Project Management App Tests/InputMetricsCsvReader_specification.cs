@@ -29,9 +29,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         [Fact]
         public void WHEN_constructing_a_new_instance_AND_TextReader_is_null_THEN_throw_ArgumentNullException()
         {
-            static void call() => InputMetricsCsvReader.Read(null);
+            static void Call() => InputMetricsCsvReader.Read(null);
 
-            Assert.Throws<ArgumentNullException>("textReader", call);
+            Assert.Throws<ArgumentNullException>("textReader", Call);
         }
 
         [Fact]
@@ -47,9 +47,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
         {
             using var stringReader = new StringReader("someHeader");
 
-            void call() => InputMetricsCsvReader.Read(stringReader);
+            void Call() => InputMetricsCsvReader.Read(stringReader);
 
-            var actualException = Assert.Throws<FailedToReadInputMetricsException>(call);
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Invalid header. It must contain a column with the name 'NumberOfCompletedWorkItems' and use ';' as delimiter.", actualException.Message);
         }
 
@@ -74,9 +74,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
 ";
             using var stringReader = new StringReader(fileContents);
 
-            void call() => InputMetricsCsvReader.Read(stringReader);
+            void Call() => InputMetricsCsvReader.Read(stringReader);
 
-            var actualException = Assert.Throws<FailedToReadInputMetricsException>(call);
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Invalid header. It must contain a column with the name 'NumberOfCompletedWorkItems' and use ';' as delimiter.", actualException.Message);
         }
 
@@ -91,9 +91,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
 ";
             using var emptyStringReader = new StringReader(fileContents);
 
-            void call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
 
-            var actualException = Assert.Throws<FailedToReadInputMetricsException>(call);
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Invalid header. It must contain a column with the name 'NumberOfCompletedWorkItems' and use ';' as delimiter.", actualException.Message);
         }
 
@@ -116,7 +116,7 @@ namespace KanbanProjectManagementApp.Tests.Unit
                 new InputMetric { Throughput = new ThroughputPerDay(1) },
                 new InputMetric { Throughput = new ThroughputPerDay(3) },
             };
-            Assert.Equal(inputMetrics, expectedInputMetrics, new InputMetricEqualtyComparer());
+            Assert.Equal(inputMetrics, expectedInputMetrics, new InputMetricEqualityComparer());
         }
 
         [Fact]
@@ -130,9 +130,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
 ";
             using var emptyStringReader = new StringReader(fileContents);
 
-            void call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
 
-            var actualException = Assert.Throws<FailedToReadInputMetricsException>(call);
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Failed to parse a value in the 'NumberOfCompletedWorkItems' column. All elements must be a number.", actualException.Message);
         }
 
@@ -147,13 +147,13 @@ namespace KanbanProjectManagementApp.Tests.Unit
 ";
             using var emptyStringReader = new StringReader(fileContents);
 
-            void call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
 
-            var actualException = Assert.Throws<FailedToReadInputMetricsException>(call);
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Failed to parse a value in the 'NumberOfCompletedWorkItems' column. All elements must be a number.", actualException.Message);
         }
 
-        private class InputMetricEqualtyComparer : IEqualityComparer<InputMetric>
+        private class InputMetricEqualityComparer : IEqualityComparer<InputMetric>
         {
             public bool Equals([AllowNull] InputMetric x, [AllowNull] InputMetric y)
             {

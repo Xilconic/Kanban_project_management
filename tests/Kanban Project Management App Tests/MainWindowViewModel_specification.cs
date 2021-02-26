@@ -22,9 +22,9 @@ using KanbanProjectManagementApp.Domain;
 using System.Windows.Input;
 using Moq;
 using System.Collections.Specialized;
-using KanbanProjectManagementApp.Tests.TestUtilities;
 using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Application;
+using KanbanProjectManagementApp.Tests.Unit.TestUtilities;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
@@ -40,66 +40,66 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void AND_export_file_locator_is_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new MainWindowViewModel(
+                static void Call() => new MainWindowViewModel(
                     null,
                     new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("exportFileLocator", call);
+                Assert.Throws<ArgumentNullException>("exportFileLocator", Call);
             }
 
             [Fact]
             public void AND_import_file_locator_is_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new MainWindowViewModel(
+                static void Call() => new MainWindowViewModel(
                     new Mock<IExportFileLocator>().Object,
                     null,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("importFileLocator", call);
+                Assert.Throws<ArgumentNullException>("importFileLocator", Call);
             }
 
             [Fact]
             public void AND_work_estimation_file_exporter_is_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new MainWindowViewModel(
+                static void Call() => new MainWindowViewModel(
                     new Mock<IExportFileLocator>().Object,
                     new Mock<IImportFileLocator>().Object,
                     null,
                     new Mock<IInputMetricsFileImporter>().Object,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("workEstimationsFileExporter", call);
+                Assert.Throws<ArgumentNullException>("workEstimationsFileExporter", Call);
             }
 
             [Fact]
             public void AND_input_metrics_file_importer_is_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new MainWindowViewModel(
+                static void Call() => new MainWindowViewModel(
                     new Mock<IExportFileLocator>().Object,
                     new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     null,
                     new Mock<IAskUserForConfirmationToProceed>().Object);
 
-                Assert.Throws<ArgumentNullException>("inputMetricsFileImporter", call);
+                Assert.Throws<ArgumentNullException>("inputMetricsFileImporter", Call);
             }
 
             [Fact]
             public void AND_user_confirmation_asker_is_null_THEN_throw_ArgumentNullException()
             {
-                static void call() => new MainWindowViewModel(
+                static void Call() => new MainWindowViewModel(
                     new Mock<IExportFileLocator>().Object,
                     new Mock<IImportFileLocator>().Object,
                     new Mock<IWorkEstimationsFileExporter>().Object,
                     new Mock<IInputMetricsFileImporter>().Object,
                     null);
 
-                Assert.Throws<ArgumentNullException>("confirmationAsker", call);
+                Assert.Throws<ArgumentNullException>("confirmationAsker", Call);
             }
         }
 
@@ -201,9 +201,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_invalid_number_of_work_items_to_be_completed_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfWorkItems)
             {
-                void call() => newViewModel.RoadmapConfigurator.TotalNumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
+                void Call() => newViewModel.RoadmapConfigurator.TotalNumberOfWorkItemsToBeCompleted = invalidNumberOfWorkItems;
 
-                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Number of work items to be completed must be at least 1.");
+                AssertActionThrowsArgumentOutOfRangeException(Call, "value", "Number of work items to be completed must be at least 1.");
             }
 
             public static IEnumerable<object[]> InvalidNumberOfMonteCarloSimulationsScenarions
@@ -220,9 +220,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_invalid_number_of_simulations_THEN_throw_ArgumentOutOfRangeException(
                 int invalidNumberOfMonteCarloSimulations)
             {
-                void call() => newViewModel.NumberOfMonteCarloSimulations = invalidNumberOfMonteCarloSimulations;
+                void Call() => newViewModel.NumberOfMonteCarloSimulations = invalidNumberOfMonteCarloSimulations;
 
-                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Number of simulation should be at least 1.");
+                AssertActionThrowsArgumentOutOfRangeException(Call, "value", "Number of simulation should be at least 1.");
             }
 
             public static IEnumerable<object[]> InvalidMaximumNumberOfIterationsScenarions
@@ -239,9 +239,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
             public void WHEN_setting_invalid_maximum_number_of_iterations_THEN_throw_ArgumentOutOfRangeException(
                 int invalidMaximumNumberOfIterations)
             {
-                void call() => newViewModel.MaximumNumberOfIterations = invalidMaximumNumberOfIterations;
+                void Call() => newViewModel.MaximumNumberOfIterations = invalidMaximumNumberOfIterations;
 
-                AssertActionThrowsArgumentOutOfRangeException(call, "value", "Maximum number of iterations should be at least 1.");
+                AssertActionThrowsArgumentOutOfRangeException(Call, "value", "Maximum number of iterations should be at least 1.");
             }
 
             private static void AssertActionThrowsArgumentOutOfRangeException(
@@ -290,8 +290,8 @@ namespace KanbanProjectManagementApp.Tests.Unit
             [Fact]
             public void WHEN_estimating_completion_time_of_work_items_THEN_throw_InvalidOperationException()
             {
-                void call() => viewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
-                Assert.Throws<InvalidOperationException>(call);
+                void Call() => viewModel.EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand.Execute(null);
+                Assert.Throws<InvalidOperationException>(Call);
             }
 
             [Fact]
@@ -342,9 +342,9 @@ namespace KanbanProjectManagementApp.Tests.Unit
                     .Setup(i => i.Import(filePath))
                     .Throws(expectedException);
 
-                void call() => viewModel.ImportThroughputMetricsCommand.Execute(null);
+                void Call() => viewModel.ImportThroughputMetricsCommand.Execute(null);
 
-                var actualException = Assert.Throws<FileImportException>(call);
+                var actualException = Assert.Throws<FileImportException>(Call);
                 Assert.Same(expectedException, actualException);
             }
         }
@@ -626,23 +626,25 @@ namespace KanbanProjectManagementApp.Tests.Unit
                     .Setup(e => e.Export(expectedFilePath, viewModelWithOneInputMetric.NumberOfWorkingDaysTillCompletionEstimations, ConfigurationMode.Simple))
                     .Throws(expectedException);
 
-                void call() => viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
+                void Call() => viewModelWithOneInputMetric.ExportWorkEstimatesCommand.Execute(null);
 
-                var actualException = Assert.Throws<FileExportException>(call);
+                var actualException = Assert.Throws<FileExportException>(Call);
                 Assert.Same(expectedException, actualException);
             }
 
             private static void AssertAllWorkEstimatesAreDeterminatelyEqualToExpectedWorkEstimate(IReadOnlyCollection<WorkEstimate> roadmapEstimations, WorkEstimate expectedEstimate)
             {
-                void assertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) => Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
+                void AssertEstimateHasExpectedNumberOfWorkingDays(WorkEstimate estimate) =>
+                    Assert.Equal(expectedEstimate.EstimatedNumberOfWorkingDaysRequired, estimate.EstimatedNumberOfWorkingDaysRequired);
 
                 Assert.Collection(roadmapEstimations,
-                    Enumerable.Repeat<Action<WorkEstimate>>(assertEstimateHasExpectedNumberOfWorkingDays, roadmapEstimations.Count).ToArray()
+                    Enumerable.Repeat<Action<WorkEstimate>>(AssertEstimateHasExpectedNumberOfWorkingDays, roadmapEstimations.Count).ToArray()
                 );
 
-                static void assertEstimateIsDeterminate(WorkEstimate estimate) => Assert.False(estimate.IsIndeterminate);
+                static void AssertEstimateIsDeterminate(WorkEstimate estimate) =>
+                    Assert.False(estimate.IsIndeterminate);
                 Assert.Collection(roadmapEstimations,
-                    Enumerable.Repeat<Action<WorkEstimate>>(assertEstimateIsDeterminate, roadmapEstimations.Count).ToArray()
+                    Enumerable.Repeat<Action<WorkEstimate>>(AssertEstimateIsDeterminate, roadmapEstimations.Count).ToArray()
                 );
             }
         }

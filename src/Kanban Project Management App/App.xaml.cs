@@ -18,14 +18,13 @@ using KanbanProjectManagementApp.TextFileProcessing;
 using KanbanProjectManagementApp.Views;
 using System.Windows;
 using System.Windows.Threading;
-using WpfApplication = System.Windows.Application;
 
 namespace KanbanProjectManagementApp
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : WpfApplication
+    public partial class App
     {
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
