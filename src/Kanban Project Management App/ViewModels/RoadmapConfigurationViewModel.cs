@@ -77,7 +77,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
         /// <exception cref="ArgumentException">Thrown when <paramref name="newProjects"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">Thrown when <paramref name="newProjects"/> doesn't contain
-        /// exactly 1 project when <see cref="ConfigurationMode"/> equals to <see cref="ConfigurationMode.Simple"/>.</exception>
+        /// exactly 1 project when <see cref="ConfigurationMode"/> equals to <see cref="RoadmapConfigurator.ConfigurationMode.Simple"/>.</exception>
         public void ResetRoadmap(IReadOnlyCollection<ProjectConfiguration> newProjects)
         {
             var originalNumberOfProjects = configurator.NumberOfProjects;
