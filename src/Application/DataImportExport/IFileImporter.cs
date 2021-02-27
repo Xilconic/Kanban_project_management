@@ -14,32 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
-using System;
-using System.Collections.Generic;
-
-namespace KanbanProjectManagementApp.Application
+namespace KanbanProjectManagementApp.Application.DataImportExport
 {
-    public interface IInputMetricsFileImporter : IFileImporter
+    public interface IFileImporter
     {
-        /// <exception cref="FileImportException"/>
-        IReadOnlyCollection<InputMetric> Import(string filePath);
-    }
-
-    public class FileImportException : Exception
-    {
-        public FileImportException()
-        {
-        }
-
-        public FileImportException(string message)
-            : base(message)
-        {
-        }
-
-        public FileImportException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+        string ImportFileExtension { get; }
+        string FileTypeDescription { get; }
     }
 }
