@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 
-using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.IO;
+using KanbanProjectManagementApp.Application.DataImportExport;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 {
     public class WorkEstimationsToCsvFileExporter : IWorkEstimationsFileExporter
     {

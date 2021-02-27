@@ -14,19 +14,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using CsvHelper;
-using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
-using KanbanProjectManagementApp.Domain;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
+using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 {
-    internal class InputMetricsCsvReader
+    public class InputMetricsCsvReader
     {
         /// <exception cref="FailedToReadInputMetricsException"/>
         public static IReadOnlyCollection<InputMetric> Read(TextReader textReader)

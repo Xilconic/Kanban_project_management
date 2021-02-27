@@ -14,16 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
-using KanbanProjectManagementApp.Domain;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using KanbanProjectManagementApp.Application.DataImportExport;
+using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 {
-    internal class InputMetricsFromCsvFileImporter : IInputMetricsFileImporter
+    public class InputMetricsFromCsvFileImporter : IInputMetricsFileImporter
 	{
         public string ImportFileExtension => ".csv";
         public string FileTypeDescription => "Comma separated values file";

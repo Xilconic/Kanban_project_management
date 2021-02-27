@@ -14,13 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
+
 using System;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
-namespace KanbanProjectManagementApp.ViewModels
+namespace KanbanProjectManagementApp.Application.DataImportExport
 {
     public interface IWorkEstimationsFileExporter : IFileExporter
     {

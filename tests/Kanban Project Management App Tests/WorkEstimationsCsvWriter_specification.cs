@@ -14,16 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
+
 using KanbanProjectManagementApp.Domain;
-using KanbanProjectManagementApp.TextFileProcessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
+using KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing;
 using Xunit;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

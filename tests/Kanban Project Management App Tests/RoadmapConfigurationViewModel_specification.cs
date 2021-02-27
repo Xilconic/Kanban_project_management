@@ -24,7 +24,6 @@ using System.Linq;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Tests.Unit.TestUtilities;
 using Xunit;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

@@ -23,9 +23,9 @@ using KanbanProjectManagementApp.Application.DataFormatting;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 
-namespace KanbanProjectManagementApp.TextFileProcessing
+namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 {
-    internal class WorkEstimationsCsvWriter
+    public class WorkEstimationsCsvWriter
     {
         private const string CsvDelimiter = ";";
 
@@ -40,7 +40,7 @@ namespace KanbanProjectManagementApp.TextFileProcessing
             this.textWriter = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
         }
 
-        /// <exception cref="ArgumentException">Thrown when <paramref name="workEstimates"/> doesn't contain at least 1 simulation.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when <paramref name="workEstimates"/> doesn't contain at least 1 simulation.</exception>
         public void Write(TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
         {
             if (workEstimates.Count == 0)

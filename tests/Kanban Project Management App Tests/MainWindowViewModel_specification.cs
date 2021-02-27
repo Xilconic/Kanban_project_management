@@ -28,7 +28,6 @@ using KanbanProjectManagementApp.Application.DataImportExport;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using KanbanProjectManagementApp.Tests.Unit.TestUtilities;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {
