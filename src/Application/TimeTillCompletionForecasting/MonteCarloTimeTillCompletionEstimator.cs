@@ -14,13 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Domain;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
+using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp.Application
+namespace KanbanProjectManagementApp.Application.TimeTillCompletionForecasting
 {
     public class MonteCarloTimeTillCompletionEstimator
     {

@@ -21,6 +21,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Windows;
+using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using Xunit;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 

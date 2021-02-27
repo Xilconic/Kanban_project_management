@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using KanbanProjectManagementApp.Application;
+using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using KanbanProjectManagementApp.Domain;
 
 namespace KanbanProjectManagementApp.ViewModels

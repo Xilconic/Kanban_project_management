@@ -23,6 +23,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters

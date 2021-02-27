@@ -18,6 +18,7 @@ using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Domain;
 using System;
 using System.Linq;
+using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests.Unit.Application

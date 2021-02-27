@@ -19,6 +19,7 @@ using KanbanProjectManagementApp.Domain;
 using System;
 using System.Collections.Generic;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
+using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests.Unit.Application
