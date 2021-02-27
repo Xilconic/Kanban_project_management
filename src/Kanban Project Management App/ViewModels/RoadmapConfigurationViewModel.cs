@@ -18,7 +18,8 @@ using KanbanProjectManagementApp.Application;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.ViewModels
 {

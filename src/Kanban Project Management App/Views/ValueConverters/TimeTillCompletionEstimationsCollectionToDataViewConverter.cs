@@ -23,7 +23,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {

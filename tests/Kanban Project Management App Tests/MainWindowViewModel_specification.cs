@@ -24,8 +24,9 @@ using Moq;
 using System.Collections.Specialized;
 using KanbanProjectManagementApp.ViewModels;
 using KanbanProjectManagementApp.Application;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Tests.Unit.TestUtilities;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

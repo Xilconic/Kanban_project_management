@@ -18,6 +18,7 @@ using KanbanProjectManagementApp.Application;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 
 namespace KanbanProjectManagementApp.Views
 {

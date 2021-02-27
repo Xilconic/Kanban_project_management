@@ -18,7 +18,7 @@ using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.IO;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {

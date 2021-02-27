@@ -22,7 +22,7 @@ using System.Data;
 using System.Globalization;
 using System.Windows;
 using Xunit;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Tests.Unit
 {

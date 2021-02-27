@@ -20,7 +20,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurator;
+using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.TextFileProcessing
 {
