@@ -29,6 +29,11 @@ namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 {
     public class InputMetricsCsvReader
     {
+        private static readonly CsvConfiguration Configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            Delimiter = ";"
+        };
+
         /// <exception cref="FailedToReadInputMetricsException"/>
         public static IReadOnlyCollection<InputMetric> Read(TextReader textReader)
         {
@@ -37,14 +42,10 @@ namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
                 throw new ArgumentNullException(nameof(textReader));
             }
 
-            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = ";"
-            };
-            using var csvreader = new CsvReader(textReader, configuration, true);
+            using var csvReader = new CsvReader(textReader, Configuration, true);
             try
             {
-                var records = csvreader.GetRecords<MetricPropertyRecord>();
+                var records = csvReader.GetRecords<MetricPropertyRecord>();
                 return records.Select(r => r.ToDomain()).ToArray();
             }
             catch(HeaderValidationException ex)
@@ -73,23 +74,6 @@ namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
 
             public InputMetric ToDomain() =>
                 new InputMetric { Throughput = new ThroughputPerDay(NumberOfCompletedWorkItems) };
-        }
-    }
-
-    public class FailedToReadInputMetricsException : Exception
-    {
-        public FailedToReadInputMetricsException()
-        {
-        }
-
-        public FailedToReadInputMetricsException(string message)
-            : base(message)
-        {
-        }
-
-        public FailedToReadInputMetricsException(string message, Exception inner)
-            : base(message, inner)
-        {
         }
     }
 }
