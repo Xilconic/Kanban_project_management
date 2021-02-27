@@ -20,12 +20,12 @@ using System.Collections.Generic;
 
 namespace KanbanProjectManagementApp.Application
 {
-    public class ImportThroughputMetricsFromFileUsecase
+    public class ImportThroughputMetricsFromFileUseCase
     {
         private readonly IImportFileLocator locator;
         private readonly IInputMetricsFileImporter importer;
 
-        public ImportThroughputMetricsFromFileUsecase(
+        public ImportThroughputMetricsFromFileUseCase(
             IImportFileLocator locator,
             IInputMetricsFileImporter importer)
         {
@@ -33,7 +33,7 @@ namespace KanbanProjectManagementApp.Application
             this.importer = importer ?? throw new ArgumentNullException(nameof(importer));
         }
 
-        public void ApendThroughputMetricsFromImportFile(ICollection<InputMetric> inputMetrics)
+        public void AppendThroughputMetricsFromImportFile(ICollection<InputMetric> inputMetrics)
         {
             if (locator.TryGetFileToRead(importer, out string filePath))
             {

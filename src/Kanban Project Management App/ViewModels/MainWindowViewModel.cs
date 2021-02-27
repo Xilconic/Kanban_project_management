@@ -130,7 +130,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
             RoadmapConfigurator = new RoadmapConfigurationViewModel(confirmationAsker);
 
-            var throughputMetricsImportUsecase = new ImportThroughputMetricsFromFileUsecase(importFileLocator, inputMetricsFileImporter);
+            var throughputMetricsImportUsecase = new ImportThroughputMetricsFromFileUseCase(importFileLocator, inputMetricsFileImporter);
             ImportThroughputMetricsCommand = new ImportThroughputMetricsFromFileCommand(throughputMetricsImportUsecase, InputMetrics);
             UpdateCycleTimeStatisticsCommand = new CalculateThroughputStatisticsCommand(this);
             EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand = new PerformMonteCarloEstimationOfNumberOfWorkDaysTillWorkItemsCompletedCommand(this);
@@ -187,14 +187,14 @@ namespace KanbanProjectManagementApp.ViewModels
 
         private class ImportThroughputMetricsFromFileCommand : ICommand
         {
-            private readonly ImportThroughputMetricsFromFileUsecase usecase;
+            private readonly ImportThroughputMetricsFromFileUseCase useCase;
             private readonly ObservableCollection<InputMetric> inputMetrics;
 
             public ImportThroughputMetricsFromFileCommand(
-                ImportThroughputMetricsFromFileUsecase usecase,
+                ImportThroughputMetricsFromFileUseCase useCase,
                 ObservableCollection<InputMetric> inputMetrics)
             {
-                this.usecase = usecase ?? throw new ArgumentNullException(nameof(usecase));
+                this.useCase = useCase ?? throw new ArgumentNullException(nameof(useCase));
                 this.inputMetrics = inputMetrics ?? throw new ArgumentNullException(nameof(inputMetrics));
             }
 
@@ -207,7 +207,7 @@ namespace KanbanProjectManagementApp.ViewModels
 
             public void Execute(object parameter)
             {
-                usecase.ApendThroughputMetricsFromImportFile(inputMetrics);
+                useCase.AppendThroughputMetricsFromImportFile(inputMetrics);
             }
         }
 
