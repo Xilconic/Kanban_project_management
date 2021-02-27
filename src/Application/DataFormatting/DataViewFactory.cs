@@ -24,7 +24,7 @@ using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using KanbanProjectManagementApp.Domain;
 
-namespace KanbanProjectManagementApp.Application
+namespace KanbanProjectManagementApp.Application.DataFormatting
 {
     public class DataViewFactory
     {

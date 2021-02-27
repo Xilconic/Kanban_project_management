@@ -22,7 +22,7 @@ using System.Windows;
 using System.Windows.Data;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
-using KanbanProjectManagementApp.Application;
+using KanbanProjectManagementApp.Application.DataFormatting;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {
