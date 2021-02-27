@@ -47,4 +47,10 @@
       <ProjectReference Include="..\..\src\InterfaceAdapters\InterfaceAdapters.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\..\COPYING">
+        <Link>COPYING</Link>
+      </Content>
+    </ItemGroup>
+
 </Project>
