@@ -20,6 +20,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
@@ -29,6 +30,7 @@ namespace KanbanProjectManagementApp.TextFileProcessing
     {
         private const string CsvDelimiter = ";";
 
+        private readonly DataViewFactory factory = new DataViewFactory();
         private readonly TextWriter textWriter;
 
         /// <remarks>
@@ -47,17 +49,13 @@ namespace KanbanProjectManagementApp.TextFileProcessing
                 throw new ArgumentException("Work estimations should have at least 1 simulation.", nameof(workEstimates));
             }
 
-            DataView dataView = GetDataViewOfData(workEstimates, configurationMode);
+            DataView dataView = factory.FromTimeTillCompletionEstimations(
+                workEstimates,
+                configurationMode,
+                CultureInfo.InvariantCulture);
 
             WriteHeader(dataView.Table.Columns);
             WriteRows(dataView);
-        }
-
-        /// <remarks>This code ensures the data exported is consistently shaped with the MainWindow's simulation results DataGrid.</remarks>
-        private static DataView GetDataViewOfData(TimeTillCompletionEstimationsCollection workEstimates, ConfigurationMode configurationMode)
-        {
-            var converter = new TimeTillCompletionEstimationsCollectionToDataViewConverter();
-            return (DataView)converter.Convert(new object[] { workEstimates, configurationMode }, null, null, CultureInfo.InvariantCulture);
         }
 
         private void WriteHeader(DataColumnCollection columns)

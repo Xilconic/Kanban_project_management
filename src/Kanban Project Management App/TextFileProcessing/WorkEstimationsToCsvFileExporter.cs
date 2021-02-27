@@ -18,6 +18,7 @@ using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.ViewModels;
 using System;
 using System.IO;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 

@@ -20,6 +20,7 @@ using KanbanProjectManagementApp.TextFileProcessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using Xunit;
 using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;

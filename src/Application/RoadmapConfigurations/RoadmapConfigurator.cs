@@ -144,11 +144,5 @@ namespace KanbanProjectManagementApp.Application.RoadmapConfigurations
                 });
             }
         }
-
-        public enum ConfigurationMode
-        {
-            Simple,
-            Advanced
-        }
     }
 }

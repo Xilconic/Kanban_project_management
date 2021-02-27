@@ -14,22 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
-using KanbanProjectManagementApp.Application;
-using KanbanProjectManagementApp.Domain;
+
 using System;
-using System.Data;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
+using KanbanProjectManagementApp.Application;
 
 namespace KanbanProjectManagementApp.Views.ValueConverters
 {
     public class TimeTillCompletionEstimationsCollectionToDataViewConverter : IMultiValueConverter
     {
+        private readonly DataViewFactory factory = new DataViewFactory();
+        
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             Debug.Assert(values.Length == 2, "Precondition violated: Must pass exactly 1 value into this converter.");
@@ -37,78 +37,15 @@ namespace KanbanProjectManagementApp.Views.ValueConverters
             if (values[0] is TimeTillCompletionEstimationsCollection estimations &&
                 values[1] is ConfigurationMode mode)
             {
-                Debug.Assert(estimations.RoadmapEstimations.Count > 0, $"Invariant failed: Should guarantee at least 1 work estimation.");
-
-                string identifier = estimations.RoadmapEstimations.First().Identifier;
-
-                var dataTable = new DataTable();
-
-                AddReadOnlyColumn($"Number of days till completion of '{identifier}' in simulation", dataTable);
-                AddReadOnlyColumn($"Is '{identifier}' estimation indeterminate", dataTable);
-                if(mode == ConfigurationMode.Advanced)
-                {
-                    for(int i = 0; i < estimations.NumberOfProjectsInRoadmap; i++)
-                    {
-                        var projectEstimations = estimations[i];
-                        Debug.Assert(projectEstimations.Count > 0, $"Invariant failed: Should guarantee at least 1 work estimation for project.");
-
-                        identifier = projectEstimations.First().Identifier;
-                        AddReadOnlyColumn($"Number of days till completion of '{identifier}' in simulation", dataTable);
-                        AddReadOnlyColumn($"Is '{identifier}' estimation indeterminate", dataTable);
-                    }
-                }
-
-                for(int i = 0; i < estimations.NumberOfSimulations; i++)
-                {
-                    object[] rowData = GetRowData(estimations, i, mode, culture);
-                    dataTable.Rows.Add(rowData);
-                }
-
-                return dataTable.DefaultView;
+                return factory.FromTimeTillCompletionEstimations(estimations, mode, culture);
             }
 
             return DependencyProperty.UnsetValue;
-        }
-
-        private object[] GetRowData(
-            TimeTillCompletionEstimationsCollection estimations,
-            int simulationIndex,
-            ConfigurationMode mode,
-            CultureInfo culture)
-        {
-            WorkEstimate roadmapEstimate = estimations.GetRoadmapEstimationForSimulation(simulationIndex);
-            var rowData = new object[]
-            {
-                FormatEstiatedNumberOfWorkingDays(roadmapEstimate, culture),
-                roadmapEstimate.IsIndeterminate
-            };
-            if(mode == ConfigurationMode.Advanced)
-            {
-                var additionalRowData = new object[estimations.NumberOfProjectsInRoadmap*2];
-                for(int projectIndex = 0; projectIndex < estimations.NumberOfProjectsInRoadmap; projectIndex++)
-                {
-                    WorkEstimate projectEstimate = estimations.GetProjectEstimationForSimulation(projectIndex, simulationIndex);
-                    additionalRowData[projectIndex * 2] = FormatEstiatedNumberOfWorkingDays(projectEstimate, culture);
-                    additionalRowData[projectIndex * 2 + 1] = projectEstimate.IsIndeterminate;
-                }
-                rowData = rowData.Concat(additionalRowData).ToArray();
-            }
-
-            return rowData;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
-
-        private static void AddReadOnlyColumn(string header, DataTable dataTable)
-        {
-            var c = dataTable.Columns.Add(header);
-            c.ReadOnly = true;
-        }
-
-        private string FormatEstiatedNumberOfWorkingDays(WorkEstimate estimate, CultureInfo culture) =>
-            estimate.EstimatedNumberOfWorkingDaysRequired.ToString(culture);
     }
 }
