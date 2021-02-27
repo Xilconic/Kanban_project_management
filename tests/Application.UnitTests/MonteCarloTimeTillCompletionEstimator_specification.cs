@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
+using KanbanProjectManagementApp.Tests.Unit.Application.TestUtilities;
 using Xunit;
 
 namespace KanbanProjectManagementApp.Tests.Unit.Application
@@ -27,6 +28,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
     public class MonteCarloTimeTillCompletionEstimator_specification
     {
         private readonly IReadOnlyList<InputMetric> inputMetrics = Array.Empty<InputMetric>();
+        private readonly IRandomNumberGenerator randomNumberGenerator = new RandomNumberGeneratorTestStub();
 
         public static IEnumerable<object[]> InvalidNumberOfSimulationsScenarios
         {
@@ -42,7 +44,11 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         public void WHEN_constructing_new_instance_AND_number_of_simulations_is_less_than_1_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfSimulations)
         {
-            void Call() => new MonteCarloTimeTillCompletionEstimator(invalidNumberOfSimulations, 1, inputMetrics);
+            void Call() => new MonteCarloTimeTillCompletionEstimator(
+                invalidNumberOfSimulations,
+                1,
+                inputMetrics,
+                randomNumberGenerator);
 
 
             AssertActionThrowsArgumentOutOfRangeException(Call, "numberOfSimulations", "Number of simulations should be at least 1.");
@@ -62,7 +68,11 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         public void WHEN_constructing_new_instance_AND_maximum_number_of_iterations_is_less_than_1_THEN_throw_ArgumentOutOfRangeException(
             int invalidNumberOfIterations)
         {
-            void Call() => new MonteCarloTimeTillCompletionEstimator(1, invalidNumberOfIterations, inputMetrics);
+            void Call() => new MonteCarloTimeTillCompletionEstimator(
+                1,
+                invalidNumberOfIterations,
+                inputMetrics,
+                randomNumberGenerator);
 
             AssertActionThrowsArgumentOutOfRangeException(Call, "maximumNumberOfIterations", "Maximum number of iterations should be at least 1.");
         }
@@ -70,15 +80,35 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         [Fact]
         public void WHEN_constructing_new_instance_AND_input_metrics_are_null_THEN_throw_ArgumentNullException()
         {
-            static void Call() => new MonteCarloTimeTillCompletionEstimator(1, 1, null);
+            void Call() => new MonteCarloTimeTillCompletionEstimator(
+                1,
+                1,
+                null,
+                randomNumberGenerator);
 
             Assert.Throws<ArgumentNullException>("inputMetrics", Call);
         }
 
         [Fact]
+        public void WHEN_constructing_new_instance_AND_random_number_generator_is_null_THEN_throw_ArgumentNullException()
+        {
+            void Call() => new MonteCarloTimeTillCompletionEstimator(
+                1,
+                1,
+                inputMetrics,
+                null);
+
+            Assert.Throws<ArgumentNullException>("randomNumberGenerator", Call);
+        }
+
+        [Fact]
         public void GIVEN_no_input_metrics_WHEN_estimating_THEN_throw_InvalidOperationException()
         {
-            var estimator = new MonteCarloTimeTillCompletionEstimator(1, 1, inputMetrics);
+            var estimator = new MonteCarloTimeTillCompletionEstimator(
+                1,
+                1,
+                inputMetrics,
+                randomNumberGenerator);
             var projects = new[] { new ProjectConfiguration("A", 1, default) };
             var roadmapConfiguration = new RoadmapConfiguration(projects);
 
@@ -96,7 +126,11 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
                 new InputMetric { Throughput = new ThroughputPerDay(2) }
             };
             var numberOfSimulations = 2;
-            var estimator = new MonteCarloTimeTillCompletionEstimator(numberOfSimulations, 10, inputMetrics);
+            var estimator = new MonteCarloTimeTillCompletionEstimator(
+                numberOfSimulations,
+                10,
+                inputMetrics,
+                randomNumberGenerator);
 
             var projectName = "test";
             var projects = new[] { new ProjectConfiguration(projectName, 10, default) };

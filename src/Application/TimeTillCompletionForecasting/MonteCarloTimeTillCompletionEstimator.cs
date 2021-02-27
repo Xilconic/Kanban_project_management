@@ -28,10 +28,15 @@ namespace KanbanProjectManagementApp.Application.TimeTillCompletionForecasting
         private readonly int numberOfSimulations;
         private readonly int maximumNumberOfIterations;
         private readonly IReadOnlyList<InputMetric> inputMetrics;
+        private readonly IRandomNumberGenerator randomNumberGenerator;
 
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="maximumNumberOfIterations"/> or <paramref name="numberOfSimulations"/> is not at least 1.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="inputMetrics"/> is null.</exception>
-        public MonteCarloTimeTillCompletionEstimator(int numberOfSimulations, int maximumNumberOfIterations, IReadOnlyList<InputMetric> inputMetrics)
+        public MonteCarloTimeTillCompletionEstimator(
+            int numberOfSimulations,
+            int maximumNumberOfIterations,
+            IReadOnlyList<InputMetric> inputMetrics,
+            IRandomNumberGenerator randomNumberGenerator)
         {
             ValidateAtLeastOneSimulation(numberOfSimulations);
             ValidateAtLeastOneIteration(maximumNumberOfIterations);
@@ -39,6 +44,7 @@ namespace KanbanProjectManagementApp.Application.TimeTillCompletionForecasting
             this.numberOfSimulations = numberOfSimulations;
             this.maximumNumberOfIterations = maximumNumberOfIterations;
             this.inputMetrics = inputMetrics ?? throw new ArgumentNullException(nameof(inputMetrics));
+            this.randomNumberGenerator = randomNumberGenerator ?? throw new ArgumentNullException(nameof(randomNumberGenerator));
         }
 
         /// <exception cref="InvalidOperationException">Thrown when <see cref="inputMetrics"/> is empty.</exception>
@@ -51,7 +57,7 @@ namespace KanbanProjectManagementApp.Application.TimeTillCompletionForecasting
         {
             ValidateAtLeastOneInputMetric();
 
-            var simulationEstimator = new TimeTillCompletionEstimator(inputMetrics, new RandomNumberGenerator(), maximumNumberOfIterations);
+            var simulationEstimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGenerator, maximumNumberOfIterations);
             var simulationResults = new TimeTillCompletionEstimationsCollection(numberOfSimulations, roadmapConfiguration.Projects.Count);
             for (int i = 0; i < numberOfSimulations; i++)
             {

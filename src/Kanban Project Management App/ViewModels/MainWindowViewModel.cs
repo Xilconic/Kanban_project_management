@@ -24,6 +24,7 @@ using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Application.DataImportExport;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
 using KanbanProjectManagementApp.Domain;
+using KanbanProjectManagementApp.InterfaceAdapters;
 
 namespace KanbanProjectManagementApp.ViewModels
 {
@@ -274,7 +275,8 @@ namespace KanbanProjectManagementApp.ViewModels
                 var estimator = new MonteCarloTimeTillCompletionEstimator(
                     viewModel.NumberOfMonteCarloSimulations,
                     viewModel.MaximumNumberOfIterations,
-                    viewModel.InputMetrics);
+                    viewModel.InputMetrics,
+                    new RandomNumberGenerator());
                 viewModel.NumberOfWorkingDaysTillCompletionEstimations = estimator.Estimate(viewModel.RoadmapConfigurator.Roadmap);
             }
         }

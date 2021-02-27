@@ -18,24 +18,26 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.Application;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
+using KanbanProjectManagementApp.Tests.Unit.Application.TestUtilities;
 
 namespace KanbanProjectManagementApp.Tests.Unit.Application
 {
     public class TimeTillCompletionEstimator_specification
     {
         private readonly Mock<IRandomNumberGenerator> randomNumberGeneratorMock;
-        private readonly RandomNumberGenerator realRandomNumberGenerator;
+        private readonly IRandomNumberGenerator realRandomNumberGenerator;
         private readonly int someMaximumNumberOfIterations = 25;
         private readonly Roadmap someRoadmap = new Roadmap(new[] { new Project(1) });
 
         public TimeTillCompletionEstimator_specification()
         {
             randomNumberGeneratorMock = new Mock<IRandomNumberGenerator>();
-            realRandomNumberGenerator = new RandomNumberGenerator();
+            realRandomNumberGenerator = new RandomNumberGeneratorTestStub();
         }
 
         [Fact]

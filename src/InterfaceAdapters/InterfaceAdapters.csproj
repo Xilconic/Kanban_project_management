@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <AssemblyName>KanbanProjectManagementApp.InterfaceAdapters</AssemblyName>
+        <RootNamespace>KanbanProjectManagementApp.InterfaceAdapters</RootNamespace>
+        <PackageVersion>0.4.0</PackageVersion>
+        <Authors>S.L. des Bouvrie</Authors>
+        <Description>Interface adapters object library for convertion between ideal representation in high-level code (Application, Domain) to preferred representation in low-level code (UI, Databases, Frameworks, OS-dependent code).</Description>
+        <Copyright>Copyright (c) 2020 S.L. des Bouvrie</Copyright>
+        <PackageProjectUrl>https://github.com/Xilconic/Kanban_project_management</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Xilconic/Kanban_project_management</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>kanban;estimate;estimations;throughput;metric;project;management</PackageTags>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Company>S.L. des Bouvrie</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+</Project>
