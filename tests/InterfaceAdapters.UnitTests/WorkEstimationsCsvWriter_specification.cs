@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 
-using KanbanProjectManagementApp.Domain;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
 using KanbanProjectManagementApp.Application.TimeTillCompletionForecasting;
+using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing;
 using Xunit;
 
-namespace KanbanProjectManagementApp.Tests.Unit
+namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
 {
     public class WorkEstimationsCsvWriter_specification : IDisposable
     {
