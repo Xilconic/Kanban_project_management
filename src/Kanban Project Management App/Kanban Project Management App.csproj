@@ -19,6 +19,7 @@
     <PackageLicenseFile>COPYING</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>kanban;estimate;estimations;throughput;metric;project;management</PackageTags>
+    <ApplicationIcon>MainAppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
