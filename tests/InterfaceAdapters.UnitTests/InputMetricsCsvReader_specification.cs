@@ -82,7 +82,7 @@ namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
         }
 
         [Fact]
-        public void GIVEN_text_reader_returning_data_with_throughput_column_AND_comma_as_delimiter_WHEN_reading_THEN_return_input_metrics_with_throughput_data()
+        public void GIVEN_text_reader_returning_data_with_throughput_column_AND_comma_as_delimiter_WHEN_reading_THEN_throw_FailedToReadInputMetricsException()
         {
             string fileContents =
 @"Date,NumberOfCompletedWorkItems
@@ -90,12 +90,30 @@ namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
 08/18/2020 00:00:00,1
 08/17/2020 00:00:00,3
 ";
-            using var emptyStringReader = new StringReader(fileContents);
+            using var stringReader = new StringReader(fileContents);
 
-            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(stringReader);
 
             var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Invalid header. It must contain a column with the name 'NumberOfCompletedWorkItems' and use ';' as delimiter.", actualException.Message);
+        }
+        
+        [Fact]
+        public void GIVEN_text_reader_returning_data_with_invalid_throughput_value_WHEN_reading_THEN_throw_FailedToReadInputMetricsException()
+        {
+            string fileContents =
+@"Date;NumberOfCompletedWorkItems
+08/19/2020 00:00:00;4
+08/18/2020 00:00:00;-2
+08/17/2020 00:00:00;3
+";
+            using var stringReader = new StringReader(fileContents);
+
+            void Call() => InputMetricsCsvReader.Read(stringReader);
+
+            var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
+            var expectedErrorMessage = $"Invalid data was provided. Details: Must be in range [0.0, PositiveInfinity). (Parameter 'numberOfWorkItemsFinished'){Environment.NewLine}Actual value was -2.";
+            Assert.Equal(expectedErrorMessage, actualException.Message);
         }
 
         [Fact]
@@ -107,9 +125,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
 08/18/2020 00:00:00;1
 08/17/2020 00:00:00;3
 ";
-            using var emptyStringReader = new StringReader(fileContents);
+            using var stringReader = new StringReader(fileContents);
 
-            IReadOnlyCollection<InputMetric> inputMetrics = InputMetricsCsvReader.Read(emptyStringReader);
+            IReadOnlyCollection<InputMetric> inputMetrics = InputMetricsCsvReader.Read(stringReader);
 
             var expectedInputMetrics = new[]
             {
@@ -129,9 +147,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
 08/18/2020 00:00:00;bug
 08/17/2020 00:00:00;3
 ";
-            using var emptyStringReader = new StringReader(fileContents);
+            using var stringReader = new StringReader(fileContents);
 
-            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(stringReader);
 
             var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Failed to parse a value in the 'NumberOfCompletedWorkItems' column. All elements must be a number.", actualException.Message);
@@ -146,9 +164,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.InterfaceAdapters
 08/18/2020 00:00:00;
 08/17/2020 00:00:00;3
 ";
-            using var emptyStringReader = new StringReader(fileContents);
+            using var stringReader = new StringReader(fileContents);
 
-            void Call() => InputMetricsCsvReader.Read(emptyStringReader);
+            void Call() => InputMetricsCsvReader.Read(stringReader);
 
             var actualException = Assert.Throws<FailedToReadInputMetricsException>(Call);
             Assert.Equal("Failed to parse a value in the 'NumberOfCompletedWorkItems' column. All elements must be a number.", actualException.Message);

@@ -60,8 +60,9 @@ namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
                     "Failed to parse a value in the 'NumberOfCompletedWorkItems' column. All elements must be a number.",
                     ex);
             }
-            catch(Exception ex)
+            catch(Exception ex) when(!(ex is FailedToReadInputMetricsException))
             {
+                // Covers any unknown Exceptions that CsvReader could possibly throw
                 throw new FailedToReadInputMetricsException(
                     "Failed to read the file due to unexpected reasons.",
                     ex);
@@ -72,8 +73,20 @@ namespace KanbanProjectManagementApp.InterfaceAdapters.CsvFileProcessing
         {
             public double NumberOfCompletedWorkItems { get; set; }
 
-            public InputMetric ToDomain() =>
-                new InputMetric { Throughput = new ThroughputPerDay(NumberOfCompletedWorkItems) };
+            /// <exception cref="FailedToReadInputMetricsException">Thrown when conversion was failed.</exception>
+            public InputMetric ToDomain()
+            {
+                try
+                {
+                    return new InputMetric {Throughput = new ThroughputPerDay(NumberOfCompletedWorkItems)};
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    throw new FailedToReadInputMetricsException(
+                        $"Invalid data was provided. Details: {e.Message}",
+                        e);
+                }
+            }
         }
     }
 }
