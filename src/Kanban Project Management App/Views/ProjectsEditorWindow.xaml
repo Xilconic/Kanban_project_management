@@ -23,7 +23,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KanbanProjectManagementApp.Views"
         mc:Ignorable="d"
-        Title="ProjectsEditorWindow" Height="450" Width="800">
+        Title="Projects Editor" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
