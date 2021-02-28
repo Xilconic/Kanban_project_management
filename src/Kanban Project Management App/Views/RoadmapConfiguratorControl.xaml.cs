@@ -23,14 +23,13 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using KanbanProjectManagementApp.Application.RoadmapConfigurations;
-using static KanbanProjectManagementApp.Application.RoadmapConfigurations.RoadmapConfigurator;
 
 namespace KanbanProjectManagementApp.Views
 {
     /// <summary>
     /// Interaction logic for RoadmapConfiguratorControl.xaml
     /// </summary>
-    public partial class RoadmapConfiguratorControl : UserControl
+    public partial class RoadmapConfiguratorControl
     {
         public RoadmapConfiguratorControl()
         {
@@ -39,13 +38,16 @@ namespace KanbanProjectManagementApp.Views
         }
 
         public static readonly DependencyProperty RoadmapConfiguratorProperty =
-             DependencyProperty.Register(nameof(RoadmapConfigurator), typeof(RoadmapConfigurationViewModel),
-             typeof(RoadmapConfiguratorControl), new FrameworkPropertyMetadata(new RoadmapConfigurationViewModel(new IAskUserForConfirmationToProceedStub())));
+            DependencyProperty.Register(
+                nameof(RoadmapConfigurator),
+                typeof(RoadmapConfigurationViewModel),
+                typeof(RoadmapConfiguratorControl),
+                new FrameworkPropertyMetadata(new RoadmapConfigurationViewModel(new IAskUserForConfirmationToProceedStub())));
 
         public RoadmapConfigurationViewModel RoadmapConfigurator
         {
-            get { return (RoadmapConfigurationViewModel)GetValue(RoadmapConfiguratorProperty); }
-            set { SetValue(RoadmapConfiguratorProperty, value); }
+            get => (RoadmapConfigurationViewModel)GetValue(RoadmapConfiguratorProperty);
+            set => SetValue(RoadmapConfiguratorProperty, value);
         }
 
         private void EditRoadmapProjectsButton_Click(object sender, RoutedEventArgs e)
@@ -59,16 +61,20 @@ namespace KanbanProjectManagementApp.Views
             }
         }
 
-        private ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
+        private static ObservableCollection<ProjectRowItem> GetProjectRowItems(RoadmapConfigurationViewModel configurationViewModel)
         {
+            var projectRowItems = configurationViewModel.Roadmap.Projects
+                .Select(ProjectRowItem.FromDomain)
+                .ToArray();
             return new ObservableCollectionThatKeepsAtLeastOneItem<ProjectRowItem>(
-                configurationViewModel.Roadmap.Projects.Select(ProjectRowItem.FromDomain).ToArray(), "project of Roadmap");
+                projectRowItems,
+                "project of Roadmap");
         }
 
         private bool reEntrancyGuardWhenSwitchingToSimpleMode = false;
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(e.OriginalSource == ModeSelectorControl)
+            if(ReferenceEquals(e.OriginalSource, ModeSelectorControl))
             {
                 e.Handled = true;
 
@@ -108,7 +114,7 @@ namespace KanbanProjectManagementApp.Views
             }
         }
 
-        private ConfigurationMode ToConfigurationMode(int selectedIndex)
+        private static ConfigurationMode ToConfigurationMode(int selectedIndex)
         {
             return selectedIndex switch
             {
