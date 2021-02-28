@@ -16,6 +16,7 @@
 //  along with Kanban Project Management App.  If not, see https://www.gnu.org/licenses/.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -28,6 +29,7 @@ namespace KanbanProjectManagementApp.Application.DataFormatting
 {
     public class DataViewFactory
     {
+        /// <exception cref="ArgumentNullException">Thrown when any argument is null.</exception>
         public DataView FromTimeTillCompletionEstimations(
             TimeTillCompletionEstimationsCollection estimations,
             ConfigurationMode mode,
@@ -48,7 +50,7 @@ namespace KanbanProjectManagementApp.Application.DataFormatting
             {
                 for (int i = 0; i < estimations.NumberOfProjectsInRoadmap; i++)
                 {
-                    var projectEstimations = estimations[i];
+                    IReadOnlyCollection<WorkEstimate> projectEstimations = estimations[i];
                     Debug.Assert(projectEstimations.Count > 0,
                         $"Invariant failed: Should guarantee at least 1 work estimation for project.");
 

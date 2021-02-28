@@ -18,7 +18,6 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Xunit;
 using KanbanProjectManagementApp.Domain;
 using KanbanProjectManagementApp.Application;
@@ -106,6 +105,23 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
             Assert.StartsWith("At least 1 datapoint of input metrics is required for estimation.", actualException.Message);
         }
 
+        [Fact]
+        public void GIVEN_completed_roadmap_WHEN_estimating_time_to_completion_THEN_throw_ArgumentOutOfRangeException()
+        {
+            var inputMetrics = ToInputMetrics(new[] { new ThroughputPerDay(1) });
+            var project = new Project(1);
+            var roadmap = new Roadmap(new[] { project });
+            
+            project.CompleteWorkItem();
+
+            var estimator = new TimeTillCompletionEstimator(inputMetrics, randomNumberGeneratorMock.Object, someMaximumNumberOfIterations);
+
+            void Call() => estimator.Estimate(roadmap);
+            
+            var actualException = Assert.Throws<ArgumentOutOfRangeException>("roadmap", Call);
+            Assert.StartsWith("Roadmap should have work to be completed.", actualException.Message);
+        }
+        
         public static IEnumerable<object[]> SingleMetricEstimationScenarios
         {
             get
@@ -121,7 +137,9 @@ namespace KanbanProjectManagementApp.Tests.Unit.Application
         [Theory]
         [MemberData(nameof(SingleMetricEstimationScenarios))]
         public void GIVEN_one_input_metric_AND_one_project_WHEN_estimating_time_to_completion_THEN_return_number_of_work_days(
-            ThroughputPerDay throughput, Project project, double expectedNumberOfDaysRequired)
+            ThroughputPerDay throughput,
+            Project project,
+            double expectedNumberOfDaysRequired)
         {
             var inputMetrics = ToInputMetrics(new[] { throughput });
             var roadmap = new Roadmap(new[] { project });

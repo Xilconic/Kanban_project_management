@@ -30,12 +30,28 @@ namespace KanbanProjectManagementApp.Application.RoadmapConfigurations
             int numberOfWorkItemsToBeCompleted,
             int priorityWeight)
         {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name must be specified", nameof(name));
-            if (numberOfWorkItemsToBeCompleted <= 0) throw new ArgumentOutOfRangeException(nameof(numberOfWorkItemsToBeCompleted), "Project must have at least 1 work item to be completed.");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name must be specified.", nameof(name));
+            }
+            ValidateNumberOfWorkItemsToBeCompleted(
+                numberOfWorkItemsToBeCompleted,
+                nameof(numberOfWorkItemsToBeCompleted));
 
             Name = name;
             NumberOfWorkItemsToBeCompleted = numberOfWorkItemsToBeCompleted;
             PriorityWeight = priorityWeight;
+        }
+
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="newNumberOfWorkItemsToBeCompleted"/> is invalid.</exception>
+        private static void ValidateNumberOfWorkItemsToBeCompleted(int newNumberOfWorkItemsToBeCompleted, string argumentName)
+        {
+            if (newNumberOfWorkItemsToBeCompleted <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    argumentName,
+                    "Project must have at least 1 work item to be completed.");
+            }
         }
 
         public int NumberOfWorkItemsToBeCompleted
@@ -43,19 +59,16 @@ namespace KanbanProjectManagementApp.Application.RoadmapConfigurations
             get => numberOfWorkItemsToBeCompleted;
             set
             {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), "Project must have at least 1 work item to be completed.");
-                }
+                ValidateNumberOfWorkItemsToBeCompleted(value, nameof(value));
                 numberOfWorkItemsToBeCompleted = value;
             }
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
         /// <summary>
         /// Represents the priority. The higher the value, the more priority it gets in being worked on.
         /// </summary>
-        public int PriorityWeight { get; private set; }
+        public int PriorityWeight { get; }
 
         public Project ToWorkableProject() => new Project(NumberOfWorkItemsToBeCompleted, PriorityWeight, Name);
     }
