@@ -25,8 +25,8 @@ namespace KanbanProjectManagementApp.ViewModels
         private readonly string elementDescription;
 
         public ObservableCollectionThatKeepsAtLeastOneItem(
-            IEnumerable<T> elements,
-            string elementDescription) : base(elements)
+            IEnumerable<T> collection,
+            string elementDescription) : base(collection)
         {
             this.elementDescription = elementDescription;
         }
