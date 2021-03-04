@@ -24,18 +24,18 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
         xmlns:local="clr-namespace:KanbanProjectManagementApp.Views"
         xmlns:valueconveters="clr-namespace:KanbanProjectManagementApp.Views.ValueConverters"
         mc:Ignorable="d"
-        Title="Kanban Project Management App" Height="450" Width="800">
+        Title="Kanban Project Management App" MinHeight="450" MinWidth="800">
     <Window.Resources>
         <valueconveters:ThroughputPerDayValueConverter x:Key="ThroughputConverter"/>
         <valueconveters:TimeTillCompletionEstimationsCollectionToDataViewConverter x:Key="EstimationsConverter"/>
     </Window.Resources>
-    <Grid x:Name="MainGrid">
+    <Grid x:Name="MainGrid" Margin="4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" Margin="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -50,9 +50,10 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             </DataGrid>
         </Grid>
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Margin="4">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"/> <!--HACK: This value is copied to RoadmapConfiguratorControl Grid to ensure visual consistency-->
+                <ColumnDefinition Width="150"/>
+                <!--HACK: This value is copied to RoadmapConfiguratorControl Grid to ensure visual consistency-->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -80,7 +81,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             <TextBlock Grid.Column="0" Grid.Row="2" Margin="4" TextAlignment="Right">Standard deviation:</TextBlock>
             <TextBox IsReadOnly="True" Grid.Column="1" Grid.Row="2" Margin="4" Text="{Binding EstimatedCorrectedSampleStandardDeviationOfThroughput, Mode=OneWay}"/>
 
-            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Margin="4"  Command="{Binding UpdateCycleTimeStatisticsCommand, Mode=OneWay}">Calculate</Button>
 
             <!-- Work estimation section: -->
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="4,24,4,4" TextAlignment="Center" FontWeight="Bold">Estimation</TextBlock>
@@ -93,7 +94,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
             <TextBlock Grid.Column="0" Grid.Row="7" Margin="4" TextAlignment="Right">Max. number of iterations:</TextBlock>
             <TextBox Grid.Column="1" Grid.Row="7" Margin="4" Text="{Binding MaximumNumberOfIterations}"/>
 
-            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
+            <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Margin="4" Command="{Binding EstimateNumberOfWorkDaysTillWorkItemsCompletedCommand}">Estimate number of working days till completion</Button>
 
             <DataGrid Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.ItemsSource>
@@ -104,7 +105,7 @@ along with Kanban Project Management App.  If not, see https://www.gnu.org/licen
                 </DataGrid.ItemsSource>
             </DataGrid>
 
-            <Button Grid.Row="10" Grid.Column="1" Command="{Binding ExportWorkEstimatesCommand}">Export</Button>
+            <Button Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" Width="50" Command="{Binding ExportWorkEstimatesCommand}">Export</Button>
         </Grid>
 
     </Grid>
