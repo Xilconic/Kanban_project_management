@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kanban Project Management A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1CFF5E84-3571-429B-95AA-AA965D1E9D4E}"
 	ProjectSection(SolutionItems) = preProject
+		build.cake = build.cake
+		.config\dotnet-tools.json = .config\dotnet-tools.json
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -21,13 +23,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.UnitTests", "tests\Domain.UnitTests\Domain.UnitTests.csproj", "{DD4EF2D2-C97C-473C-8A75-7B722D3BECB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{FACBC961-6441-4EE0-9FDC-F7B5AED15458}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\Application\Application.csproj", "{FACBC961-6441-4EE0-9FDC-F7B5AED15458}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "tests\Application.UnitTests\Application.UnitTests.csproj", "{65A61D2D-CF9D-4D67-AD51-185932F261F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "tests\Application.UnitTests\Application.UnitTests.csproj", "{65A61D2D-CF9D-4D67-AD51-185932F261F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAdapters", "src\InterfaceAdapters\InterfaceAdapters.csproj", "{50F298B8-3F7C-4333-B45E-205BB6FBD72F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceAdapters", "src\InterfaceAdapters\InterfaceAdapters.csproj", "{50F298B8-3F7C-4333-B45E-205BB6FBD72F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceAdapters.UnitTests", "tests\InterfaceAdapters.UnitTests\InterfaceAdapters.UnitTests.csproj", "{41F7F6B3-E46C-4C0C-AEAD-00D4A83D96C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceAdapters.UnitTests", "tests\InterfaceAdapters.UnitTests\InterfaceAdapters.UnitTests.csproj", "{41F7F6B3-E46C-4C0C-AEAD-00D4A83D96C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
