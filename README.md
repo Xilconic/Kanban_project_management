@@ -13,6 +13,9 @@ After installing the framework head to https://github.com/Xilconic/Kanban_projec
 ## Building and running tests locally
 Execute the following on the commandline: `dotnet cake`
 
+## Creating a release locally
+Execute the following on the commandline: `dotnet cake --target="CreateKanbanProjectManagementAppReleaseZip"`
+
 # Distribution
 Copyright (c) 2020 S.L. des Bouvrie
 

@@ -306,9 +306,9 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Cake - Uncomment if you are using it
-# tools/**
-# !tools/packages.config
+# Cake
+tools/**
+!tools/packages.config
 
 # Tabs Studio
 *.tss
@@ -348,5 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Rider personal
 .idea/
+
+# Visual Studio Code personal
 .vscode/
