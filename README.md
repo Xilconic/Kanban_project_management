@@ -6,6 +6,13 @@ Download the latest release at https://github.com/Xilconic/Kanban_project_manage
 In case you don't have .Dot Net Core framework installed on your machine yet, a prompt will point you to the official website where you can download the framework. 
 After installing the framework head to https://github.com/Xilconic/Kanban_project_management/wiki/Introduction to get started!
 
+# DevOps
+1. Install dotnet commandline application and .Net Core 3.1 on your machine.
+2. In order to ensure all the required tools for are installed, execute the following on the commandline: `dotnet tool restore`
+
+## Building and running tests locally
+Execute the following on the commandline: `dotnet cake`
+
 # Distribution
 Copyright (c) 2020 S.L. des Bouvrie
 
